@@ -5,7 +5,7 @@ Paraméterezhető CAD-modell (Fusion 360) + animáció/render (Blender) + narrá
 videó + weboldal. Készült a Polinvent belső „AI Kihívás” keretében
 (2026. november 2–6.).
 
-**Élő oldal:** _(GitHub Pages link – publikálás után)_
+**Élő oldal:** https://peti-polinvent.github.io/kompozit-erthetoen/ · **Repó:** https://github.com/peti-polinvent/kompozit-erthetoen
 
 ## Hogyan áll össze? (hibrid munkafolyamat)
 

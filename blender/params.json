@@ -23,7 +23,7 @@
     { "name": "Üvegszövet 0/90° – 4. réteg",    "type": "glass",    "thickness_mm": 0.45, "display_thickness_mm": 4,  "color": "#e0d8bf", "alpha": 1.0 },
     { "name": "Tépőszövet (peel ply)",          "type": "peelply",  "thickness_mm": 0.15, "display_thickness_mm": 3,  "color": "#c84b4b", "alpha": 1.0 },
     { "name": "Gyantavezető háló (flow mesh)",      "type": "flowmesh", "thickness_mm": 1.0,  "display_thickness_mm": 4,  "color": "#4caf78", "alpha": 0.55 },
-    { "name": "Vákuumzsák",                     "type": "bag",      "thickness_mm": 0.075,"display_thickness_mm": 2,  "color": "#a9d4ff", "alpha": 0.22 }
+    { "name": "Vákuumzsák",                     "type": "bag",      "thickness_mm": 0.075,"display_thickness_mm": 2,  "color": "#a9d4ff", "alpha": 0.32 }
   ],
 
   "consumables": {

@@ -1,0 +1,16 @@
+build/*.png
+build_mock/
+fusion/export_mock/
+fusion/export/*.obj
+fusion/export/*.mtl
+fusion/export/*.stl
+__pycache__/
+*.blend1
+.DS_Store
+Thumbs.db
+video/frames/
+video/camtest/
+video/*.log
+video/elonezet.mp4
+video/narracio_mix.m4a
+video/tts/*_espeak.wav

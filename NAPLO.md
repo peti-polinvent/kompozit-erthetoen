@@ -180,4 +180,47 @@ sweep-elt cső OBJ-ben ~1 MB), ezért az importáló a csövek hálóját 25%-ra
 ritkítja (Decimate) → 810 KB. A weboldal mostantól ezt a Fusion-modellt
 mutatja. **A 3D-modell ezzel szakmailag és technikailag lezárva.**
 
-_(folytatás – videó)_
+**GitHub és Pages (kedd délelőtt).** Fiók: `peti-polinvent`. GitHub Desktop
+Mac-en. Elakadás #5: a Desktop a repót nem a projektmappában hozta létre,
+hanem egy új, üres mappában (csak `.gitattributes`), és azt publikálta – az
+oldal 404-et adott. Megoldás: Repository → Show in Finder, a projekt
+tartalmát bemásolni a repómappába, Commit → Push. Ezután az oldal él:
+https://peti-polinvent.github.io/kompozit-erthetoen/ – asztali és mobil
+nézetben ellenőrizve (3D néző, animáció, jelmagyarázat, napló, sötét mód).
+A repómappa innentől a hiteles másolat; a Windows-gépen klónozással jön létre.
+
+**Videó – terv és lánc (kedd délután).** Narráció 6 jelenetben, 241 szó
+(`video/narracio.md`, TTS-szegmensek `video/tts/NN.txt`). Elakadás #6: a
+felhőből egyetlen neurális magyar TTS sem érhető el (Edge TTS, HuggingFace/
+Piper – hálózati korlát), és a Mac-en futó parancssornak sincs hálózata.
+Megoldás: a hangot a Mac beépített magyar hangjával (Tünde, `say` parancs)
+állítjuk elő; addig espeak-ng gépi hanggal épül a teljes lánc. A lánc:
+`build_video.py` a hangfájlok hosszából ütemtervet csinál (jelenetek közt
+0,8 s), ebből VTT/SRT feliratot mondatonként, majd a `render_scenes.py`
+Blenderben jelenetenként mozgó kamerával és a narrációhoz igazított animációs
+időponttal renderel, végül ffmpeg vágja össze (címfeliratok, beégetett
+felirat, H.264). Tanulság: a Workbench-render 720p-ben 2,7 s/kép – a 150 s-os
+videó 2,5 óra lenne, ezért előbb 640×360/12 fps előnézet, és a végleges render
+csak a végleges hanggal.
+
+**Szakmai javítás #5 – az előnézeti videó után** (öt észrevétel):
+1. A szivattyú nem volt egyértelműen bekötve: a szívócsonk a fej oldalára
+   került, a puffertartályból jövő cső vízszintesen, tengelyben megy bele.
+2. A gyantatartályban a gyanta az asztal alá lógott – klasszikus origó-hiba: a
+   henger origója az alján volt, de a háló középre igazítva; a félmagasság a lap
+   alá esett. A háló csúcsait eltoltam, most 0-tól a magasságig tart.
+3. Felirat: nagyobb (27 px 720p-n), félkövér, sötét áttetsző sávval, csak alul.
+4. A vákuumfólia Blenderben mostantól valódi hártya: 96×72-es rács, amely a
+   köteg élein lekerekítve lejt a tömítőszalagig; alakkulccsal (shape key)
+   „laza sátor” → „ráfeszült” animáció az összeállás és az infúzió között – ez a
+   GLB-be morph-animációként átmegy, a weboldalon is látszik. (Elakadás #7: a
+   glTF-exportőr az alakkulcs-animációt csak akkor vitte, ha az is NLA-sávba
+   került.) A Fusion-modellben a fólia marad a lapokból álló CAD-változat.
+5. Címkék: a render minden képkockához kiszámolja a címkézett alkatrészek
+   képernyő-pozícióját (world_to_camera_view), egy utólépés (Pillow) buborékot
+   és nyilat rajzol; a rétegek bemutatásánál egyszerre csak az épp helyére
+   ereszkedő réteg címkéje látszik.
+Döntés: a narráció **saját hanggal** készül (jelenetenként egy felvétel), nem
+TTS-sel – hitelesebb, és a kiírás is ezt díjazza.
+
+_(folytatás)_

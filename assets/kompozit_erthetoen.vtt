@@ -1,0 +1,102 @@
+WEBVTT
+
+00:00:01.000 --> 00:00:02.614
+Kompozit érthetően.
+
+00:00:02.664 --> 00:00:06.817
+Hogyan készül egy kompozit lap vákuuminfúzióval?
+
+00:00:06.867 --> 00:00:13.121
+Ezt mutatjuk be egy egyszerű, háromdimenziós
+modellen, lépésről lépésre.
+
+00:00:13.971 --> 00:00:17.303
+A vákuuminfúzió zárt szerszámos eljárás.
+
+00:00:17.353 --> 00:00:26.521
+A száraz erősítőszövetet a szerszámra fektetjük,
+fóliával légmentesen lezárjuk, és a levegőt kiszivattyúzzuk.
+
+00:00:26.571 --> 00:00:28.889
+A gyantát nem mi nyomjuk be:
+
+00:00:28.939 --> 00:00:32.187
+a külső légnyomás tolja át a rétegeken.
+
+00:00:32.237 --> 00:00:37.092
+Így egyenletes, buborékmentes, jól ismételhető
+lap készül.
+
+00:00:37.942 --> 00:00:41.014
+Nézzük a rétegrendet, alulról felfelé.
+
+00:00:41.064 --> 00:00:45.450
+Az alumínium szerszámon formaleválasztó, majd
+gelcoat.
+
+00:00:45.500 --> 00:00:48.161
+Erre négy üvegszövet réteg kerül:
+
+00:00:48.211 --> 00:00:56.375
+nulla kilencven, plusz mínusz negyvenöt, plusz
+mínusz negyvenöt, nulla kilencven fokos száliránnyal.
+
+00:00:56.425 --> 00:01:00.647
+Felül a tépőszövet, amit kikeményedés után
+lehúzunk.
+
+00:01:00.697 --> 00:01:04.673
+Rá a gyantavezető háló, amely elosztja a
+gyantát.
+
+00:01:04.723 --> 00:01:08.369
+Végül a vákuumfólia, tömítőszalaggal lezárva.
+
+00:01:09.219 --> 00:01:10.522
+Indul az infúzió.
+
+00:01:10.572 --> 00:01:18.718
+A narancssárga spirálcsőből a gyanta a gyantavezető hálón
+fut végig, és onnan szivárog le a szövetekbe.
+
+00:01:18.768 --> 00:01:27.869
+A háló az elszívó oldal előtt véget ér, így a gyanta
+előbb átitatja a lapot, mint hogy elérné a kék elszívó csövet.
+
+00:01:27.919 --> 00:01:33.598
+Ami mégis túlfut, a gyantacsapdában gyűlik
+össze, nem jut a szivattyúba.
+
+00:01:33.648 --> 00:01:38.691
+A csapda és a szivattyú között puffertartály
+simítja a vákuumot.
+
+00:01:38.741 --> 00:01:47.842
+A Polinventnél az infúzió mínusz nulla egész hatvanöt
+bar relatív vákuummal fut, saját fejlesztésű epoxi gyantával.
+
+00:01:48.692 --> 00:01:49.627
+Az eredmény:
+
+00:01:49.677 --> 00:02:01.776
+egyenletes vastagságú, sima szerszámoldali felületű kompozit lap, magas
+száltartalommal, zárt rendszerben, kevés hulladékkal és kevés kibocsátással.
+
+00:02:02.626 --> 00:02:08.848
+Ezt a modellt négy nap alatt készítettem,
+mesterséges intelligenciával tanulva.
+
+00:02:08.898 --> 00:02:18.932
+A geometriát a Fusion háromszázhatvan szkriptje építi egy
+paraméterfájlból, az animációt a Blender, a weboldalt a model-viewer.
+
+00:02:18.982 --> 00:02:21.472
+A rétegrend bármikor cserélhető:
+
+00:02:21.522 --> 00:02:25.839
+ez az alap a sewerbot kompozit dobjának
+modellezéséhez.
+
+00:02:25.889 --> 00:02:27.507
+Köszönöm a figyelmet.
+

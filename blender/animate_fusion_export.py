@@ -81,6 +81,8 @@ def main(export_dir, out_dir, previews, up="Z"):
 
     objs = {}
     for entry in manifest["items"]:
+        if entry.get("layer_type") == "bag" and "bag" in layout["geo"]:
+            continue    # a fólia Blenderben hártyaként épül (build_bag_film)
         path = os.path.join(export_dir, entry["file"])
         if not os.path.exists(path):
             print("[hiányzik]", path)

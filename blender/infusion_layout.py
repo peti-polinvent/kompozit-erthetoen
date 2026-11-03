@@ -262,7 +262,11 @@ def compute_layout(P):
     hz = table_top + base_h + 55
     items.append(_box("pump_head", "Szivattyúfej", (70, 112, 110), (px + 65, py, hz), "04_Berendezesek",
                       "#455a64", roughness=0.5, metallic=0.5))
-    pump_in = _port("pump_port_in", "Szivattyú szívócsonk", px + 65, py, hz + 55, r=11, h=22)
+    # szívócsonk a fej +X (puffertartály felőli) oldalán, vízszintesen – a cső innen jön
+    pin_z = hz + 25
+    items.append(_cyl("pump_port_in", "Szivattyú szívócsonk", 11, (px + 98, py, pin_z), (px + 128, py, pin_z),
+                      "04_Berendezesek", steel, roughness=0.5, metallic=0.5))
+    pump_in = (px + 128, py, pin_z)          # a csonk külső vége
     _gauge("gauge_pump", "Vákuummérő – szivattyú szívóoldal", px + 65 - 24, py - 36, hz + 55)
     items.append(_cyl("pump_exhaust", "Kipufogó/olajköd-leválasztó", 14, (px + 65, py + 56, hz + 20),
                       (px + 65, py + 56 + 40, hz + 20), "04_Berendezesek", "#90a4ae", roughness=0.5, metallic=0.4))
@@ -334,16 +338,17 @@ def compute_layout(P):
             (trap_out[0] + 70, trap_out[1] + 10, trap_out[2] + 90),
             ] + _enter(port_in),
             "04_Berendezesek", tube["color"], alpha=tube.get("alpha", 1.0)))
+        # a puffertartály kimenő csonkjából fel, ív, majd +X irányból vízszintesen a szívócsonkba
         items.append(_tube("hose_buffer_pump", "Cső: puffertartály → szivattyú", r_t,
             _leave(port_out) + [
-            (pump_in[0] + 30, pump_in[1] - 30, pump_in[2] + 80),
-            ] + _enter(pump_in),
+            ((port_out[0] + pump_in[0] + 60) / 2, (port_out[1] + pump_in[1]) / 2, port_out[2] + 95),
+            ] + _axial(pump_in, (-1, 0), run=70),
             "04_Berendezesek", tube["color"], alpha=tube.get("alpha", 1.0)))
     else:
         items.append(_tube("hose_trap_pump", "Cső: csapda → szivattyú", r_t,
             _leave(trap_out) + [
             (trap_out[0] + 60, (trap_out[1] + pump_in[1]) / 2, trap_out[2] + 80),
-            ] + _enter(pump_in),
+            ] + _axial(pump_in, (-1, 0), run=70),
             "04_Berendezesek", tube["color"], alpha=tube.get("alpha", 1.0)))
 
     # ---- Animációs időzítés -------------------------------------------------
@@ -371,6 +376,16 @@ def compute_layout(P):
         resin_color=P["resin"]["color"], resin_alpha=P["resin"]["alpha"],
         n_layers=len(P["layup"]),
     )
+    if bag_layer:
+        bi_, Ld, zb = bag_layer
+        tb = Ld["display_thickness_mm"]
+        pp = OVERSIZE["peelply"]
+        geo["bag"] = dict(layer_index=bi_, color=Ld["color"], alpha=Ld.get("alpha", 1.0),
+                          thickness_mm=Ld["thickness_mm"], name=Ld["name"],
+                          tx=L / 2 + pp[0] + 5, ty=W / 2 + pp[2] + 5,          # a köteg teteje
+                          fxi=fx - tw_ / 2, fyi=fy - tw_ / 2,                   # a szalag belső éle
+                          fxo=fx + tw_ / 2 + 15, fyo=fy + tw_ / 2 + 15,         # a perem külső széle
+                          ztop=zb + tb / 2, zfoot=tool_top + th_ + tb / 2, puff_mm=28)
     return {"items": items, "geo": geo, "frames": frames}
 
 

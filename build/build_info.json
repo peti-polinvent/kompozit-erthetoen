@@ -41,5 +41,15 @@
     "09 Vákuumzsák – perem yp"
   ],
   "source": "fusion360",
-  "missing_from_fusion": []
+  "missing_from_fusion": [
+    "L09_bag_top",
+    "L09_bag_xm",
+    "L09_bag_xp",
+    "L09_bag_ym",
+    "L09_bag_yp",
+    "L09_bag_flange_xm",
+    "L09_bag_flange_xp",
+    "L09_bag_flange_ym",
+    "L09_bag_flange_yp"
+  ]
 }

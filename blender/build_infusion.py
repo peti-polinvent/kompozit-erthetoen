@@ -130,6 +130,8 @@ def add_cylinder_bottom_origin(name, radius, height, base_location, material, co
                                         location=(0, 0, height / 2))
     obj = bpy.context.active_object
     obj.name = name
+    for v in obj.data.vertices:        # a háló az origó FÖLÉ kerüljön (0..height)
+        v.co.z += height / 2
     for c in obj.users_collection:
         c.objects.unlink(obj)
     collection.objects.link(obj)
@@ -156,6 +158,64 @@ def add_tube(name, points, radius, material, collection):
     obj.select_set(True)
     bpy.ops.object.convert(target="MESH")
     obj.select_set(False)
+    return obj
+
+
+def build_bag_film(B, material, collection, nx=96, ny=72):
+    """Vákuumfólia mint hártya: sűrű rács, amely a köteg teteje és a tömítőszalag
+    között lekerekítve lejt, a szalagon túl sík peremmel. Két alak:
+      Basis = ráfeszülve (vákuum alatt), "Laza" = lebegő sátor (szívás előtt).
+    A "Laza" alakkulcs értékét 1→0 animálva a fólia "rászívódik" a rétegekre."""
+    import math as _m
+    tx, ty, fxi, fyi, fxo, fyo = (B[k] * MM for k in ("tx", "ty", "fxi", "fyi", "fxo", "fyo"))
+    ztop, zfoot, puff = B["ztop"] * MM, B["zfoot"] * MM, B["puff_mm"] * MM
+
+    def smooth(t):
+        t = max(0.0, min(1.0, t))
+        return t * t * (3 - 2 * t)
+
+    def z_tight(x, y):
+        dx = max(abs(x) - tx, 0.0) / (fxi - tx)
+        dy = max(abs(y) - ty, 0.0) / (fyi - ty)
+        d = _m.hypot(dx, dy)
+        return zfoot + (ztop - zfoot) * (1.0 - smooth(d))
+
+    def z_loose(x, y):
+        # a szalag belső élén belül mindenütt felpúposodik, a peremen nem
+        ex = max(abs(x) - fxi, 0.0) / (fxo - fxi)
+        ey = max(abs(y) - fyi, 0.0) / (fyo - fyi)
+        inside = 1.0 - smooth(max(ex, ey))
+        dome = 1.0 - 0.35 * max(abs(x) / fxi, abs(y) / fyi) ** 2
+        return z_tight(x, y) + puff * inside * dome
+
+    verts, verts_loose, faces = [], [], []
+    for j in range(ny + 1):
+        y = -fyo + 2 * fyo * j / ny
+        for i in range(nx + 1):
+            x = -fxo + 2 * fxo * i / nx
+            verts.append((x, y, z_tight(x, y)))
+            verts_loose.append((x, y, z_loose(x, y)))
+    for j in range(ny):
+        for i in range(nx):
+            a = j * (nx + 1) + i
+            faces.append((a, a + 1, a + nx + 2, a + nx + 1))
+    mesh = bpy.data.meshes.new("Vakuumfolia")
+    mesh.from_pydata(verts, [], faces)
+    mesh.update()
+    for poly in mesh.polygons:
+        poly.use_smooth = True
+    obj = bpy.data.objects.new(f"{B['layer_index']+1:02d} {B['name']}", mesh)
+    collection.objects.link(obj)
+    obj.data.materials.append(material)
+    obj.shape_key_add(name="Basis", from_mix=False)
+    sk = obj.shape_key_add(name="Laza", from_mix=False)
+    for k, co in enumerate(verts_loose):
+        sk.data[k].co = co
+    sk.value = 1.0
+    obj["key"] = "L%02d_bag_film" % (B["layer_index"] + 1)
+    obj["layer_index"] = B["layer_index"]
+    obj["layer_type"] = "bag"
+    obj["thickness_mm"] = B["thickness_mm"]
     return obj
 
 
@@ -206,6 +266,8 @@ def build_primitives(layout, cols):
     """Layout-itemek → Blender-objektumok. Visszaad: {key: obj}"""
     objs = {}
     for it in layout["items"]:
+        if it.get("layer_type") == "bag" and "bag" in layout["geo"]:
+            continue    # a fóliát hártyaként építjük (build_bag_film), nem hasábokból
         mat = material_for(it)
         col = cols[it["collection"]]
         if it["kind"] == "box":
@@ -247,12 +309,26 @@ def animate_and_export(layout, objs, cols, out_dir):
     f_in0, f_in1 = F["infuse"]
     f_end = F["end"]
 
+    # --- vákuumfólia-hártya (ráfeszülés animációval)
+    if "bag" in G:
+        B = G["bag"]
+        mat_bag = make_material("M_bag_film", B["color"], alpha=B["alpha"], roughness=0.15)
+        film = build_bag_film(B, mat_bag, cols["02_Retegrend"])
+        objs[film["key"]] = film
+        sk = film.data.shape_keys.key_blocks["Laza"]
+        f_suck0, f_suck1 = f_as1 + 3, f_in0 - 3     # az összeállás után, az infúzió előtt szívódik rá
+        for fr, v in ((1, 1.0), (f_suck0, 1.0), (f_suck1, 0.0), (f_end, 0.0)):
+            sk.value = v
+            sk.keyframe_insert("value", frame=fr)
+        for fc in film.data.shape_keys.animation_data.action.fcurves:
+            for kp in fc.keyframe_points:
+                kp.interpolation = "BEZIER"; kp.easing = "EASE_IN_OUT"
+
     # --- rétegek: robbantott → összeállt, lentről felfelé lépcsőzve
-    for it in layout["items"]:
-        if "layer_index" not in it or it["key"] not in objs:
+    for obj in list(objs.values()):
+        if obj.get("layer_index") is None:
             continue
-        i = it["layer_index"]
-        obj = objs[it["key"]]
+        i = int(obj["layer_index"])
         rest = Vector(obj.location)
         exploded = rest + Vector((0, 0, (i + 1) * gap))
         stagger = F["assemble_frames"] * 0.5 * i / max(n - 1, 1)
@@ -324,13 +400,16 @@ def animate_and_export(layout, objs, cols, out_dir):
     scene.render.resolution_x, scene.render.resolution_y = 1920, 1080
 
     # --- export: minden akció egy közös "Infuzio" NLA-sávba → egyetlen glTF-animáció
-    for obj in bpy.data.objects:
-        ad = obj.animation_data
+    def _to_nla(ad):
         if ad and ad.action:
             track = ad.nla_tracks.new()
             track.name = "Infuzio"
             track.strips.new("Infuzio", 1, ad.action)
             ad.action = None
+    for obj in bpy.data.objects:
+        _to_nla(obj.animation_data)
+        if obj.type == "MESH" and obj.data.shape_keys:          # alakkulcs-animáció (fólia) is
+            _to_nla(obj.data.shape_keys.animation_data)
     os.makedirs(out_dir, exist_ok=True)
     glb = os.path.join(out_dir, "infusion.glb")
     bpy.ops.export_scene.gltf(filepath=glb, export_format="GLB", export_animations=True,
