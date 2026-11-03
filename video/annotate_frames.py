@@ -194,6 +194,16 @@ def draw_braces(img, braces, font, scale):
         min_cy = prev_b["cy"] + prev_b["th"] / 2 + cur["th"] / 2 + 2 * pad + 4 * scale
         if cur["cy"] < min_cy:
             cur["cy"] = min_cy
+    # a feliratsáv fölött maradjanak: a legalsót felhúzzuk, és ha kell, a többit is (alulról felfelé)
+    H = img.size[1]
+    for k in range(len(items) - 1, -1, -1):
+        cur = items[k]
+        limit = (H - (SUB_BAND + 18) * scale) - cur["th"] / 2 - pad   # kétsoros felirat fölött
+        if k < len(items) - 1:
+            nxt = items[k + 1]
+            limit = min(limit, nxt["cy"] - nxt["th"] / 2 - cur["th"] / 2 - 2 * pad - 4 * scale)
+        if cur["cy"] > limit:
+            cur["cy"] = limit
     # közös felirat-oszlop: a legbalra eső zárójeltől balra
     x_col = min(b["x"] for b in items) - 26 * scale
     for b in items:

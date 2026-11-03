@@ -13,6 +13,7 @@ Lépések:
 
     python video/build_video.py            # minden lépés
     python video/build_video.py --no-render   # csak hang+felirat+vágás (ha a frames/ kész)
+    python video/build_video.py --no-render --no-annotate   # ha a frames/ már címkézett is
 """
 
 import json
@@ -43,7 +44,7 @@ TITLES = [  # (jelenet-index, cím) – a jelenet első 3,5 másodpercében jele
     (2, "A rétegrend"),
     (3, "Hol áramlik a gyanta?"),
     (4, "Az eredmény"),
-    (5, "Készült: Fusion 360 + Blender + model-viewer, AI-val tanulva"),
+    (5, "Így készült: Fusion 360 + Blender + AI"),
 ]
 
 
@@ -160,9 +161,10 @@ def main(render=True):
         subprocess.check_call([BPY_PY, os.path.join(HERE, "render_scenes.py"), "--plan",
                                os.path.join(HERE, "scene_plan.json"), "--out", FRAMES,
                                "--size", f"{RES[0]}x{RES[1]}"])
-    # címkék (buborék + nyíl) a képkockákra
-    subprocess.check_call(["/usr/local/bin/python3", os.path.join(HERE, "annotate_frames.py"),
-                           "--frames", FRAMES, "--labels", os.path.join(HERE, "labels.json")])
+    # címkék (buborék + nyíl) a képkockákra (--no-annotate: már címkézett frames/ esetén kihagyjuk)
+    if "--no-annotate" not in sys.argv:
+        subprocess.check_call(["/usr/local/bin/python3", os.path.join(HERE, "annotate_frames.py"),
+                               "--frames", FRAMES, "--labels", os.path.join(HERE, "labels.json")])
 
     # ---- 4. hangsáv ------------------------------------------------------------
     # ffmpeg filter: minden hang elé/után csend, összefűzés

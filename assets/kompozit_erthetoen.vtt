@@ -1,102 +1,95 @@
 WEBVTT
 
-00:00:01.000 --> 00:00:02.614
+00:00:01.000 --> 00:00:02.355
 Kompozit érthetően.
 
-00:00:02.664 --> 00:00:06.817
+00:00:02.405 --> 00:00:05.903
 Hogyan készül egy kompozit lap vákuuminfúzióval?
 
-00:00:06.867 --> 00:00:13.121
+00:00:05.953 --> 00:00:11.226
 Ezt mutatjuk be egy egyszerű, háromdimenziós
 modellen, lépésről lépésre.
 
-00:00:13.971 --> 00:00:17.303
-A vákuuminfúzió zárt szerszámos eljárás.
+00:00:12.076 --> 00:00:21.516
+A vákuuminfúzió során a száraz erősítőszövetet a szerszámra
+fektetjük, fóliával légmentesen lezárjuk, és a levegőt kiszivattyúzzuk.
 
-00:00:17.353 --> 00:00:26.521
-A száraz erősítőszövetet a szerszámra fektetjük,
-fóliával légmentesen lezárjuk, és a levegőt kiszivattyúzzuk.
-
-00:00:26.571 --> 00:00:28.889
+00:00:21.566 --> 00:00:23.545
 A gyantát nem mi nyomjuk be:
 
-00:00:28.939 --> 00:00:32.187
+00:00:23.595 --> 00:00:26.370
 a külső légnyomás tolja át a rétegeken.
 
-00:00:32.237 --> 00:00:37.092
+00:00:26.420 --> 00:00:30.572
 Így egyenletes, buborékmentes, jól ismételhető
 lap készül.
 
-00:00:37.942 --> 00:00:41.014
-Nézzük a rétegrendet, alulról felfelé.
+00:00:31.422 --> 00:00:34.570
+Nézzük meg a rétegrendet, alulról felfelé.
 
-00:00:41.064 --> 00:00:45.450
+00:00:34.620 --> 00:00:39.444
 Az alumínium szerszámon formaleválasztó, majd
-gelcoat.
+gelcoat található.
 
-00:00:45.500 --> 00:00:48.161
+00:00:39.494 --> 00:00:41.958
 Erre négy üvegszövet réteg kerül:
 
-00:00:48.211 --> 00:00:56.375
+00:00:42.008 --> 00:00:49.726
 nulla kilencven, plusz mínusz negyvenöt, plusz
-mínusz negyvenöt, nulla kilencven fokos száliránnyal.
+mínusz negyvenöt és nulla kilencven fokos száliránnyal.
 
-00:00:56.425 --> 00:01:00.647
-Felül a tépőszövet, amit kikeményedés után
-lehúzunk.
+00:00:49.776 --> 00:00:55.666
+Felül a tépőszövet, amit a gyanta térhálósodása
+után eltávolítunk a termékről.
 
-00:01:00.697 --> 00:01:04.673
-Rá a gyantavezető háló, amely elosztja a
-gyantát.
+00:00:55.716 --> 00:00:58.713
+Ezen helyezkedik el a gyantavezető háló.
 
-00:01:04.723 --> 00:01:08.369
+00:00:58.763 --> 00:01:02.140
 Végül a vákuumfólia, tömítőszalaggal lezárva.
 
-00:01:09.219 --> 00:01:10.522
-Indul az infúzió.
+00:01:02.990 --> 00:01:11.737
+Az infúzió során a narancssárga spirálcsőből a gyanta a
+gyantavezető hálón fut végig, és onnan szivárog le a szövetekbe.
 
-00:01:10.572 --> 00:01:18.718
-A narancssárga spirálcsőből a gyanta a gyantavezető hálón
-fut végig, és onnan szivárog le a szövetekbe.
+00:01:11.787 --> 00:01:21.926
+A gyantavezető az elszívó oldal előtt véget ér, így a gyanta
+előbb átitatja a lapot, mint hogy elérné a kékkel feltüntetett elszívó csövet.
 
-00:01:18.768 --> 00:01:27.869
-A háló az elszívó oldal előtt véget ér, így a gyanta
-előbb átitatja a lapot, mint hogy elérné a kék elszívó csövet.
+00:01:21.976 --> 00:01:27.790
+Ha a gyanta mégis túlfut, a gyantacsapdában
+gyűlik össze, nem jut a szivattyúba.
 
-00:01:27.919 --> 00:01:33.598
-Ami mégis túlfut, a gyantacsapdában gyűlik
-össze, nem jut a szivattyúba.
-
-00:01:33.648 --> 00:01:38.691
+00:01:27.840 --> 00:01:33.948
 A csapda és a szivattyú között puffertartály
-simítja a vákuumot.
+gondoskodik az egyenletesebb vákuumról.
 
-00:01:38.741 --> 00:01:47.842
+00:01:33.998 --> 00:01:42.744
 A Polinventnél az infúzió mínusz nulla egész hatvanöt
-bar relatív vákuummal fut, saját fejlesztésű epoxi gyantával.
+bar relatív vákuummal történik, saját fejlesztésű epoxi gyantával.
 
-00:01:48.692 --> 00:01:49.627
-Az eredmény:
+00:01:43.594 --> 00:01:45.121
+Mit kapunk eredményül?
 
-00:01:49.677 --> 00:02:01.776
-egyenletes vastagságú, sima szerszámoldali felületű kompozit lap, magas
-száltartalommal, zárt rendszerben, kevés hulladékkal és kevés kibocsátással.
+00:01:45.171 --> 00:01:51.572
+Egyenletes vastagságú, sima szerszámoldali
+felületű kompozit lapot, magas száltartalommal.
 
-00:02:02.626 --> 00:02:08.848
+00:01:52.422 --> 00:01:56.878
 Ezt a modellt négy nap alatt készítettem,
-mesterséges intelligenciával tanulva.
+mesterséges intelligenciával.
 
-00:02:08.898 --> 00:02:18.932
-A geometriát a Fusion háromszázhatvan szkriptje építi egy
-paraméterfájlból, az animációt a Blender, a weboldalt a model-viewer.
+00:01:56.928 --> 00:02:06.143
+A geometriát a Fusion háromszázhatvan szkriptje építette egy
+paraméterfájlból, az animációt Blenderrel, a weboldalt a model-viewerrel készítettem.
 
-00:02:18.982 --> 00:02:21.472
+00:02:06.193 --> 00:02:08.174
 A rétegrend bármikor cserélhető:
 
-00:02:21.522 --> 00:02:25.839
-ez az alap a sewerbot kompozit dobjának
-modellezéséhez.
+00:02:08.224 --> 00:02:12.743
+nagyon jó alap a Sewerbot Compact kompozit dob
+gyártásának bemutatására.
 
-00:02:25.889 --> 00:02:27.507
+00:02:12.793 --> 00:02:14.075
 Köszönöm a figyelmet.
 
