@@ -83,6 +83,8 @@ def main(export_dir, out_dir, previews, up="Z"):
     for entry in manifest["items"]:
         if entry.get("layer_type") == "bag" and "bag" in layout["geo"]:
             continue    # a fólia Blenderben hártyaként épül (build_bag_film)
+        if entry.get("kind") == "tube":
+            continue    # a csöveket mindig a layoutból építjük (így a csővezetés sosem avul el)
         path = os.path.join(export_dir, entry["file"])
         if not os.path.exists(path):
             print("[hiányzik]", path)
@@ -105,9 +107,22 @@ def main(export_dir, out_dir, previews, up="Z"):
                 obj[k] = entry[k]
         objs[entry["key"]] = obj
 
+    # csövek a layoutból (Bezier-cső), a Fusion-exporttól függetlenül
+    for it in layout["items"]:
+        if it["kind"] == "tube":
+            obj = bi.add_tube(it["name"], [[v * 0.001 for v in p] for p in it["points_mm"]],
+                              it["radius_mm"] * 0.001, bi.material_for(it), cols[it["collection"]])
+            obj["key"] = it["key"]
+            for poly in obj.data.polygons:
+                poly.use_smooth = True
+            objs[it["key"]] = obj
+
     # mértékegység: Fusion → méter
     s = detect_scale(objs, layout, manifest.get("units", "cm"))
-    for obj in objs.values():
+    tube_keys = {it["key"] for it in layout["items"] if it["kind"] == "tube"}
+    for key, obj in objs.items():
+        if key in tube_keys:
+            continue
         for v in obj.data.vertices:
             v.co *= s
         obj.data.update()
@@ -126,7 +141,8 @@ def main(export_dir, out_dir, previews, up="Z"):
             bpy.context.view_layer.objects.active = obj
             bpy.ops.object.modifier_apply(modifier=mod.name)
 
-    missing = [it["key"] for it in layout["items"] if it["key"] not in objs]
+    missing = [it["key"] for it in layout["items"]
+               if it["key"] not in objs and it.get("layer_type") != "bag"]   # a fólia szándékosan hártya
     if missing:
         print("[figyelem] a Fusion-exportból hiányzó testek:", ", ".join(missing))
 
