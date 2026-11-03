@@ -14,3 +14,5 @@ video/*.log
 video/elonezet.mp4
 video/narracio_mix.m4a
 video/tts/*_espeak.wav
+models/compactdrum.obj
+models/*.mtl

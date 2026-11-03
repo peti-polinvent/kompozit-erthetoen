@@ -80,7 +80,11 @@ def main(export_dir, out_dir, previews, up="Z"):
     scene["source"] = "fusion360"
 
     objs = {}
+    layout_keys = {it["key"]: it for it in layout["items"]}
     for entry in manifest["items"]:
+        if entry["key"] not in layout_keys:
+            print("[kihagyva] a Fusion-exportban van, a layoutban már nincs:", entry["key"])
+            continue
         if entry.get("layer_type") == "bag" and "bag" in layout["geo"]:
             continue    # a fólia Blenderben hártyaként épül (build_bag_film)
         if entry.get("kind") == "tube":
@@ -100,7 +104,9 @@ def main(export_dir, out_dir, previews, up="Z"):
         cols[entry["collection"]].objects.link(obj)
         # anyag a layout színeiből (a Fusion OBJ nem hoz megbízható anyagot)
         obj.data.materials.clear()
-        obj.data.materials.append(bi.material_for(entry))
+        # a megjelenést mindig a layout (params.json) adja, nem a Fusion-export manifestje
+        lay_item = next((it for it in layout["items"] if it["key"] == entry["key"]), entry)
+        obj.data.materials.append(bi.material_for(lay_item))
         obj["key"] = entry["key"]
         for k in ("layer_index", "layer_type", "thickness_mm"):
             if k in entry:
@@ -144,8 +150,16 @@ def main(export_dir, out_dir, previews, up="Z"):
     missing = [it["key"] for it in layout["items"]
                if it["key"] not in objs and it.get("layer_type") != "bag"]   # a fólia szándékosan hártya
     if missing:
+        # amit a Fusion-export (még) nem tartalmaz, primitívből pótoljuk – így a modell a
+        # Fusion újrafuttatása nélkül is teljes marad
+        sub = {"items": [it for it in layout["items"] if it["key"] in missing], "geo": layout["geo"]}
+        objs.update(bi.build_primitives(sub, cols))
+        print("[pótolva primitívből]", ", ".join(missing))
+        missing = []
+    if missing:
         print("[figyelem] a Fusion-exportból hiányzó testek:", ", ".join(missing))
 
+    objs.update(bi.load_extras(bi.load_params(), cols))     # külső modellek (pl. sewerbot dob)
     info = bi.animate_and_export(layout, objs, cols, out_dir)
     info["missing_from_fusion"] = missing
     with open(os.path.join(out_dir, "build_info.json"), "w", encoding="utf-8") as f:

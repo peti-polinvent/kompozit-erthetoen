@@ -164,8 +164,8 @@ def add_tube(name, points, radius, material, collection):
 def build_bag_film(B, material, collection, nx=96, ny=72):
     """Vákuumfólia mint hártya: sűrű rács, amely a köteg teteje és a tömítőszalag
     között lekerekítve lejt, a szalagon túl sík peremmel. Két alak:
-      Basis = ráfeszülve (vákuum alatt), "Laza" = lebegő sátor (szívás előtt).
-    A "Laza" alakkulcs értékét 1→0 animálva a fólia "rászívódik" a rétegekre."""
+      Basis = ráfeszülve (vákuum alatt), "Lap" = sík fólialap (vákuum előtt).
+    A "Lap" alakkulcs értékét 1→0 animálva a fólia "rászívódik" a rétegekre."""
     import math as _m
     tx, ty, fxi, fyi, fxo, fyo = (B[k] * MM for k in ("tx", "ty", "fxi", "fyi", "fxo", "fyo"))
     ztop, zfoot, puff = B["ztop"] * MM, B["zfoot"] * MM, B["puff_mm"] * MM
@@ -180,13 +180,9 @@ def build_bag_film(B, material, collection, nx=96, ny=72):
         d = _m.hypot(dx, dy)
         return zfoot + (ztop - zfoot) * (1.0 - smooth(d))
 
-    def z_loose(x, y):
-        # a szalag belső élén belül mindenütt felpúposodik, a peremen nem
-        ex = max(abs(x) - fxi, 0.0) / (fxo - fxi)
-        ey = max(abs(y) - fyi, 0.0) / (fyo - fyi)
-        inside = 1.0 - smooth(max(ex, ey))
-        dome = 1.0 - 0.35 * max(abs(x) / fxi, abs(y) / fyi) ** 2
-        return z_tight(x, y) + puff * inside * dome
+    def z_flat(x, y):
+        # vákuum előtt: sík lap a köteg tetejének magasságában, végig a peremig
+        return ztop
 
     verts, verts_loose, faces = [], [], []
     for j in range(ny + 1):
@@ -194,7 +190,7 @@ def build_bag_film(B, material, collection, nx=96, ny=72):
         for i in range(nx + 1):
             x = -fxo + 2 * fxo * i / nx
             verts.append((x, y, z_tight(x, y)))
-            verts_loose.append((x, y, z_loose(x, y)))
+            verts_loose.append((x, y, z_flat(x, y)))
     for j in range(ny):
         for i in range(nx):
             a = j * (nx + 1) + i
@@ -208,7 +204,7 @@ def build_bag_film(B, material, collection, nx=96, ny=72):
     collection.objects.link(obj)
     obj.data.materials.append(material)
     obj.shape_key_add(name="Basis", from_mix=False)
-    sk = obj.shape_key_add(name="Laza", from_mix=False)
+    sk = obj.shape_key_add(name="Lap", from_mix=False)
     for k, co in enumerate(verts_loose):
         sk.data[k].co = co
     sk.value = 1.0
@@ -233,9 +229,11 @@ def key_scale(obj, frame, scale):
     obj.keyframe_insert(data_path="scale", frame=frame)
 
 
-def smooth_keys(obj):
+def smooth_keys(obj, only_path=None):
     if obj.animation_data and obj.animation_data.action:
         for fc in obj.animation_data.action.fcurves:
+            if only_path and fc.data_path != only_path:
+                continue
             for kp in fc.keyframe_points:
                 kp.interpolation = "BEZIER"
                 kp.easing = "EASE_IN_OUT"
@@ -246,7 +244,79 @@ def smooth_keys(obj):
 # ---------------------------------------------------------------------------
 
 COLLECTIONS = ["00_Asztal", "01_Szerszam", "02_Retegrend", "03_Segedanyagok",
-               "04_Berendezesek", "05_Gyanta", "99_Kamera_Feny"]
+               "04_Berendezesek", "05_Gyanta", "06_Termek", "99_Kamera_Feny"]
+UNIT_TO_M = {"mm": 0.001, "cm": 0.01, "m": 1.0, "in": 0.0254}
+
+
+def apply_texture(obj, mat, image_path, tile_m):
+    """Csempézhető szövettextúra: Smart UV vetítés (a Fusion-export UV nélkül jön),
+    képtextúra + Mapping-skála (a glTF-be KHR_texture_transform-ként megy át)."""
+    bpy.ops.object.select_all(action="DESELECT")
+    obj.select_set(True); bpy.context.view_layer.objects.active = obj
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.uv.smart_project(angle_limit=math.radians(66), island_margin=0.003, scale_to_bounds=False)
+    bpy.ops.object.mode_set(mode="OBJECT")
+    nt = mat.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    tex = nt.nodes.new("ShaderNodeTexImage")
+    tex.image = bpy.data.images.load(os.path.abspath(image_path))
+    tex.image.pack()
+    # Smart UV (scale_to_bounds=False): 1 UV-egység ≈ 1 m felület → az UV-t skálázzuk,
+    # hogy 1 csempe = tile_m legyen (a Workbench a Mapping-csomópontot nem veszi figyelembe)
+    rep = 1.0 / max(tile_m, 1e-4)
+    uv = obj.data.uv_layers.active.data
+    for l in uv:
+        l.uv = (l.uv[0] * rep, l.uv[1] * rep)
+    tex.extension = "REPEAT"
+    nt.links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+
+
+def load_extras(params, cols):
+    """params["extras"]: külső OBJ/STL modellek (pl. a sewerbot Compact dob) beolvasása,
+    mértékegység-váltás, elhelyezés; opcionálisan a padlóra ültetve (sit_on_floor)."""
+    objs = {}
+    for ex in params.get("extras", []):
+        path = os.path.join(HERE, "..", ex["file"])
+        if not os.path.exists(path):
+            print("[extras] hiányzik:", path); continue
+        before = set(bpy.data.objects)
+        if path.lower().endswith(".obj"):
+            bpy.ops.wm.obj_import(filepath=path, forward_axis="Y", up_axis="Z")
+        else:
+            bpy.ops.wm.stl_import(filepath=path, forward_axis="Y", up_axis="Z")
+        parts = [o for o in bpy.data.objects if o not in before and o.type == "MESH"]
+        bpy.ops.object.select_all(action="DESELECT")
+        for o in parts: o.select_set(True)
+        bpy.context.view_layer.objects.active = parts[0]
+        if len(parts) > 1:
+            bpy.ops.object.join()
+        obj = bpy.context.active_object
+        obj.name = ex["name"]
+        sc = UNIT_TO_M.get(ex.get("units", "mm"), 0.001)
+        for v in obj.data.vertices:
+            v.co *= sc
+        for pl in obj.data.polygons: pl.use_smooth = True
+        for c in list(obj.users_collection): c.objects.unlink(obj)
+        cols[ex.get("collection", "06_Termek")].objects.link(obj)
+        obj.data.materials.clear()
+        mat = make_material("M_" + ex["key"], ex.get("color", "#888888"),
+                            roughness=ex.get("roughness", 0.5), metallic=ex.get("metallic", 0.0))
+        if ex.get("texture"):
+            apply_texture(obj, mat, os.path.join(HERE, "..", ex["texture"]), ex.get("texture_tile_mm", 50) * MM)
+        obj.data.materials.append(mat)
+        rx, ry, rz = ex.get("rotation_deg", [0, 0, 0])
+        obj.rotation_euler = (math.radians(rx), math.radians(ry), math.radians(rz))
+        px, py, pz = [v * MM for v in ex.get("position_mm", [0, 0, 0])]
+        obj.location = (px, py, pz)
+        bpy.context.view_layer.update()
+        if ex.get("sit_on_floor"):
+            zmin = min((obj.matrix_world @ Vector(c)).z for c in obj.bound_box)
+            obj.location.z += -zmin
+        obj["key"] = ex["key"]
+        objs[ex["key"]] = obj
+        print(f"[extras] {ex['name']}: {len(obj.data.polygons)} lap")
+    return objs
 
 
 def new_scene():
@@ -315,7 +385,7 @@ def animate_and_export(layout, objs, cols, out_dir):
         mat_bag = make_material("M_bag_film", B["color"], alpha=B["alpha"], roughness=0.15)
         film = build_bag_film(B, mat_bag, cols["02_Retegrend"])
         objs[film["key"]] = film
-        sk = film.data.shape_keys.key_blocks["Laza"]
+        sk = film.data.shape_keys.key_blocks["Lap"]
         f_suck0, f_suck1 = f_as1 + 3, f_in0 - 3     # az összeállás után, az infúzió előtt szívódik rá
         for fr, v in ((1, 1.0), (f_suck0, 1.0), (f_suck1, 0.0), (f_end, 0.0)):
             sk.value = v
@@ -360,11 +430,22 @@ def animate_and_export(layout, objs, cols, out_dir):
     R = G["resin_front"]
     resin_front = add_box_origin_minx("Gyantafront", (R["length"] * MM, R["width"] * MM, R["height"] * MM),
                                       R["x0"] * MM, 0, R["z_center"] * MM, mat_resin, cols["05_Gyanta"])
+    # az infúzió indulásáig a gyantafront a jelenet ALATT van (lépcsős kulcs, nem interpolál),
+    # és csak az induláskor ugrik a helyére – a 0 szélességű hasáb lapja sem látszik így
+    home = Vector(resin_front.location)
+    key_loc(resin_front, 1, home - Vector((0, 0, 5.0)))
+    key_loc(resin_front, f_in0 - 1, home - Vector((0, 0, 5.0)))
+    key_loc(resin_front, f_in0, home)
+    for fc in resin_front.animation_data.action.fcurves:
+        if fc.data_path == "location":
+            for kp in fc.keyframe_points:
+                kp.interpolation = "CONSTANT"
     key_scale(resin_front, 1, (0.001, 1, 1))
     key_scale(resin_front, f_in0, (0.001, 1, 1))
     key_scale(resin_front, f_in1, (1.0, 1, 1))
     key_scale(resin_front, f_end, (1.0, 1, 1))
-    for o in (resin_front, resin_pot, resin_trap):
+    smooth_keys(resin_front, only_path="scale")
+    for o in (resin_pot, resin_trap):
         smooth_keys(o)
 
     # --- kamera, fény, világ
@@ -393,7 +474,7 @@ def animate_and_export(layout, objs, cols, out_dir):
     # Workbench: gyors, műszaki-illusztráció jellegű render
     scene.render.engine = "BLENDER_WORKBENCH"
     sh = scene.display.shading
-    sh.light, sh.color_type = "STUDIO", "MATERIAL"
+    sh.light, sh.color_type = "STUDIO", "TEXTURE"   # textúrás anyagoknál a kép, máshol az anyagszín
     sh.show_shadows = sh.show_cavity = sh.show_object_outline = True
     sh.cavity_type = "BOTH"
     scene.display.render_aa = "8"
@@ -453,9 +534,11 @@ def parse_args():
 
 if __name__ == "__main__":
     out, previews = parse_args()
-    layout = compute_layout(load_params())
+    params = load_params()
+    layout = compute_layout(params)
     scene, cols = new_scene()
     objs = build_primitives(layout, cols)
+    objs.update(load_extras(params, cols))
     info = animate_and_export(layout, objs, cols, out)
     if previews:
         render_previews(out, info)

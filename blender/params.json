@@ -7,7 +7,7 @@
   },
 
   "tool": {
-    "name": "Szerszám (alumínium lap)",
+    "name": "Formaleválasztóval előkészített szerszám (alumínium lap)",
     "length_mm": 560,
     "width_mm": 460,
     "thickness_mm": 15,
@@ -15,15 +15,14 @@
   },
 
   "layup": [
-    { "name": "Formaleválasztó (release film)", "type": "release",  "thickness_mm": 0.05, "display_thickness_mm": 2,  "color": "#d9e6f2", "alpha": 0.6 },
-    { "name": "Gelcoat",                        "type": "gelcoat",  "thickness_mm": 0.5,  "display_thickness_mm": 3,  "color": "#f2f2f0", "alpha": 1.0 },
+    { "name": "Gelcoat",                        "type": "gelcoat",  "thickness_mm": 0.5,  "display_thickness_mm": 3,  "color": "#9c27b0", "alpha": 1.0 },
     { "name": "Üvegszövet 0/90° – 1. réteg",    "type": "glass",    "thickness_mm": 0.45, "display_thickness_mm": 4,  "color": "#e8e2cf", "alpha": 1.0 },
     { "name": "Üvegszövet ±45° – 2. réteg",     "type": "glass",    "thickness_mm": 0.45, "display_thickness_mm": 4,  "color": "#e0d8bf", "alpha": 1.0 },
     { "name": "Üvegszövet ±45° – 3. réteg",     "type": "glass",    "thickness_mm": 0.45, "display_thickness_mm": 4,  "color": "#e8e2cf", "alpha": 1.0 },
     { "name": "Üvegszövet 0/90° – 4. réteg",    "type": "glass",    "thickness_mm": 0.45, "display_thickness_mm": 4,  "color": "#e0d8bf", "alpha": 1.0 },
     { "name": "Tépőszövet (peel ply)",          "type": "peelply",  "thickness_mm": 0.15, "display_thickness_mm": 3,  "color": "#c84b4b", "alpha": 1.0 },
     { "name": "Gyantavezető háló (flow mesh)",      "type": "flowmesh", "thickness_mm": 1.0,  "display_thickness_mm": 4,  "color": "#4caf78", "alpha": 0.55 },
-    { "name": "Vákuumzsák",                     "type": "bag",      "thickness_mm": 0.075,"display_thickness_mm": 2,  "color": "#a9d4ff", "alpha": 0.32 }
+    { "name": "Vákuumfólia",                    "type": "bag",      "thickness_mm": 0.075,"display_thickness_mm": 2,  "color": "#fff176", "alpha": 0.38 }
   ],
 
   "consumables": {
@@ -47,6 +46,16 @@
     "resin": "Polinvent által előállított epoxi gyanta",
     "vacuum_system": "Puffertartály (vákuumtartály) a gyantacsapda és a szivattyú között, megfelelően kiépített rendszerrel – a folyamatos, egyenletes vákuum fenntartására."
   },
+
+  "extras": [
+    {
+      "_comment": "Külső geometria (Fusion OBJ-export, cm). Egyelőre az asztal alatt; ez lesz a következő fázis terméke.",
+      "key": "compactdrum", "name": "sewerbot Compact kompozit dob", "file": "models/compactdrum_lowpoly.obj",
+      "units": "cm", "position_mm": [250, 0, 0], "rotation_deg": [0, -90, 0], "sit_on_floor": true,
+      "color": "#c9a227", "roughness": 0.5, "metallic": 0.0, "collection": "06_Termek",
+      "texture": "assets/textures/twill_aramid.png", "texture_tile_mm": 64
+    }
+  ],
 
   "animation": {
     "fps": 24,

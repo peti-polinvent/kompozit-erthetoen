@@ -207,6 +207,7 @@
       [p.equipment.buffer_tank.color, p.equipment.buffer_tank.name],
       [p.equipment.pump.color, p.equipment.pump.name],
       ['#f5f5f5', 'Vákuum-nyomásmérők (csapda, puffertartály, szivattyú)'],
+      ...(p.extras || []).map(e => [e.color, e.name + ' – a következő fázis terméke (az asztal alatt)']),
       [p.tool.color, p.tool.name],
     ];
     if (p.process) {

@@ -66,7 +66,8 @@ def trim_silence(src, i):
 
 
 def pick_audio(i):
-    for ext in (".aiff", ".wav", ".m4a", ".mp3", ".mp4", ".caf"):
+    # saját felvétel (m4a/wav/caf/mp3) előnyben; az .aiff a "say" TTS tartaléké
+    for ext in (".m4a", ".wav", ".caf", ".mp3", ".mp4", ".aiff"):
         p = os.path.join(TTS, f"{i:02d}{ext}")
         if os.path.exists(p):
             return trim_silence(p, i), "felvetel"
@@ -190,10 +191,10 @@ def main(render=True):
                   f"box=1:boxcolor=black@0.45:boxborderw={bw}:x={m}:y={m}:enable='between(t,{a:.2f},{b:.2f})'")
     srt_esc = srt.replace("\\", "/").replace(":", "\\:")
     # felirat: nagyobb, félkövér, sötét áttetsző sávval (BorderStyle=4), csak alul
-    sub_fs = 13 if PREVIEW else 27
-    vf.append(f"subtitles='{srt_esc}':force_style='FontName=DejaVu Sans,Bold=1,FontSize={sub_fs},"
-              f"BorderStyle=4,Outline=0,Shadow=0,MarginV={14 if PREVIEW else 26},MarginL=40,MarginR=40,"
-              f"PrimaryColour=&H00FFFFFF,BackColour=&H66000000'")
+    # (libass a méreteket 384×288-as virtuális vászonhoz skálázza: FontSize=11 ≈ 27 px 720p-n)
+    vf.append(f"subtitles='{srt_esc}':force_style='FontName=DejaVu Sans,Bold=1,FontSize=11,"
+              f"BorderStyle=4,Outline=0,Shadow=0,MarginV=9,MarginL=14,MarginR=14,"
+              f"PrimaryColour=&H00FFFFFF,BackColour=&H73000000'")
     out_mp4 = os.path.join(HERE, "elonezet.mp4") if PREVIEW else os.path.join(ASSETS, "kompozit_erthetoen.mp4")
     subprocess.check_call(["ffmpeg", "-y", "-v", "error", "-framerate", str(FPS),
                            "-i", os.path.join(FRAMES, "%05d.png"), "-i", audio_mix,

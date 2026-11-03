@@ -223,4 +223,32 @@ csak a végleges hanggal.
 Döntés: a narráció **saját hanggal** készül (jelenetenként egy felvétel), nem
 TTS-sel – hitelesebb, és a kiírás is ezt díjazza.
 
+**Szakmai javítás #6 – a videó ellenőrző képei után.** Gelcoat élénk lila;
+a gyantafront az infúzió indulásáig láthatatlan (0 szélesség); a fólia a
+robbantott és összeállt nézetben sík lap, és csak a vákuumnál feszül rá;
+a fólia áttetsző citromsárga; a formaleválasztó nem külön réteg, hanem a
+szerszám felirata („formaleválasztóval előkészített szerszám”) – a rétegrend
+így 8 elemű. Felirat: 27 px (a libass 288 px-es virtuális vászonhoz skáláz –
+ezt tanulni kellett). Címkézés helyett **kiemelés**: az éppen bemutatott
+alkatrész fénylő körvonalat kap (a renderelő külön maszkot renderel róla),
+egyetlen névcímkével; a 2. jelenet oldalnézet kapcsos zárójeles rétegrend-
+jelmagyarázattal; a buborékok automatikus, ütközésmentes elrendezést kaptak.
+Az importáló a Fusion-exportból hiányzó elemeket primitívből pótolja, a
+feleslegeseket kihagyja – így a geometria-módosítás nem vár a Fusion
+újrafuttatására. Döntés: narráció saját hanggal.
+
+**A sewerbot Compact dobja a modellben.** A dob Fusion-exportja (OBJ, cm,
+281 ezer háromszög, 31 MB) a `params.json` új `extras` blokkján keresztül kerül
+a jelenetbe: a Blender beolvassa, mértékegységet vált, a padlóra ülteti az
+asztal alá. Webre 8%-ra ritkítva (22 ezer háromszög, 2 MB) – az eredeti nem
+megy a repóba. Ez a következő fázis kiindulása: a dob teregetésének
+(rétegrendjének) modellezése és animálása ugyanebből a paraméter-logikából.
+A dob a kör alakú nyílást hordozó oldalára fektetve fekszik (`rotation_deg`
+[0, −90, 0] – az első próba, [90, 0, 0], a nyakat a kamera felé fordította,
+ez a kép alapján derült ki). Felülete 2/2 twill aramid mintázatú: a textúra
+procedurálisan generált PNG (16 fonalköteg, sötét–világos mustársárga), Smart
+UV-vetítéssel, 64 mm-es csempemérettel. **Elakadás #8:** a Workbench
+renderelő nem veszi figyelembe a Mapping-csomópont skálázását, ezért a
+csempeméretet közvetlenül az UV-koordináták szorzásával állítjuk be.
+
 _(folytatás)_
