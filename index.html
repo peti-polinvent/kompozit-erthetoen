@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kompozit érthetően – vákuuminfúzió 3D-ben</title>
+<meta name="description" content="Hogyan készül egy kompozit panel vákuuminfúzióval? Paraméterezhető 3D modell, narrált videó és tanulási napló – Polinvent AI Kihívás.">
+<script type="module" src="assets/vendor/model-viewer.min.js"></script>
+<script src="assets/vendor/marked.min.js"></script>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#ffffff; --ink:#1c2430; --muted:#5b6675; --line:#e3e7ec;
+    --accent:#1f6feb; --resin:#e0a030; --glass:#d9cfae; --peel:#c84b4b; --flow:#4caf78; --bag:#7fb6ea; --tape:#f0c419;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#0f141a; --card:#171e27; --ink:#e8edf3; --muted:#9aa7b6; --line:#273241; --accent:#6ea8ff; }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+  a{color:var(--accent)}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+  header{padding:48px 0 24px}
+  header h1{font-size:clamp(28px,5vw,44px);margin:0 0 8px;line-height:1.15}
+  header p.lead{font-size:clamp(16px,2.2vw,20px);color:var(--muted);max-width:720px;margin:0}
+  nav{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;gap:4px;overflow-x:auto;padding:8px 16px}
+  nav a{white-space:nowrap;text-decoration:none;color:var(--ink);padding:8px 12px;border-radius:8px;font-size:14px}
+  nav a:hover{background:var(--line)}
+  section{padding:40px 0;border-top:1px solid var(--line)}
+  h2{font-size:clamp(22px,3.5vw,30px);margin:0 0 16px}
+  h3{font-size:18px;margin:24px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .grid{display:grid;gap:16px}
+  @media(min-width:760px){.grid-2{grid-template-columns:1fr 1fr}.grid-3{grid-template-columns:repeat(3,1fr)}}
+  model-viewer{width:100%;height:min(70vh,560px);background:linear-gradient(#eef1f5,#dfe5ec);border-radius:12px}
+  @media (prefers-color-scheme: dark){ model-viewer{background:linear-gradient(#1b2430,#121923)} }
+  .controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+  .controls button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer;font-size:14px}
+  .controls button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .controls input[type=range]{flex:1;min-width:140px}
+  .legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-top:12px}
+  .legend div{display:flex;gap:10px;align-items:center;font-size:14px}
+  .sw{width:22px;height:14px;border-radius:4px;border:1px solid rgba(0,0,0,.15);flex:none}
+  .steps{counter-reset:s;display:grid;gap:12px}
+  .steps .card{position:relative;padding-left:56px}
+  .steps .card::before{counter-increment:s;content:counter(s);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:600;font-size:14px}
+  .steps h3{margin:0 0 6px}
+  .steps p{margin:0;color:var(--muted)}
+  video{width:100%;border-radius:12px;background:#000;aspect-ratio:16/9}
+  .muted{color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600}
+  .dl a{display:inline-block;margin:4px 8px 4px 0;padding:10px 14px;border:1px solid var(--line);border-radius:10px;text-decoration:none;background:var(--card)}
+  #naplo{font-size:15px}
+  #naplo h2{font-size:22px;margin-top:28px}
+  #naplo h3{font-size:17px}
+  #naplo blockquote{border-left:3px solid var(--accent);margin:12px 0;padding:4px 14px;color:var(--muted);background:var(--card);border-radius:0 8px 8px 0}
+  #naplo code{background:var(--line);padding:1px 5px;border-radius:4px;font-size:13px}
+  #naplo pre{background:var(--line);padding:12px;border-radius:8px;overflow:auto}
+  #naplo hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  footer{padding:32px 0;color:var(--muted);font-size:14px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <h1>Kompozit érthetően<br><span class="muted" style="font-weight:500">vákuuminfúzió 3D-ben</span></h1>
+  <p class="lead">Egyetlen történet: hogyan készül egy egyszerű kompozit panel vákuuminfúzióval? Paraméterezhető CAD-modell (Fusion 360), animáció (Blender), narrált videó és tanulási napló – a Polinvent belső AI Kihívására, 2026. november 2–6.</p>
+</header>
+
+<nav><div class="wrap">
+  <a href="#modell">3D modell</a><a href="#video">Videó</a><a href="#technologia">Technológia</a><a href="#retegrend">Rétegrend</a><a href="#naplo-sec">Napló</a><a href="#letoltes">Letöltések</a>
+</div></nav>
+
+<section id="modell"><div class="wrap">
+  <h2>Forgatható 3D modell</h2>
+  <p class="muted">Húzd az egérrel/ujjaddal a forgatáshoz, görgess a nagyításhoz. Az animáció: a rétegek szétnyitva lebegnek → összeállnak a szerszámon → a gyanta a bevezetéstől (narancs spirálcső) az elszívás (kék spirálcső) felé átitatja a laminátumot.</p>
+  <model-viewer id="mv"
+    src="assets/infusion.glb"
+    alt="Vákuuminfúziós összeállítás 3D modellje: asztal, szerszám, rétegrend, vákuumzsák, gyantatartály, gyantacsapda, szivattyú"
+    camera-controls touch-action="pan-y" autoplay
+    shadow-intensity="1" exposure="1" environment-image="neutral" tone-mapping="neutral"
+    camera-orbit="-30deg 60deg 2.6m" camera-target="0.1m 0.78m 0m" min-camera-orbit="auto auto 0.8m" max-camera-orbit="auto auto 5m"
+    interaction-prompt="auto">
+  </model-viewer>
+  <div class="controls">
+    <button id="btnPlay">⏸ Szünet</button>
+    <button data-t="0.5">Robbantott nézet</button>
+    <button data-t="5.0">Összeállítva</button>
+    <button data-t="8.0">Infúzió közben</button>
+    <button data-t="11.5">Kész</button>
+    <input id="scrub" type="range" min="0" max="12" step="0.02" value="0" aria-label="Animáció időpontja">
+  </div>
+  <div class="legend" id="legend"></div>
+</div></section>
+
+<section id="video"><div class="wrap">
+  <h2>Videó (kb. 2 perc, narrációval és felirattal)</h2>
+  <video id="vid" controls playsinline preload="metadata" poster="assets/poster.jpg">
+    <source src="assets/kompozit_erthetoen.mp4" type="video/mp4">
+    <track kind="subtitles" src="assets/kompozit_erthetoen.vtt" srclang="hu" label="magyar" default>
+    A böngésződ nem támogatja a videó lejátszását.
+  </video>
+  <p class="muted" id="videoNote">A videó Blenderből renderelt képsorokból, AI-generált magyar narrációval és felirattal készült.</p>
+</div></section>
+
+<section id="technologia"><div class="wrap">
+  <h2>Mi az a vákuuminfúzió?</h2>
+  <div class="grid grid-2">
+    <div class="card">
+      <p>A <strong>vákuuminfúzió</strong> (VARTM) zárt szerszámos kompozitgyártási eljárás: a <em>száraz</em> erősítőanyagot (üveg-, szén- vagy aramidszövetet) a szerszámra fektetjük, a segédanyagokkal együtt vákuumzsákba zárjuk, majd a zsákból kiszívott levegő helyére – a légköri nyomás hatására – <strong>a gyanta magától beáramlik</strong> és átitatja a rétegeket.</p>
+      <p>Előnyei a kézi laminálással szemben: egyenletes, magas száltartalom (jellemzően 50–60 tf%), kevesebb légzárvány, jól ismételhető minőség és lényegesen kevesebb oldószer-/sztirolkibocsátás a műhelyben – a gyanta zárt rendszerben mozog.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Hol áramlik a gyanta?</h3>
+      <p>A <span style="color:var(--flow);font-weight:600">gyantavezető háló</span> a zsák alatti „gyorsforgalmi út”: a gyanta ezen fut végig a panel felett, és onnan szivárog <em>lefelé</em>, a vastagságon át a szövetrétegekbe. Ezért ér véget a háló az elszívó oldal előtt néhány centivel: így a gyanta nem rohan a vákuumcsőbe, előbb átitatja a laminátumot.</p>
+      <h3>Mire való a gyantacsapda?</h3>
+      <p>A <strong>gyantacsapda</strong> (catch pot) a vákuumvezetékbe iktatott tartály: ha a gyanta eléri az elszívó csövet, itt gyűlik össze – és <strong>nem jut a szivattyúba</strong>, ami tönkretenné azt. Egyúttal itt látszik, mikor „telt be” a panel.</p>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px;border-left:4px solid var(--accent)">
+    <h3 style="margin-top:0">Így csináljuk a Polinventnél</h3>
+    <div class="grid grid-3" id="processGrid">
+      <div><strong id="procVac">–0,65 bar</strong><br><span class="muted">relatív vákuum az infúzió alatt</span></div>
+      <div><strong>Saját epoxi gyanta</strong><br><span class="muted" id="procResin">a Polinvent által előállított epoxi gyantával dolgozunk</span></div>
+      <div><strong>Puffertartály</strong><br><span class="muted" id="procSys">a gyantacsapda és a szivattyú között, hogy a vákuum folyamatos és egyenletes maradjon – a 3D modellben is látható</span></div>
+    </div>
+  </div>
+
+  <h3>A folyamat lépésről lépésre</h3>
+  <div class="steps">
+    <div class="card"><h3>Szerszám előkészítése</h3><p>Tiszta, sima szerszámfelület (itt alumínium lap), formaleválasztó, opcionálisan gelcoat – ez adja a kész felületet.</p></div>
+    <div class="card"><h3>Száraz rétegrend lerakása</h3><p>Az erősítőszövetek a tervezett irányban (pl. 0/90°, ±45°), a rétegrend szerint. Ragasztóspray tartja a helyén őket.</p></div>
+    <div class="card"><h3>Segédanyagok</h3><p>Tépőszövet (peel ply) – leszedhető, érdes felületet hagy; gyantavezető háló – a gyanta elosztása; spirálcsövek – gyantabevezetés az egyik, elszívás a másik oldalon.</p></div>
+    <div class="card"><h3>Zsákolás és tömörségpróba</h3><p>Tömítőszalaggal lezárt vákuumzsák, szivattyú bekapcsolva. Zárt csappal a nyomásnak tartania kell: szivárgó zsákból porózus alkatrész lesz. A puffertartály (vákuumtartály) a csapda és a szivattyú között simítja a vákuumot, így az egyenletes marad az infúzió teljes ideje alatt.</p></div>
+    <div class="card"><h3>Gyanta előkészítése</h3><p>A gyantát (nálunk a Polinvent saját epoxi rendszere) a keverési arány szerint bekeverjük, és szükség esetén vákuum alatt gáztalanítjuk, hogy ne vigyünk buborékot a laminátumba. A fazékidőt a panel kitöltési idejéhez kell méretezni.</p></div>
+    <div class="card"><h3>Infúzió</h3><p>A bevezető csapot kinyitjuk: a gyanta a tartályból a bevezető spirálcsőbe, a gyantavezető hálón át a laminátumba áramlik, amíg a front el nem éri az elszívó oldalt. Nálunk ez –0,65 bar relatív vákuum mellett történik.</p></div>
+    <div class="card"><h3>Kikeményedés és kiszerelés</h3><p>Bevezetés lezárva, vákuum tartva a gélesedésig. Utána zsák, háló, tépőszövet le – és kész a panel: sima szerszámoldal, egyenletes vastagság.</p></div>
+  </div>
+</div></section>
+
+<section id="retegrend"><div class="wrap">
+  <h2>Rétegrend és paraméterek</h2>
+  <p class="muted">A modell a <code>blender/params.json</code> fájlból épül: a rétegek neve, típusa, valós és megjelenített (felnagyított) vastagsága, színe mind paraméter. A vékony rétegeket a 3D-ben szándékosan vastagabban mutatjuk, hogy látszódjanak. A geometriát egy eszközfüggetlen modul (<code>infusion_layout.py</code>) számolja; ugyanebből épít a <strong>Fusion 360</strong>-szkript (CAD-modell, f3d/STEP) és a <strong>Blender</strong>-szkript (animáció, render, GLB a webre).</p>
+  <div class="card" style="overflow:auto">
+    <table id="layupTable"><thead><tr><th>#</th><th>Réteg (alulról felfelé)</th><th>Típus</th><th>Valós vastagság</th><th>Megjelenítve</th></tr></thead><tbody></tbody></table>
+  </div>
+  <p class="muted" style="margin-top:12px">Következő lépés a kihíváson túl: ugyanebből a paraméterlogikából a <strong>sewerbot Compact</strong> kompozit dobjának hengeres szerszáma és rétegrendje, majd Darcy-törvény alapú kitöltésiidő-becslés a paraméterekből.</p>
+</div></section>
+
+<section id="naplo-sec"><div class="wrap">
+  <h2>Tanulási napló</h2>
+  <p class="muted">Milyen eszközöket használtam, hogyan dolgoztam az AI-jal (példa promptokkal), hol akadtam el, és hogyan jutottam túl rajta.</p>
+  <div class="card" id="naplo"><p class="muted">Napló betöltése…</p></div>
+</div></section>
+
+<section id="letoltes"><div class="wrap">
+  <h2>Letöltések és forrás</h2>
+  <div class="dl">
+    <a href="fusion/export/infusion.f3d" download>⬇ infusion.f3d (Fusion 360)</a>
+    <a href="fusion/export/infusion.step" download>⬇ infusion.step (STEP)</a>
+    <a href="build/infusion.blend" download>⬇ infusion.blend (Blender 4.5)</a>
+    <a href="assets/infusion.glb" download>⬇ infusion.glb (3D, animációval)</a>
+    <a href="blender/params.json" download>⬇ params.json (rétegrend)</a>
+    <a href="fusion/KompozitInfuzio/KompozitInfuzio.py" download>⬇ KompozitInfuzio.py (Fusion-szkript)</a>
+    <a href="blender/infusion_layout.py" download>⬇ infusion_layout.py (geometria)</a>
+    <a href="blender/build_infusion.py" download>⬇ build_infusion.py (Blender)</a>
+    <a href="NAPLO.md" download>⬇ NAPLO.md</a>
+    <a id="ghLink" href="#" target="_blank" rel="noopener">GitHub repó →</a>
+  </div>
+</div></section>
+
+<footer><div class="wrap">Mészáros Péter · Polinvent · AI Kihívás 2026. november · Készült Claude-dal, Fusion 360-nal, Blenderrel, ffmpeg-gel és &lt;model-viewer&gt;-rel.</div></footer>
+
+<script>
+  // --- 3D animáció vezérlés ---
+  const mv = document.getElementById('mv');
+  const scrub = document.getElementById('scrub');
+  const btnPlay = document.getElementById('btnPlay');
+  let userScrubbing = false;
+  mv.addEventListener('load', () => {
+    scrub.max = (mv.duration || 12).toFixed(2);
+    mv.play();
+  });
+  function setPlayLabel(){ btnPlay.textContent = mv.paused ? '▶ Lejátszás' : '⏸ Szünet'; }
+  btnPlay.addEventListener('click', () => { mv.paused ? mv.play() : mv.pause(); setPlayLabel(); });
+  document.querySelectorAll('.controls button[data-t]').forEach(b => b.addEventListener('click', () => {
+    mv.pause(); mv.currentTime = parseFloat(b.dataset.t); scrub.value = mv.currentTime; setPlayLabel();
+    document.querySelectorAll('.controls button[data-t]').forEach(x => x.classList.toggle('active', x === b));
+  }));
+  scrub.addEventListener('input', () => { userScrubbing = true; mv.pause(); mv.currentTime = parseFloat(scrub.value); setPlayLabel(); });
+  scrub.addEventListener('change', () => { userScrubbing = false; });
+  setInterval(() => { if (!userScrubbing && !mv.paused) scrub.value = mv.currentTime; }, 100);
+
+  // --- jelmagyarázat + rétegrend táblázat a params.json-ból ---
+  fetch('blender/params.json').then(r => r.json()).then(p => {
+    const legend = document.getElementById('legend');
+    const items = [
+      ...p.layup.map(l => [l.color, l.name]),
+      [p.consumables.sealant_tape.color, p.consumables.sealant_tape.name],
+      [p.consumables.inlet_spiral.color, p.consumables.inlet_spiral.name],
+      [p.consumables.vacuum_spiral.color, p.consumables.vacuum_spiral.name],
+      [p.resin.color, 'Gyanta (front, tartály, csapda)'],
+      [p.equipment.resin_trap.color, p.equipment.resin_trap.name],
+      [p.equipment.buffer_tank.color, p.equipment.buffer_tank.name],
+      [p.equipment.pump.color, p.equipment.pump.name],
+      ['#f5f5f5', 'Vákuum-nyomásmérők (csapda, puffertartály, szivattyú)'],
+      [p.tool.color, p.tool.name],
+    ];
+    if (p.process) {
+      document.getElementById('procVac').textContent = p.process.vacuum_bar_relative.toLocaleString('hu-HU') + ' bar';
+      document.getElementById('procResin').textContent = p.process.resin;
+    }
+    legend.innerHTML = items.map(([c, n]) => `<div><span class="sw" style="background:${c}"></span>${n}</div>`).join('');
+    const tb = document.querySelector('#layupTable tbody');
+    const typeNames = {release:'formaleválasztó', gelcoat:'gelcoat', glass:'üvegszövet', carbon:'szénszövet', peelply:'tépőszövet', flowmesh:'gyantavezető háló', bag:'vákuumzsák'};
+    tb.innerHTML = p.layup.map((l, i) => `<tr><td>${i+1}</td><td><span class="sw" style="background:${l.color};display:inline-block;vertical-align:middle;margin-right:6px"></span>${l.name}</td><td>${typeNames[l.type]||l.type}</td><td>${l.thickness_mm} mm</td><td>${l.display_thickness_mm} mm</td></tr>`).join('')
+      + `<tr><th colspan="3">Összesen (valós laminátum + segédanyagok)</th><th>${p.layup.reduce((a,l)=>a+l.thickness_mm,0).toFixed(2)} mm</th><th>${p.layup.reduce((a,l)=>a+l.display_thickness_mm,0)} mm</th></tr>`;
+  }).catch(() => {});
+
+  // --- napló Markdownból ---
+  fetch('NAPLO.md').then(r => r.text()).then(md => {
+    document.getElementById('naplo').innerHTML = marked.parse(md.replace(/^# .*\n/, ''));
+  }).catch(() => { document.getElementById('naplo').innerHTML = '<p class="muted">A napló a <a href="NAPLO.md">NAPLO.md</a> fájlban olvasható.</p>'; });
+
+  // --- GitHub link: ha GitHub Pages-en fut, a repóra mutat ---
+  const gh = document.getElementById('ghLink');
+  const m = location.hostname.match(/^(.+)\.github\.io$/);
+  if (m) { gh.href = `https://github.com/${m[1]}/${location.pathname.split('/')[1] || ''}`; } else { gh.textContent = 'GitHub repó (publikálás után)'; }
+</script>
+</body>
+</html>

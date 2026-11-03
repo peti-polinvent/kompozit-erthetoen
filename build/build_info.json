@@ -1,0 +1,45 @@
+{
+  "frames": {
+    "exploded_hold": [
+      1,
+      37
+    ],
+    "assemble": [
+      37,
+      109
+    ],
+    "assembled_hold": [
+      109,
+      133
+    ],
+    "infuse": [
+      133,
+      253
+    ],
+    "end": 289
+  },
+  "fps": 24,
+  "stack_total_display_mm": 30,
+  "stack_total_real_mm": 4.175,
+  "layers": [
+    "01 Formaleválasztó (release film)",
+    "02 Gelcoat",
+    "03 Üvegszövet 0/90° – 1. réteg",
+    "04 Üvegszövet ±45° – 2. réteg",
+    "05 Üvegszövet ±45° – 3. réteg",
+    "06 Üvegszövet 0/90° – 4. réteg",
+    "07 Tépőszövet (peel ply)",
+    "08 Gyantavezető háló (flow mesh)",
+    "09 Vákuumzsák – tető",
+    "09 Vákuumzsák – oldal xm",
+    "09 Vákuumzsák – oldal xp",
+    "09 Vákuumzsák – oldal ym",
+    "09 Vákuumzsák – oldal yp",
+    "09 Vákuumzsák – perem xm",
+    "09 Vákuumzsák – perem xp",
+    "09 Vákuumzsák – perem ym",
+    "09 Vákuumzsák – perem yp"
+  ],
+  "source": "fusion360",
+  "missing_from_fusion": []
+}

@@ -1,0 +1,13 @@
+{
+    "autodeskProduct": "Fusion",
+    "type": "script",
+    "id": "9e2f1c7a-5b3d-4e8a-9c1f-7a2b3c4d5e6f",
+    "author": "Mészáros Péter (Polinvent) – Claude segítségével",
+    "description": {
+        "": "Vákuuminfúziós összeállítás építése a blender/params.json alapján, OBJ/F3D/STEP export."
+    },
+    "version": "0.3.0",
+    "runOnStartup": false,
+    "supportedOS": "windows|mac",
+    "editEnabled": true
+}

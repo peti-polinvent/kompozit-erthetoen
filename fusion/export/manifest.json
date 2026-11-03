@@ -1,0 +1,1238 @@
+{
+  "units": "cm",
+  "up_axis": "Z",
+  "items": [
+    {
+      "key": "table_top",
+      "name": "Asztallap",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "00_Asztal",
+      "color": "#8d6e63",
+      "alpha": 1.0,
+      "roughness": 0.8,
+      "metallic": 0.0,
+      "file": "table_top.obj"
+    },
+    {
+      "key": "table_leg_a",
+      "name": "Asztalláb a",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "00_Asztal",
+      "color": "#8d6e63",
+      "alpha": 1.0,
+      "roughness": 0.8,
+      "metallic": 0.0,
+      "file": "table_leg_a.obj"
+    },
+    {
+      "key": "table_leg_b",
+      "name": "Asztalláb b",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "00_Asztal",
+      "color": "#8d6e63",
+      "alpha": 1.0,
+      "roughness": 0.8,
+      "metallic": 0.0,
+      "file": "table_leg_b.obj"
+    },
+    {
+      "key": "table_leg_c",
+      "name": "Asztalláb c",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "00_Asztal",
+      "color": "#8d6e63",
+      "alpha": 1.0,
+      "roughness": 0.8,
+      "metallic": 0.0,
+      "file": "table_leg_c.obj"
+    },
+    {
+      "key": "table_leg_d",
+      "name": "Asztalláb d",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "00_Asztal",
+      "color": "#8d6e63",
+      "alpha": 1.0,
+      "roughness": 0.8,
+      "metallic": 0.0,
+      "file": "table_leg_d.obj"
+    },
+    {
+      "key": "tool",
+      "name": "Szerszám (alumínium lap)",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "01_Szerszam",
+      "color": "#9aa0a6",
+      "alpha": 1.0,
+      "roughness": 0.35,
+      "metallic": 0.8,
+      "file": "tool.obj"
+    },
+    {
+      "key": "L01_release",
+      "name": "01 Formaleválasztó (release film)",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "02_Retegrend",
+      "color": "#d9e6f2",
+      "alpha": 0.6,
+      "roughness": 0.4,
+      "metallic": 0.0,
+      "layer_index": 0,
+      "layer_type": "release",
+      "thickness_mm": 0.05,
+      "file": "L01_release.obj"
+    },
+    {
+      "key": "L02_gelcoat",
+      "name": "02 Gelcoat",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "02_Retegrend",
+      "color": "#f2f2f0",
+      "alpha": 1.0,
+      "roughness": 0.3,
+      "metallic": 0.0,
+      "layer_index": 1,
+      "layer_type": "gelcoat",
+      "thickness_mm": 0.5,
+      "file": "L02_gelcoat.obj"
+    },
+    {
+      "key": "L03_glass",
+      "name": "03 Üvegszövet 0/90° – 1. réteg",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "02_Retegrend",
+      "color": "#e8e2cf",
+      "alpha": 1.0,
+      "roughness": 0.9,
+      "metallic": 0.0,
+      "layer_index": 2,
+      "layer_type": "glass",
+      "thickness_mm": 0.45,
+      "file": "L03_glass.obj"
+    },
+    {
+      "key": "L04_glass",
+      "name": "04 Üvegszövet ±45° – 2. réteg",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "02_Retegrend",
+      "color": "#e0d8bf",
+      "alpha": 1.0,
+      "roughness": 0.9,
+      "metallic": 0.0,
+      "layer_index": 3,
+      "layer_type": "glass",
+      "thickness_mm": 0.45,
+      "file": "L04_glass.obj"
+    },
+    {
+      "key": "L05_glass",
+      "name": "05 Üvegszövet ±45° – 3. réteg",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "02_Retegrend",
+      "color": "#e8e2cf",
+      "alpha": 1.0,
+      "roughness": 0.9,
+      "metallic": 0.0,
+      "layer_index": 4,
+      "layer_type": "glass",
+      "thickness_mm": 0.45,
+      "file": "L05_glass.obj"
+    },
+    {
+      "key": "L06_glass",
+      "name": "06 Üvegszövet 0/90° – 4. réteg",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "02_Retegrend",
+      "color": "#e0d8bf",
+      "alpha": 1.0,
+      "roughness": 0.9,
+      "metallic": 0.0,
+      "layer_index": 5,
+      "layer_type": "glass",
+      "thickness_mm": 0.45,
+      "file": "L06_glass.obj"
+    },
+    {
+      "key": "L07_peelply",
+      "name": "07 Tépőszövet (peel ply)",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "02_Retegrend",
+      "color": "#c84b4b",
+      "alpha": 1.0,
+      "roughness": 0.9,
+      "metallic": 0.0,
+      "layer_index": 6,
+      "layer_type": "peelply",
+      "thickness_mm": 0.15,
+      "file": "L07_peelply.obj"
+    },
+    {
+      "key": "L08_flowmesh",
+      "name": "08 Gyantavezető háló (flow mesh)",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "02_Retegrend",
+      "color": "#4caf78",
+      "alpha": 0.55,
+      "roughness": 0.6,
+      "metallic": 0.0,
+      "layer_index": 7,
+      "layer_type": "flowmesh",
+      "thickness_mm": 1.0,
+      "file": "L08_flowmesh.obj"
+    },
+    {
+      "key": "tape_xm",
+      "name": "Tömítőszalag -X",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "03_Segedanyagok",
+      "color": "#f0c419",
+      "alpha": 1.0,
+      "roughness": 0.9,
+      "metallic": 0.0,
+      "file": "tape_xm.obj"
+    },
+    {
+      "key": "tape_xp",
+      "name": "Tömítőszalag +X",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "03_Segedanyagok",
+      "color": "#f0c419",
+      "alpha": 1.0,
+      "roughness": 0.9,
+      "metallic": 0.0,
+      "file": "tape_xp.obj"
+    },
+    {
+      "key": "tape_ym",
+      "name": "Tömítőszalag -Y",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "03_Segedanyagok",
+      "color": "#f0c419",
+      "alpha": 1.0,
+      "roughness": 0.9,
+      "metallic": 0.0,
+      "file": "tape_ym.obj"
+    },
+    {
+      "key": "tape_yp",
+      "name": "Tömítőszalag +Y",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "03_Segedanyagok",
+      "color": "#f0c419",
+      "alpha": 1.0,
+      "roughness": 0.9,
+      "metallic": 0.0,
+      "file": "tape_yp.obj"
+    },
+    {
+      "key": "spiral_inlet",
+      "name": "Gyantabevezető spirálcső",
+      "kind": "cyl",
+      "radius_mm": 5.0,
+      "collection": "03_Segedanyagok",
+      "color": "#ff9f43",
+      "alpha": 1.0,
+      "roughness": 0.5,
+      "metallic": 0.0,
+      "file": "spiral_inlet.obj"
+    },
+    {
+      "key": "spiral_vacuum",
+      "name": "Vákuumelszívó spirálcső",
+      "kind": "cyl",
+      "radius_mm": 5.0,
+      "collection": "03_Segedanyagok",
+      "color": "#5b7bd5",
+      "alpha": 1.0,
+      "roughness": 0.5,
+      "metallic": 0.0,
+      "file": "spiral_vacuum.obj"
+    },
+    {
+      "key": "L09_bag_top",
+      "name": "09 Vákuumzsák – tető",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "02_Retegrend",
+      "color": "#a9d4ff",
+      "alpha": 0.22,
+      "roughness": 0.2,
+      "metallic": 0.0,
+      "layer_index": 8,
+      "layer_type": "bag",
+      "thickness_mm": 0.075,
+      "file": "L09_bag_top.obj"
+    },
+    {
+      "key": "L09_bag_xm",
+      "name": "09 Vákuumzsák – oldal xm",
+      "kind": "box",
+      "dir_len": [
+        -0.6925318281897135,
+        0,
+        -0.7213873210309515
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "02_Retegrend",
+      "color": "#a9d4ff",
+      "alpha": 0.22,
+      "roughness": 0.2,
+      "metallic": 0.0,
+      "layer_index": 8,
+      "layer_type": "bag",
+      "thickness_mm": 0.075,
+      "file": "L09_bag_xm.obj"
+    },
+    {
+      "key": "L09_bag_xp",
+      "name": "09 Vákuumzsák – oldal xp",
+      "kind": "box",
+      "dir_len": [
+        0.6925318281897135,
+        0,
+        -0.7213873210309515
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "02_Retegrend",
+      "color": "#a9d4ff",
+      "alpha": 0.22,
+      "roughness": 0.2,
+      "metallic": 0.0,
+      "layer_index": 8,
+      "layer_type": "bag",
+      "thickness_mm": 0.075,
+      "file": "L09_bag_xp.obj"
+    },
+    {
+      "key": "L09_bag_ym",
+      "name": "09 Vákuumzsák – oldal ym",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        -0.6925318281897135,
+        -0.7213873210309515
+      ],
+      "collection": "02_Retegrend",
+      "color": "#a9d4ff",
+      "alpha": 0.22,
+      "roughness": 0.2,
+      "metallic": 0.0,
+      "layer_index": 8,
+      "layer_type": "bag",
+      "thickness_mm": 0.075,
+      "file": "L09_bag_ym.obj"
+    },
+    {
+      "key": "L09_bag_yp",
+      "name": "09 Vákuumzsák – oldal yp",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        0.6925318281897135,
+        -0.7213873210309515
+      ],
+      "collection": "02_Retegrend",
+      "color": "#a9d4ff",
+      "alpha": 0.22,
+      "roughness": 0.2,
+      "metallic": 0.0,
+      "layer_index": 8,
+      "layer_type": "bag",
+      "thickness_mm": 0.075,
+      "file": "L09_bag_yp.obj"
+    },
+    {
+      "key": "L09_bag_flange_xm",
+      "name": "09 Vákuumzsák – perem xm",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "02_Retegrend",
+      "color": "#a9d4ff",
+      "alpha": 0.22,
+      "roughness": 0.2,
+      "metallic": 0.0,
+      "layer_index": 8,
+      "layer_type": "bag",
+      "thickness_mm": 0.075,
+      "file": "L09_bag_flange_xm.obj"
+    },
+    {
+      "key": "L09_bag_flange_xp",
+      "name": "09 Vákuumzsák – perem xp",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "02_Retegrend",
+      "color": "#a9d4ff",
+      "alpha": 0.22,
+      "roughness": 0.2,
+      "metallic": 0.0,
+      "layer_index": 8,
+      "layer_type": "bag",
+      "thickness_mm": 0.075,
+      "file": "L09_bag_flange_xp.obj"
+    },
+    {
+      "key": "L09_bag_flange_ym",
+      "name": "09 Vákuumzsák – perem ym",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "02_Retegrend",
+      "color": "#a9d4ff",
+      "alpha": 0.22,
+      "roughness": 0.2,
+      "metallic": 0.0,
+      "layer_index": 8,
+      "layer_type": "bag",
+      "thickness_mm": 0.075,
+      "file": "L09_bag_flange_ym.obj"
+    },
+    {
+      "key": "L09_bag_flange_yp",
+      "name": "09 Vákuumzsák – perem yp",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "02_Retegrend",
+      "color": "#a9d4ff",
+      "alpha": 0.22,
+      "roughness": 0.2,
+      "metallic": 0.0,
+      "layer_index": 8,
+      "layer_type": "bag",
+      "thickness_mm": 0.075,
+      "file": "L09_bag_flange_yp.obj"
+    },
+    {
+      "key": "resin_pot",
+      "name": "Gyantatartály",
+      "kind": "cyl",
+      "radius_mm": 60.0,
+      "collection": "04_Berendezesek",
+      "color": "#e3e7ea",
+      "alpha": 0.45,
+      "roughness": 0.2,
+      "metallic": 0.0,
+      "file": "resin_pot.obj"
+    },
+    {
+      "key": "resin_trap",
+      "name": "Gyantacsapda",
+      "kind": "cyl",
+      "radius_mm": 70.0,
+      "collection": "04_Berendezesek",
+      "color": "#b0bec5",
+      "alpha": 0.5,
+      "roughness": 0.3,
+      "metallic": 0.3,
+      "file": "resin_trap.obj"
+    },
+    {
+      "key": "resin_pot_lid",
+      "name": "Gyantatartály fedél",
+      "kind": "cyl",
+      "radius_mm": 63.6,
+      "collection": "04_Berendezesek",
+      "color": "#37474f",
+      "alpha": 1.0,
+      "roughness": 0.6,
+      "metallic": 0.4,
+      "file": "resin_pot_lid.obj"
+    },
+    {
+      "key": "resin_pot_port",
+      "name": "Gyantatartály csonk",
+      "kind": "cyl",
+      "radius_mm": 9,
+      "collection": "04_Berendezesek",
+      "color": "#37474f",
+      "alpha": 1.0,
+      "roughness": 0.5,
+      "metallic": 0.5,
+      "file": "resin_pot_port.obj"
+    },
+    {
+      "key": "resin_pot_diptube",
+      "name": "Merülőcső a gyantában",
+      "kind": "cyl",
+      "radius_mm": 4,
+      "collection": "04_Berendezesek",
+      "color": "#cfd8dc",
+      "alpha": 0.9,
+      "roughness": 0.3,
+      "metallic": 0.0,
+      "file": "resin_pot_diptube.obj"
+    },
+    {
+      "key": "resin_trap_lid",
+      "name": "Gyantacsapda fedél",
+      "kind": "cyl",
+      "radius_mm": 74.2,
+      "collection": "04_Berendezesek",
+      "color": "#37474f",
+      "alpha": 1.0,
+      "roughness": 0.6,
+      "metallic": 0.4,
+      "file": "resin_trap_lid.obj"
+    },
+    {
+      "key": "resin_trap_port_in",
+      "name": "Gyantacsapda csonk (be)",
+      "kind": "cyl",
+      "radius_mm": 9,
+      "collection": "04_Berendezesek",
+      "color": "#37474f",
+      "alpha": 1.0,
+      "roughness": 0.5,
+      "metallic": 0.5,
+      "file": "resin_trap_port_in.obj"
+    },
+    {
+      "key": "resin_trap_port_out",
+      "name": "Gyantacsapda csonk (ki)",
+      "kind": "cyl",
+      "radius_mm": 9,
+      "collection": "04_Berendezesek",
+      "color": "#37474f",
+      "alpha": 1.0,
+      "roughness": 0.5,
+      "metallic": 0.5,
+      "file": "resin_trap_port_out.obj"
+    },
+    {
+      "key": "gauge_trap_stem",
+      "name": "Vákuummérő – zsákoldal (csapda) – szár",
+      "kind": "cyl",
+      "radius_mm": 5,
+      "collection": "04_Berendezesek",
+      "color": "#37474f",
+      "alpha": 1.0,
+      "roughness": 0.5,
+      "metallic": 0.5,
+      "file": "gauge_trap_stem.obj"
+    },
+    {
+      "key": "gauge_trap_case",
+      "name": "Vákuummérő – zsákoldal (csapda) – ház",
+      "kind": "cyl",
+      "radius_mm": 24,
+      "collection": "04_Berendezesek",
+      "color": "#263238",
+      "alpha": 1.0,
+      "roughness": 0.6,
+      "metallic": 0.3,
+      "file": "gauge_trap_case.obj"
+    },
+    {
+      "key": "gauge_trap_face",
+      "name": "Vákuummérő – zsákoldal (csapda) – számlap",
+      "kind": "cyl",
+      "radius_mm": 20,
+      "collection": "04_Berendezesek",
+      "color": "#f5f5f5",
+      "alpha": 1.0,
+      "roughness": 0.4,
+      "metallic": 0.0,
+      "file": "gauge_trap_face.obj"
+    },
+    {
+      "key": "gauge_trap_needle",
+      "name": "Vákuummérő – zsákoldal (csapda) – mutató",
+      "kind": "box",
+      "dir_len": [
+        0.5,
+        0,
+        0.866
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "04_Berendezesek",
+      "color": "#c62828",
+      "alpha": 1.0,
+      "roughness": 0.5,
+      "metallic": 0.0,
+      "file": "gauge_trap_needle.obj"
+    },
+    {
+      "key": "resin_trap_diptube",
+      "name": "Merülőcső a csapdában",
+      "kind": "cyl",
+      "radius_mm": 4,
+      "collection": "04_Berendezesek",
+      "color": "#cfd8dc",
+      "alpha": 0.9,
+      "roughness": 0.3,
+      "metallic": 0.0,
+      "file": "resin_trap_diptube.obj"
+    },
+    {
+      "key": "pump_base",
+      "name": "Szivattyú talp",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "04_Berendezesek",
+      "color": "#37474f",
+      "alpha": 1.0,
+      "roughness": 0.7,
+      "metallic": 0.3,
+      "file": "pump_base.obj"
+    },
+    {
+      "key": "pump_motor",
+      "name": "Szivattyú motor",
+      "kind": "cyl",
+      "radius_mm": 52,
+      "collection": "04_Berendezesek",
+      "color": "#37474f",
+      "alpha": 1.0,
+      "roughness": 0.5,
+      "metallic": 0.5,
+      "file": "pump_motor.obj"
+    },
+    {
+      "key": "pump_fan_cover",
+      "name": "Ventilátorfedél",
+      "kind": "cyl",
+      "radius_mm": 57,
+      "collection": "04_Berendezesek",
+      "color": "#263238",
+      "alpha": 1.0,
+      "roughness": 0.8,
+      "metallic": 0.0,
+      "file": "pump_fan_cover.obj"
+    },
+    {
+      "key": "pump_feet",
+      "name": "Motortartó",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "04_Berendezesek",
+      "color": "#37474f",
+      "alpha": 1.0,
+      "roughness": 0.7,
+      "metallic": 0.3,
+      "file": "pump_feet.obj"
+    },
+    {
+      "key": "pump_head",
+      "name": "Szivattyúfej",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "04_Berendezesek",
+      "color": "#455a64",
+      "alpha": 1.0,
+      "roughness": 0.5,
+      "metallic": 0.5,
+      "file": "pump_head.obj"
+    },
+    {
+      "key": "pump_port_in",
+      "name": "Szivattyú szívócsonk",
+      "kind": "cyl",
+      "radius_mm": 11,
+      "collection": "04_Berendezesek",
+      "color": "#37474f",
+      "alpha": 1.0,
+      "roughness": 0.5,
+      "metallic": 0.5,
+      "file": "pump_port_in.obj"
+    },
+    {
+      "key": "gauge_pump_stem",
+      "name": "Vákuummérő – szivattyú szívóoldal – szár",
+      "kind": "cyl",
+      "radius_mm": 5,
+      "collection": "04_Berendezesek",
+      "color": "#37474f",
+      "alpha": 1.0,
+      "roughness": 0.5,
+      "metallic": 0.5,
+      "file": "gauge_pump_stem.obj"
+    },
+    {
+      "key": "gauge_pump_case",
+      "name": "Vákuummérő – szivattyú szívóoldal – ház",
+      "kind": "cyl",
+      "radius_mm": 24,
+      "collection": "04_Berendezesek",
+      "color": "#263238",
+      "alpha": 1.0,
+      "roughness": 0.6,
+      "metallic": 0.3,
+      "file": "gauge_pump_case.obj"
+    },
+    {
+      "key": "gauge_pump_face",
+      "name": "Vákuummérő – szivattyú szívóoldal – számlap",
+      "kind": "cyl",
+      "radius_mm": 20,
+      "collection": "04_Berendezesek",
+      "color": "#f5f5f5",
+      "alpha": 1.0,
+      "roughness": 0.4,
+      "metallic": 0.0,
+      "file": "gauge_pump_face.obj"
+    },
+    {
+      "key": "gauge_pump_needle",
+      "name": "Vákuummérő – szivattyú szívóoldal – mutató",
+      "kind": "box",
+      "dir_len": [
+        0.5,
+        0,
+        0.866
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "04_Berendezesek",
+      "color": "#c62828",
+      "alpha": 1.0,
+      "roughness": 0.5,
+      "metallic": 0.0,
+      "file": "gauge_pump_needle.obj"
+    },
+    {
+      "key": "pump_exhaust",
+      "name": "Kipufogó/olajköd-leválasztó",
+      "kind": "cyl",
+      "radius_mm": 14,
+      "collection": "04_Berendezesek",
+      "color": "#90a4ae",
+      "alpha": 1.0,
+      "roughness": 0.5,
+      "metallic": 0.4,
+      "file": "pump_exhaust.obj"
+    },
+    {
+      "key": "pump_sight_glass",
+      "name": "Olajszint-ablak",
+      "kind": "cyl",
+      "radius_mm": 10,
+      "collection": "04_Berendezesek",
+      "color": "#eceff1",
+      "alpha": 0.8,
+      "roughness": 0.2,
+      "metallic": 0.0,
+      "file": "pump_sight_glass.obj"
+    },
+    {
+      "key": "buffer_tank",
+      "name": "Puffertartály (vákuumtartály)",
+      "kind": "cyl",
+      "radius_mm": 85.0,
+      "collection": "04_Berendezesek",
+      "color": "#78909c",
+      "alpha": 1.0,
+      "roughness": 0.35,
+      "metallic": 0.6,
+      "file": "buffer_tank.obj"
+    },
+    {
+      "key": "buffer_cradle_a",
+      "name": "Tartálybak a",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "04_Berendezesek",
+      "color": "#37474f",
+      "alpha": 1.0,
+      "roughness": 0.6,
+      "metallic": 0.4,
+      "file": "buffer_cradle_a.obj"
+    },
+    {
+      "key": "buffer_cradle_b",
+      "name": "Tartálybak b",
+      "kind": "box",
+      "dir_len": [
+        1,
+        0,
+        0
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "04_Berendezesek",
+      "color": "#37474f",
+      "alpha": 1.0,
+      "roughness": 0.6,
+      "metallic": 0.4,
+      "file": "buffer_cradle_b.obj"
+    },
+    {
+      "key": "gauge_buffer_stem",
+      "name": "Vákuummérő – puffertartály – szár",
+      "kind": "cyl",
+      "radius_mm": 5,
+      "collection": "04_Berendezesek",
+      "color": "#37474f",
+      "alpha": 1.0,
+      "roughness": 0.5,
+      "metallic": 0.5,
+      "file": "gauge_buffer_stem.obj"
+    },
+    {
+      "key": "gauge_buffer_case",
+      "name": "Vákuummérő – puffertartály – ház",
+      "kind": "cyl",
+      "radius_mm": 24,
+      "collection": "04_Berendezesek",
+      "color": "#263238",
+      "alpha": 1.0,
+      "roughness": 0.6,
+      "metallic": 0.3,
+      "file": "gauge_buffer_case.obj"
+    },
+    {
+      "key": "gauge_buffer_face",
+      "name": "Vákuummérő – puffertartály – számlap",
+      "kind": "cyl",
+      "radius_mm": 20,
+      "collection": "04_Berendezesek",
+      "color": "#f5f5f5",
+      "alpha": 1.0,
+      "roughness": 0.4,
+      "metallic": 0.0,
+      "file": "gauge_buffer_face.obj"
+    },
+    {
+      "key": "gauge_buffer_needle",
+      "name": "Vákuummérő – puffertartály – mutató",
+      "kind": "box",
+      "dir_len": [
+        0.5,
+        0,
+        0.866
+      ],
+      "dir_wid": [
+        0,
+        1,
+        0
+      ],
+      "collection": "04_Berendezesek",
+      "color": "#c62828",
+      "alpha": 1.0,
+      "roughness": 0.5,
+      "metallic": 0.0,
+      "file": "gauge_buffer_needle.obj"
+    },
+    {
+      "key": "buffer_port_in",
+      "name": "Csonk (be)",
+      "kind": "cyl",
+      "radius_mm": 9,
+      "collection": "04_Berendezesek",
+      "color": "#37474f",
+      "alpha": 1.0,
+      "roughness": 0.5,
+      "metallic": 0.5,
+      "file": "buffer_port_in.obj"
+    },
+    {
+      "key": "buffer_port_out",
+      "name": "Csonk (ki)",
+      "kind": "cyl",
+      "radius_mm": 9,
+      "collection": "04_Berendezesek",
+      "color": "#37474f",
+      "alpha": 1.0,
+      "roughness": 0.5,
+      "metallic": 0.5,
+      "file": "buffer_port_out.obj"
+    },
+    {
+      "key": "hose_pot_inlet",
+      "name": "Cső: tartály → bevezető spirálcső",
+      "kind": "tube",
+      "radius_mm": 4.0,
+      "collection": "04_Berendezesek",
+      "color": "#cfd8dc",
+      "alpha": 0.7,
+      "roughness": 0.3,
+      "metallic": 0.0,
+      "file": "hose_pot_inlet.obj"
+    },
+    {
+      "key": "hose_vacuum_trap",
+      "name": "Cső: elszívó spirálcső → gyantacsapda",
+      "kind": "tube",
+      "radius_mm": 4.0,
+      "collection": "04_Berendezesek",
+      "color": "#cfd8dc",
+      "alpha": 0.7,
+      "roughness": 0.3,
+      "metallic": 0.0,
+      "file": "hose_vacuum_trap.obj"
+    },
+    {
+      "key": "hose_trap_buffer",
+      "name": "Cső: gyantacsapda → puffertartály",
+      "kind": "tube",
+      "radius_mm": 4.0,
+      "collection": "04_Berendezesek",
+      "color": "#cfd8dc",
+      "alpha": 0.7,
+      "roughness": 0.3,
+      "metallic": 0.0,
+      "file": "hose_trap_buffer.obj"
+    },
+    {
+      "key": "hose_buffer_pump",
+      "name": "Cső: puffertartály → szivattyú",
+      "kind": "tube",
+      "radius_mm": 4.0,
+      "collection": "04_Berendezesek",
+      "color": "#cfd8dc",
+      "alpha": 0.7,
+      "roughness": 0.3,
+      "metallic": 0.0,
+      "file": "hose_buffer_pump.obj"
+    }
+  ],
+  "notes": [
+    "f3d exportálva",
+    "STEP exportálva"
+  ],
+  "frames": {
+    "exploded_hold": [
+      1,
+      37
+    ],
+    "assemble": [
+      37,
+      109
+    ],
+    "assembled_hold": [
+      109,
+      133
+    ],
+    "infuse": [
+      133,
+      253
+    ],
+    "end": 289,
+    "fps": 24,
+    "explode_gap_mm": 25,
+    "assemble_frames": 72,
+    "infuse_frames": 120
+  },
+  "geo": {
+    "L": 400,
+    "W": 300,
+    "table_top": 750,
+    "tool_top": 765,
+    "stack_top": 795,
+    "laminate_bottom": 770,
+    "laminate_top": 793,
+    "pot_pos": [
+      -450.0,
+      -120,
+      750
+    ],
+    "pot_r": 60.0,
+    "pot_h": 150,
+    "pot_level": 0.8,
+    "trap_pos": [
+      450.0,
+      -100,
+      750
+    ],
+    "trap_r": 70.0,
+    "trap_h": 200,
+    "resin_front": {
+      "x0": -215.0,
+      "length": 430,
+      "width": 331,
+      "height": 23.3,
+      "z_center": 781.65
+    },
+    "resin_color": "#e0a030",
+    "resin_alpha": 1.0,
+    "n_layers": 9
+  },
+  "warnings": []
+}
