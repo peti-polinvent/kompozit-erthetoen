@@ -1,8 +1,8 @@
 {
-  "01": "Kompozit érthetően. Hogyan készül egy kompozit lap vákuuminfúzióval? Ezt mutatjuk be egy egyszerű, háromdimenziós modellen, lépésről lépésre.",
-  "02": "A vákuuminfúzió során a száraz erősítőszövetet a szerszámra fektetjük, fóliával légmentesen lezárjuk, és a levegőt kiszivattyúzzuk. A gyantát nem mi nyomjuk be: a külső légnyomás tolja át a rétegeken. Így egyenletes, buborékmentes, jól ismételhető lap készül.",
-  "03": "Nézzük meg a rétegrendet, alulról felfelé. Az alumínium szerszámon formaleválasztó, majd gelcoat található. Erre négy üvegszövet réteg kerül: nulla kilencven, plusz mínusz negyvenöt, plusz mínusz negyvenöt és nulla kilencven fokos száliránnyal. Felül a tépőszövet, amit a gyanta térhálósodása után eltávolítunk a termékről. Ezen helyezkedik el a gyantavezető háló. Végül a vákuumfólia, tömítőszalaggal lezárva.",
-  "04": "Az infúzió során a narancssárga spirálcsőből a gyanta a gyantavezető hálón fut végig, és onnan szivárog le a szövetekbe. A gyantavezető az elszívó oldal előtt véget ér, így a gyanta előbb átitatja a lapot, mint hogy elérné a kékkel feltüntetett elszívó csövet. Ha a gyanta mégis túlfut, a gyantacsapdában gyűlik össze, nem jut a szivattyúba. A csapda és a szivattyú között puffertartály gondoskodik az egyenletesebb vákuumról. A Polinventnél az infúzió mínusz nulla egész hatvanöt bar relatív vákuummal történik, saját fejlesztésű epoxi gyantával.",
-  "05": "Mit kapunk eredményül? Egyenletes vastagságú, sima szerszámoldali felületű kompozit lapot, magas száltartalommal.",
-  "06": "Ezt a modellt négy nap alatt készítettem, mesterséges intelligenciával. A geometriát a Fusion háromszázhatvan szkriptje építette egy paraméterfájlból, az animációt Blenderrel, a weboldalt a model-viewerrel készítettem. A rétegrend bármikor cserélhető: nagyon jó alap a Sewerbot Compact kompozit dob gyártásának bemutatására. Köszönöm a figyelmet."
+  "01": "Íme a kompozit receptje!",
+  "02": "Kell egy szerszám. Egy gyantatartály. Egy vákuumszivattyú. Egy puffertartály – és egy gyantacsapda. Ha ezek megvannak, jöhet a lényeg.",
+  "03": "A rétegrend. Ez határozza meg a termék tulajdonságait. Formaleválasztó a szerszámra. Rá az erősítő rétegek: a megfelelő irányú és anyagú szövetek kombinációjával érjük el a szükséges mechanikai tulajdonságokat. Letépő szövet. Gyantavezető háló. Meglövési és elszívási pont. Tömítőszalag – és a vákuumfólia.",
+  "04": "Injektálás. A gyanta átjárja a rétegeket. Aztán hagyjuk térhálósodni.",
+  "05": "Bontás. A letépő szövettel lejönnek a technológiai rétegek – és a termék lekerül a szerszámról.",
+  "06": "Kész. Kompozit – érthetően."
 }

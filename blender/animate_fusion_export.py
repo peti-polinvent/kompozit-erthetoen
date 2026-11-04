@@ -87,6 +87,9 @@ def main(export_dir, out_dir, previews, up="Z"):
             continue
         if entry.get("layer_type") == "bag" and "bag" in layout["geo"]:
             continue    # a fólia Blenderben hártyaként épül (build_bag_film)
+        if entry.get("layer_type"):
+            continue    # a rétegeket mindig a layoutból építjük: a Fusion-export rétegrendje elavulhat
+                        # (más sorrend/vastagság → rossz magasság), a lapok primitívből pontosan ugyanazok
         if entry.get("kind") == "tube":
             continue    # a csöveket mindig a layoutból építjük (így a csővezetés sosem avul el)
         path = os.path.join(export_dir, entry["file"])

@@ -16,18 +16,18 @@
       133,
       253
     ],
-    "end": 289
+    "end": 373
   },
   "fps": 24,
-  "stack_total_display_mm": 28,
-  "stack_total_real_mm": 4.125,
+  "stack_total_display_mm": 27,
+  "stack_total_real_mm": 3.675,
   "layers": [
-    "01 Gelcoat",
-    "02 Üvegszövet 0/90° – 1. réteg",
-    "03 Üvegszövet ±45° – 2. réteg",
-    "04 Üvegszövet ±45° – 3. réteg",
-    "05 Üvegszövet 0/90° – 4. réteg",
-    "06 Tépőszövet (peel ply)",
+    "01 Formaleválasztó réteg",
+    "02 Erősítő réteg 1 – üvegszövet 0/90°",
+    "03 Erősítő réteg 2 – üvegszövet ±45°",
+    "04 Erősítő réteg 3 – üvegszövet ±45°",
+    "05 Erősítő réteg 4 – üvegszövet 0/90°",
+    "06 Letépő szövet (peel ply)",
     "07 Gyantavezető háló (flow mesh)",
     "08 Vákuumfólia – tető",
     "08 Vákuumfólia – oldal xm",

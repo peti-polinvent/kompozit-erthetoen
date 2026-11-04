@@ -357,9 +357,13 @@ def compute_layout(P):
     f_assemble_end = f_assemble_start + A["assemble_frames"]
     f_infuse_start = f_assemble_end + A["hold_assembled_frames"]
     f_infuse_end = f_infuse_start + A["infuse_frames"]
-    f_end = f_infuse_end + A["hold_end_frames"]
+    # térhálósodás (tartás) → bontás: a technológiai rétegek lekerülnek, a termék leemelkedik → tartás
+    f_demold_start = f_infuse_end + A.get("cure_hold_frames", 0)
+    f_demold_end = f_demold_start + A.get("demold_frames", 0)
+    f_end = f_demold_end + A["hold_end_frames"]
     frames = dict(exploded_hold=[1, f_assemble_start], assemble=[f_assemble_start, f_assemble_end],
                   assembled_hold=[f_assemble_end, f_infuse_start], infuse=[f_infuse_start, f_infuse_end],
+                  demold=[f_demold_start, f_demold_end],
                   end=f_end, fps=A["fps"], explode_gap_mm=A["explode_gap_mm"],
                   assemble_frames=A["assemble_frames"], infuse_frames=A["infuse_frames"])
 

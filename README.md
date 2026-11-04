@@ -2,7 +2,7 @@
 
 Egyetlen történet: hogyan készül egy egyszerű kompozit panel vákuuminfúzióval?
 Paraméterezhető CAD-modell (Fusion 360) + animáció/render (Blender) + narrált
-videó + weboldal. Készült a Polinvent belső „AI Kihívás” keretében
+videó + weboldal. Készült a belső „AI Kihívás” keretében
 (2026. november 2–6.).
 
 **Élő oldal:** https://peti-polinvent.github.io/kompozit-erthetoen/ · **Repó:** https://github.com/peti-polinvent/kompozit-erthetoen

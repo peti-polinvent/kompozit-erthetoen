@@ -7,7 +7,7 @@
   },
 
   "tool": {
-    "name": "Formaleválasztóval előkészített szerszám (alumínium lap)",
+    "name": "Szerszám (alumínium lap)",
     "length_mm": 560,
     "width_mm": 460,
     "thickness_mm": 15,
@@ -15,20 +15,20 @@
   },
 
   "layup": [
-    { "name": "Gelcoat",                        "type": "gelcoat",  "thickness_mm": 0.5,  "display_thickness_mm": 3,  "color": "#9c27b0", "alpha": 1.0 },
-    { "name": "Üvegszövet 0/90° – 1. réteg",    "type": "glass",    "thickness_mm": 0.45, "display_thickness_mm": 4,  "color": "#e8e2cf", "alpha": 1.0 },
-    { "name": "Üvegszövet ±45° – 2. réteg",     "type": "glass",    "thickness_mm": 0.45, "display_thickness_mm": 4,  "color": "#e0d8bf", "alpha": 1.0 },
-    { "name": "Üvegszövet ±45° – 3. réteg",     "type": "glass",    "thickness_mm": 0.45, "display_thickness_mm": 4,  "color": "#e8e2cf", "alpha": 1.0 },
-    { "name": "Üvegszövet 0/90° – 4. réteg",    "type": "glass",    "thickness_mm": 0.45, "display_thickness_mm": 4,  "color": "#e0d8bf", "alpha": 1.0 },
-    { "name": "Tépőszövet (peel ply)",          "type": "peelply",  "thickness_mm": 0.15, "display_thickness_mm": 3,  "color": "#c84b4b", "alpha": 1.0 },
-    { "name": "Gyantavezető háló (flow mesh)",      "type": "flowmesh", "thickness_mm": 1.0,  "display_thickness_mm": 4,  "color": "#4caf78", "alpha": 0.55 },
-    { "name": "Vákuumfólia",                    "type": "bag",      "thickness_mm": 0.075,"display_thickness_mm": 2,  "color": "#fff176", "alpha": 0.38 }
+    { "name": "Formaleválasztó réteg",           "type": "release",  "thickness_mm": 0.05, "display_thickness_mm": 2,  "color": "#9ad4ff", "alpha": 1.0 },
+    { "name": "Erősítő réteg 1 – üvegszövet 0/90°",  "type": "glass",    "thickness_mm": 0.45, "display_thickness_mm": 4,  "color": "#e8e2cf", "alpha": 1.0 },
+    { "name": "Erősítő réteg 2 – üvegszövet ±45°",   "type": "glass",    "thickness_mm": 0.45, "display_thickness_mm": 4,  "color": "#e0d8bf", "alpha": 1.0 },
+    { "name": "Erősítő réteg 3 – üvegszövet ±45°",   "type": "glass",    "thickness_mm": 0.45, "display_thickness_mm": 4,  "color": "#e8e2cf", "alpha": 1.0 },
+    { "name": "Erősítő réteg 4 – üvegszövet 0/90°",  "type": "glass",    "thickness_mm": 0.45, "display_thickness_mm": 4,  "color": "#e0d8bf", "alpha": 1.0 },
+    { "name": "Letépő szövet (peel ply)",         "type": "peelply",  "thickness_mm": 0.15, "display_thickness_mm": 3,  "color": "#c84b4b", "alpha": 1.0 },
+    { "name": "Gyantavezető háló (flow mesh)",    "type": "flowmesh", "thickness_mm": 1.0,  "display_thickness_mm": 4,  "color": "#4caf78", "alpha": 0.55 },
+    { "name": "Vákuumfólia",                      "type": "bag",      "thickness_mm": 0.075,"display_thickness_mm": 2,  "color": "#fff176", "alpha": 0.38 }
   ],
 
   "consumables": {
     "sealant_tape":   { "name": "Tömítőszalag (tacky tape)", "width_mm": 12, "height_mm": 3, "color": "#f0c419" },
-    "inlet_spiral":   { "name": "Gyantabevezető spirálcső", "diameter_mm": 10, "color": "#ff9f43" },
-    "vacuum_spiral":  { "name": "Vákuumelszívó spirálcső", "diameter_mm": 10, "color": "#5b7bd5" },
+    "inlet_spiral":   { "name": "Meglövési pont – gyantabevezető spirálcső", "diameter_mm": 10, "color": "#ff9f43" },
+    "vacuum_spiral":  { "name": "Elszívási pont – vákuumelszívó spirálcső", "diameter_mm": 10, "color": "#5b7bd5" },
     "tube":           { "diameter_mm": 8, "color": "#cfd8dc", "alpha": 0.7 }
   },
 
@@ -41,9 +41,8 @@
   },
 
   "process": {
-    "_comment": "A Polinvent gyakorlata – a weboldal és a narráció innen veszi az adatokat.",
-    "vacuum_bar_relative": -0.65,
-    "resin": "Polinvent által előállított epoxi gyanta",
+    "_comment": "Az infúzió gyakorlati paraméterei – a weboldal és a narráció innen veszi az adatokat.",
+    "resin": "kétkomponensű, infúziós epoxi gyanta",
     "vacuum_system": "Puffertartály (vákuumtartály) a gyantacsapda és a szivattyú között, megfelelően kiépített rendszerrel – a folyamatos, egyenletes vákuum fenntartására."
   },
 
@@ -64,7 +63,9 @@
     "assemble_frames": 72,
     "hold_assembled_frames": 24,
     "infuse_frames": 120,
-    "hold_end_frames": 36
+    "cure_hold_frames": 24,
+    "demold_frames": 72,
+    "hold_end_frames": 24
   },
 
   "resin": {

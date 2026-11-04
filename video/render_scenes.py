@@ -27,9 +27,9 @@ ROOT = os.path.normpath(os.path.join(HERE, ".."))
 TABLE_TOP = 0.75           # m (params.json: table height 750 mm)
 Z0 = TABLE_TOP
 
-# Az animáció kulcs-képkockái (build_info.json): robbantott 1–37, összeállás
-# 37–109, tartás 109–133, infúzió 133–253, vég 253–289.
-F_EXPLODED, F_ASM0, F_ASM1, F_INF0, F_INF1, F_END = 1, 37, 109, 133, 253, 289
+# Az animáció kulcs-képkockái (build_info.json): robbantott 1–37, összeállás 37–109,
+# tartás 109–133, infúzió 133–253, térhálósodás 253–277, bontás 277–349, vég 373.
+F_EXPLODED, F_ASM0, F_ASM1, F_INF0, F_INF1, F_DM0, F_DM1, F_END = 1, 37, 109, 133, 253, 277, 349, 373
 
 
 def lerp(a, b, t):
@@ -47,116 +47,133 @@ def orbit(center, radius, height, angle_deg):
 
 # ---- Jelenetek: t ∈ [0,1] → (kamera hely, célpont, animációs képkocka, fókusz mm) --------
 
+def ease_out(t, p=3.0):
+    """Gyors indulás, lassú megérkezés (crash-zoom, becsapódás)."""
+    return 1 - (1 - min(max(t, 0.0), 1.0)) ** p
+
+
+def burst(t, t0, amp, decay=18.0):
+    """Ütésre rázkódás: t0-tól exponenciálisan lecsengő amplitúdó (m)."""
+    return amp * math.exp(-decay * (t - t0)) if t >= t0 else 0.0
+
+
+# Egy jelenet-függvény visszatérése: (kamera, célpont, animációs képkocka, fókusz mm[, roll°, rázkódás m])
+# A roll a kamera nézőtengelye körüli döntés (dutch angle), a rázkódás kézikamera-szerű mozgás amplitúdója.
+
 def scene_1_intro(t):
-    # lassú körbefordulás az összeállt asztal körül (infúzió előtt)
+    # „Hogyan készül egy kompozit termék?” – messziről, magasról becsapódunk az asztalhoz, körbesöprés
     c = (0.1, 0.0, Z0 + 0.05)
-    return orbit(c, 1.65, 0.78, lerp(-125, -70, t)), c, F_INF0 - 5, 40
+    k = ease_out(t / 0.45, 3.5) if t < 0.45 else 1.0
+    r, h = lerp(2.9, 1.55, k), lerp(1.5, 0.62, k)
+    ang = lerp(-150, -70, ease(t))
+    return orbit(c, r, h, ang), c, F_INF0 - 5, lerp(32, 44, k), lerp(-8.0, 0.0, k), 0.004 + burst(t, 0.45, 0.012)
 
 
-def scene_2_overview(t):
-    # robbantott rétegrend OLDALNÉZETBEN (a -Y oldalról, enyhe rálátás), lassú közeledés;
-    # a rétegcsoportokat kapcsos zárójelek jelölik (BRACES)
-    # majdnem tiszta oldalnézet (kb. 12° rálátás), a köteg a kép jobb felén; a rétegeket a
-    # render EXTRA_GAP-pel jobban széthúzza (csak ebben a jelenetben, a GLB-t nem érinti)
-    c = (-0.22, 0.0, Z0 + 0.25)
-    cam = (lerp(-0.2, -0.22, ease(t)), lerp(-1.85, -1.75, ease(t)), Z0 + lerp(0.64, 0.6, ease(t)))
-    return cam, c, F_EXPLODED, 60
+def scene_2_equipment(t):
+    # „Kell egy szerszám, gyantatartály, vákuumszivattyú, puffertartály, gyantacsapda” – a berendezések
+    # sorban kiemelve (EQUIP_WINDOWS), a kamera lassan a tartály felől a szivattyú felé úszik
+    c = (lerp(-0.05, 0.3, ease(t)), 0.0, Z0 + 0.1)
+    cam = (lerp(-0.9, -0.2, ease(t)), lerp(-1.5, -1.35, ease(t)), Z0 + lerp(0.7, 0.62, ease(t)))
+    return cam, c, F_INF0 - 5, 36, lerp(-2.0, 1.5, t), 0.003
 
 
-EXTRA_GAP_SCENE = {1: 0.022}   # jelenet-index → plusz hézag rétegenként (m) a robbantott nézetben
+EXTRA_GAP_SCENE = {2: 0.022}   # jelenet-index → plusz hézag rétegenként (m) a robbantott nézetben
 
-
-TOUR_END = 0.66   # a 3. jelenet első 66%-a a robbantott "túra", a maradék az összeállás
+TOUR_END = 0.84   # a 3. jelenet első 84%-a a robbantott „túra” (rétegek kiemelve), a maradék az összeállás
 
 
 def scene_3_layup(t):
-    # TISZTA oldalnézet (a -Y oldalról, a rétegek magasságából): a rétegek vékony
-    # csíkokként látszanak, és sorban ereszkednek a helyükre; lassú közelítés
-    # 0–TOUR_END: robbantott állapot, a rétegek egyenként kiemelve (alulról felfelé);
-    # TOUR_END–1: a rétegek sorban a helyükre ereszkednek
-    c = (0.0, 0.0, Z0 + 0.14)
-    cam = (0.0, lerp(-1.55, -1.42, ease(t)), Z0 + lerp(0.2, 0.17, ease(t)))
+    # „A rétegrend” – tiszta oldalnézet, a rétegek sorban kiemelve (punch-in minden tételnél),
+    # a végén gyors összeállás és a fólia ráfeszülése
+    # a kamera a köteg fölül néz le (~12°), hogy a lapok felső, megvilágított oldala látsszon
+    c = (0.0, 0.0, Z0 + 0.2)
+    cam = (0.0, lerp(-1.6, -1.45, ease(t)), Z0 + lerp(0.56, 0.5, ease(t)))
+    lens = 56.0
+    shake = 0.001
     if t < TOUR_END:
         f = F_EXPLODED
+        for _, t0, _ in LAYUP_WINDOWS:
+            if t >= t0:
+                lens += 8.0 * math.exp(-110.0 * (t - t0))   # punch-in, kb. 1 s alatt visszaáll
     else:
-        f = lerp(F_ASM0 - 8, F_ASM1 + 6, (t - TOUR_END) / (1 - TOUR_END))
-    return cam, c, f, 60
-
+        u = (t - TOUR_END) / (1 - TOUR_END)
+        f = lerp(F_ASM0 - 8, F_INF0 - 3, u)
+        for st in LAYER_SETTLE:
+            shake += burst(u, st, 0.012, decay=22.0)
+        cam = (lerp(0.0, 0.05, u), lerp(-1.45, -1.3, u), Z0 + lerp(0.5, 0.45, u))
+    return cam, c, f, lens, 0.0, shake
 
 
 def scene_4_infusion(t):
-    # 0–0.56: a gyantafront vonul (a bevezetés felől, kissé magasról)
-    # 0.56–1: vágás a berendezésekre (csapda, puffertartály, műszerek)
-    if t < 0.56:
-        u = t / 0.56
-        c = (0.05, -0.02, Z0 + 0.04)
-        cam = (lerp(-0.95, -0.55, u), lerp(-0.85, -1.0, u), Z0 + lerp(0.75, 0.65, u))
-        f = lerp(F_INF0, F_INF1, u)
-        return cam, c, f, 45
-    u = (t - 0.56) / 0.44
-    c = (0.56, 0.0, Z0 + 0.12)
-    cam = (lerp(0.2, 0.3, u), -0.95, Z0 + 0.55)
-    return cam, c, F_INF1 - 2, 50
+    # „Injektálás” – alacsony, döntött kamera a meglövés felől, a gyantafront átvonul (0–0.7),
+    # majd „hagyjuk térhálósodni”: lassú ráközelítés a kész lapra (0.7–1)
+    c = (0.05, -0.02, Z0 + 0.04)
+    if t < 0.7:
+        u = t / 0.7
+        cam = (lerp(-1.05, -0.55, u), lerp(-0.7, -0.98, u), Z0 + lerp(0.42, 0.62, u))
+        return cam, c, lerp(F_INF0, F_INF1, u), lerp(40, 46, u), lerp(-5.0, -1.5, u), 0.003
+    u = (t - 0.7) / 0.3
+    cam = (lerp(-0.55, -0.35, u), lerp(-0.98, -0.8, u), Z0 + lerp(0.62, 0.7, u))
+    return cam, c, lerp(F_INF1, F_DM0 - 1, u), lerp(46, 52, u), lerp(-1.5, 0.0, u), 0.002
 
 
-def scene_5_result(t):
-    # kész lap felülről, majd a műszerekre közelítünk
-    if t < 0.6:
-        u = t / 0.6
-        c = (0.0, 0.0, Z0 + 0.03)
-        cam = (lerp(-0.1, 0.05, u), lerp(-0.75, -0.6, u), Z0 + lerp(0.95, 0.85, u))
-        return cam, c, F_END, 42
-    u = (t - 0.6) / 0.4
-    c = (0.5, 0.0, Z0 + 0.22)
-    cam = (lerp(0.0, 0.08, u), -0.85, Z0 + 0.62)
-    return cam, c, F_END, 55
+def scene_5_demold(t):
+    # „Bontás” – elölről-felülről: a fólia, a háló, a letépő szövet lekerül, a termék leemelkedik
+    c = (0.0, 0.05, Z0 + 0.12)
+    cam = orbit(c, lerp(1.25, 1.1, ease(t)), lerp(0.85, 0.7, ease(t)), lerp(-105, -75, ease(t)))
+    shake = 0.003
+    for st in (0.04, 0.24, 0.44, 0.66):          # a rétegek indulása és a termék emelése
+        shake += burst(t * 1.15, st, 0.01, decay=20.0)
+    return cam, c, lerp(F_DM0, F_END, min(t * 1.15, 1.0)), 44, lerp(-4.0, 0.0, t), shake
 
 
 def scene_6_outro(t):
-    c = (0.1, 0.0, Z0 + 0.05)
-    return orbit(c, 1.75, 0.82, lerp(-70, -20, t)), c, F_END, 38
+    # „Kész.” – hátrálva-emelkedve kisöprünk a jelenetből
+    c = (0.1, 0.0, Z0 + 0.08)
+    k = ease(t)
+    cam = orbit(c, lerp(1.45, 2.8, k), lerp(0.6, 1.45, k), lerp(-30, -115, k))
+    return cam, c, F_END, lerp(40, 32, k), lerp(0.0, -7.0, k), 0.003
 
 
-SCENES = [scene_1_intro, scene_2_overview, scene_3_layup, scene_4_infusion, scene_5_result, scene_6_outro]
+SCENES = [scene_1_intro, scene_2_equipment, scene_3_layup, scene_4_infusion, scene_5_demold, scene_6_outro]
 
 # ---- Címkék (buborék + nyíl): jelenet → [(objektum-kulcs, szöveg, (dx,dy) px eltolás, t0, t1)] ---
 # A kulcs a layout 'key' mezője (obj["key"]). dx,dy: a buborék helye a célponthoz képest
 # (720p-s képre; kisebb felbontásnál arányosan skálázódik).
-LAYER_KEYS = ["L01_gelcoat", "L02_glass", "L03_glass", "L04_glass", "L05_glass",
+LAYER_KEYS = ["L01_release", "L02_glass", "L03_glass", "L04_glass", "L05_glass",
               "L06_peelply", "L07_flowmesh", "L08_bag_film"]
-LAYER_TEXT = ["Gelcoat", "Üvegszövet 0/90°", "Üvegszövet ±45°", "Üvegszövet ±45°",
-              "Üvegszövet 0/90°", "Tépőszövet (peel ply)", "Gyantavezető háló", "Vákuumfólia"]
 NL = len(LAYER_KEYS)
-# mikor ér a helyére az i. réteg a 3. jelenet idejében (az összeállás lépcsőzése: 36·i/(n−1) + 36 képkocka)
-LAYER_SETTLE = [(36 * i / (NL - 1) + 36 + 8) / (F_ASM1 + 6 - (F_ASM0 - 8)) for i in range(NL)]
-# Kiemelések: jelenet → [(objektum-kulcsok, szöveg, (dx,dy) címke-eltolás, t0, t1)].
-# Az adott időablakban a felsorolt alkatrész(ek) fénylő körvonalat kapnak, és EGY névcímkét.
-# Az időablakok a narráció mondataihoz igazodnak (arányosan a jelenet hosszához).
-HIGHLIGHTS = {
-    # robbantott túra: minden réteg egyforma ideig, alulról felfelé; az összeállás alatt nincs címke
-    2: [([LAYER_KEYS[i]], LAYER_TEXT[i], (-420, 0), 0.02 + (TOUR_END - 0.04) * i / NL,
-         0.02 + (TOUR_END - 0.04) * (i + 1) / NL - 0.004) for i in range(NL)],
-    3: [(["spiral_inlet"], "Gyantabevezető spirálcső", (-150, -200), 0.04, 0.17),
-        (["L08_flowmesh"], "Gyantavezető háló", (260, -170), 0.17, 0.30),
-        (["resin_front"], "Gyantafront", (60, 140), 0.30, 0.45),
-        (["spiral_vacuum"], "Vákuumelszívó spirálcső", (220, -60), 0.45, 0.56),
-        (["resin_trap"], "Gyantacsapda", (-230, -40), 0.56, 0.72),
-        (["buffer_tank"], "Puffertartály", (160, 150), 0.72, 0.84),
-        (["gauge_trap_case", "gauge_trap_face"], "Vákuummérő: –0,65 bar", (240, -200), 0.84, 1.0)],
-    4: [(["gauge_trap_case", "gauge_trap_face", "gauge_buffer_case", "gauge_buffer_face"],
-         "Vákuummérők", (-260, -120), 0.62, 1.0)],
-}
-LABELS = {k: [(keys[0], text, off, t0, t1) for keys, text, off, t0, t1 in v] for k, v in HIGHLIGHTS.items()}
+# mikor ér a helyére az i. réteg a 3. jelenet összeállás-szakaszában (az összeállás lépcsőzése: 36·i/(n−1) + 36 képkocka)
+_ASM_SPAN = (F_INF0 - 3) - (F_ASM0 - 8)
+LAYER_SETTLE = [(36 * i / (NL - 1) + 36 + 8) / _ASM_SPAN for i in range(NL)]
 
-# Kapcsos zárójelek a 2. jelenethez: (objektum-kulcsok, szöveg, t0, t1) – a zárójel a csoport
-# legfelső és legalsó elemének képernyő-magassága között fut, a köteg BAL széle mellett.
-BRACES = {
-    1: [(["L08_bag_film"], "Vákuumfólia", 0.12, 1.0),
-        (["L06_peelply", "L07_flowmesh"], "Tépőszövet + gyantavezető háló", 0.12, 1.0),
-        (["L02_glass", "L03_glass", "L04_glass", "L05_glass"], "Száraz erősítőrétegek (4× üvegszövet)", 0.12, 1.0),
-        (["L01_gelcoat"], "Gelcoat", 0.12, 1.0),
-        (["tool"], "Formaleválasztóval előkészített szerszám", 0.12, 1.0)],
+# A recept tételei a 3. jelenetben: (objektum-kulcsok, t0, t1) – a narráció sorrendjében
+LAYUP_WINDOWS = [
+    (["L01_release"], 0.12, 0.20),                                       # formaleválasztó
+    (["L02_glass", "L03_glass", "L04_glass", "L05_glass"], 0.20, 0.44),  # erősítő rétegek (kombináció)
+    (["L06_peelply"], 0.44, 0.52),                                       # letépő szövet
+    (["L07_flowmesh"], 0.52, 0.60),                                      # gyantavezető háló
+    (["spiral_inlet", "spiral_vacuum"], 0.60, 0.70),                     # meglövési és elszívási pont
+    (["tape_xm", "tape_xp", "tape_ym", "tape_yp"], 0.70, 0.77),          # tömítőszalag
+    (["L08_bag_film"], 0.77, 0.84),                                      # vákuumfólia
+]
+PUMP_KEYS = ["pump_base", "pump_motor", "pump_fan_cover", "pump_feet", "pump_head", "pump_port_in",
+             "pump_exhaust", "pump_sight_glass"]
+EQUIP_WINDOWS = [
+    (["tool"], 0.02, 0.20),
+    (["resin_pot", "resin_pot_lid"], 0.20, 0.38),
+    (PUMP_KEYS, 0.38, 0.56),
+    (["buffer_tank"], 0.56, 0.74),
+    (["resin_trap", "resin_trap_lid"], 0.74, 0.92),
+]
+# Kiemelések: jelenet → [(objektum-kulcsok, szöveg, (dx,dy), t0, t1)] – a szöveg üres: nincs buborék,
+# csak a fénylő körvonal (a narráció és a felirat nevezi meg az alkatrészt)
+HIGHLIGHTS = {
+    1: [(keys, "", (0, 0), t0, t1) for keys, t0, t1 in EQUIP_WINDOWS],
+    2: [(keys, "", (0, 0), t0, t1) for keys, t0, t1 in LAYUP_WINDOWS],
 }
+LABELS = {}     # buborékos címkék: nincsenek (a felhasználó kérése)
+BRACES = {}     # kapcsos jelmagyarázat: nincs
 
 
 def screen_rect(scene, cam, obj, width, height):
@@ -215,8 +232,22 @@ def render_mask(scene, objs, path, width, height):
         o.hide_render = False
 
 
-def look_at(cam, target):
-    cam.rotation_euler = (Vector(target) - Vector(cam.location)).to_track_quat("-Z", "Y").to_euler()
+def look_at(cam, target, roll_deg=0.0):
+    q = (Vector(target) - Vector(cam.location)).to_track_quat("-Z", "Y")
+    if roll_deg:
+        from mathutils import Quaternion
+        q = q @ Quaternion((0.0, 0.0, 1.0), math.radians(roll_deg))   # döntés a nézőtengely körül
+    cam.rotation_euler = q.to_euler()
+
+
+def handheld(time_s, amp):
+    """Kézikamera-szerű, sima, determinisztikus remegés (szinuszok összege), amplitúdó m-ben."""
+    if amp <= 0:
+        return (0.0, 0.0, 0.0)
+    x = math.sin(2 * math.pi * 1.3 * time_s) + 0.5 * math.sin(2 * math.pi * 3.1 * time_s + 1.0)
+    y = math.sin(2 * math.pi * 1.7 * time_s + 2.0) + 0.5 * math.sin(2 * math.pi * 2.6 * time_s)
+    z = math.sin(2 * math.pi * 2.2 * time_s + 0.7) + 0.5 * math.sin(2 * math.pi * 3.7 * time_s + 1.5)
+    return (amp * x / 1.5, amp * y / 1.5, amp * z / 1.5)
 
 
 def main(plan_path, out_dir, width=1280, height=720, start_at=0, only=None):
@@ -242,9 +273,13 @@ def main(plan_path, out_dir, width=1280, height=720, start_at=0, only=None):
         for k in range(n):
             if idx >= start_at and (only is None or idx in only):
                 t = k / max(n - 1, 1)
-                loc, target, aframe, lens = fn(t)
-                cam.location = loc
-                look_at(cam, target)
+                res = fn(t)
+                loc, target, aframe, lens = res[:4]
+                roll = res[4] if len(res) > 4 else 0.0
+                amp = res[5] if len(res) > 5 else 0.0
+                j = handheld(s["start"] + t * s["length"], amp)
+                cam.location = (loc[0] + j[0], loc[1] + j[1], loc[2] + j[2])
+                look_at(cam, target, roll)
                 cam.data.lens = lens
                 sc.frame_set(int(round(aframe)))
                 extra = EXTRA_GAP_SCENE.get(s["index"], 0.0)

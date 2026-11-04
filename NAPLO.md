@@ -1,6 +1,6 @@
 # Tanulási napló – „Kompozit érthetően”
 
-AI Kihívás, 2026. november 2–6. · Mészáros Péter (Polinvent)
+AI Kihívás, 2026. november 2–6. · Mészáros Péter
 
 A napló célja: lépésről lépésre rögzíteni, milyen eszközöket használtam, hogyan
 dolgoztam az AI-jal (példa promptokkal), hol akadtam el, és hogyan jutottam túl
@@ -11,7 +11,7 @@ az első verziót, én futtatom, ellenőrzöm, javítom – és közben megérte
 
 ## 0. nap – hétfő este: tervezés és keretek
 
-**Eszközök:** Claude (Cowork mód, a `polinvent-ai` mappához kötve), Blender 4.5
+**Eszközök:** Claude (Cowork mód, a projektmappához kötve), Blender 4.5
 LTS `bpy` Python-csomagként a felhőben, ffmpeg, GitHub Pages (tervezett).
 
 **Döntések:**
@@ -113,8 +113,8 @@ szögletesek, nem íveltek. Javítási ötlet a későbbre: Fusionban illesztett
 spline-pálya mentén *sweep* – ez már „igazi” CAD-művelet, jó következő tanulási
 lépés.
 
-**Szakmai bemenet a Polinvent gyakorlatából** (az én kérésemre került be):
-–0,65 bar relatív vákuum az infúzió alatt; a Polinvent saját epoxi gyantája;
+**Szakmai bemenet a gyakorlatból** (az én kérésemre került be):
+folyamatosan tartott vákuum az infúzió alatt; infúziós epoxi gyanta;
 puffertartály a gyantacsapda és a szivattyú között, megfelelően kiépített
 rendszerrel a folyamatos vákuumért. Ezek a `params.json` új `process`
 blokkjába kerültek (innen olvassa a weboldal), a puffertartály pedig
@@ -157,9 +157,9 @@ csatlakoznak, függőlegesen érkezve. 52 test. Fusion-szkript változatlan (0.3
 – csak a geometria-modul bővült, ez a layout-központú felépítés előnye.
 
 **Vákuum-nyomásmérők** három helyen: a gyantacsapda fedelén (ez a zsákoldali,
-a laminátumra ható vákuum – a –0,65 bar itt olvasható le), a puffertartályon
+a laminátumra ható vákuum itt olvasható le), a puffertartályon
 és a szivattyú szívóoldalán. Egy közös `_gauge()` segédfüggvény építi őket
-(szár, ház, fehér számlap, piros mutató ~–0,65 bar állásban). 63 test.
+(szár, ház, fehér számlap, piros mutató a vákuumtartományban). 63 test.
 
 **Fólia-perem.** A fólia lejtős oldala a szalag belső élénél ér le, és onnan
 sík peremmel ráfekszik a tömítőszalagra, 15 mm-rel túl is lóg rajta – így
@@ -250,5 +250,26 @@ procedurálisan generált PNG (16 fonalköteg, sötét–világos mustársárga)
 UV-vetítéssel, 64 mm-es csempemérettel. **Elakadás #8:** a Workbench
 renderelő nem veszi figyelembe a Mapping-csomópont skálázását, ezért a
 csempeméretet közvetlenül az UV-koordináták szorzásával állítjuk be.
+Döntés: a dob csak a Blender-jelenetben (weboldal, videó) szerepel, afféle
+easter eggként, felirat nélkül – a Fusion CAD-modellbe nem kerül be, az
+marad tisztán az infúziós összeállítás.
+
+**Szerda – fordulat: akció-/recept-változat.** A csendes, magyarázó videó „száraz
+és unalmas” volt – a döntés: pörgős, epikus, recept-szerű előadás („Kell egy
+szerszám, egy gyantatartály…”), kevesebb szöveggel (243 → 101 szó), buborékos
+címkék nélkül, csak fénylő kiemeléssel. Tartalmi változások a modellben: a gelcoat
+kikerült, a formaleválasztó külön réteg lett; az erősítő rétegek nem konkrét
+rétegrendként, hanem „a megfelelő irányú és anyagú szövetek kombinációjaként”
+jelennek meg; új animációs fázis a **bontás** (fólia → háló → letépő szövet lekerül,
+a termék leemelkedik a szerszámról; a gyantahasáb a laminátum méretére zsugorodik).
+Látvány: dinamikus kamera (becsapódó nyitás, crash-zoom, punch-in, döntött szögek,
+ütésre rázkódás), szélesvásznú sávok, hideg acélos színezés, filmszemcse, ütésre
+bevágódó nagy címek. Zene: saját szintetizált, jogtiszta trailer-track (numpy:
+drone, pulzáló basszus, dobok, braam, riser), a jelenetváltásokhoz igazítva,
+sidechain-halkítással a narráció alatt. Hang: AI (Edge TamasNeural) a saját gépen
+generálva – a felhőből a TTS-szolgáltatások nem érhetők el. A cégnév a nyilvános
+anyagokból kikerült. **Elakadás #10:** a Fusion-export rétegrendje elavult (9 réteg),
+ezért az importáló a rétegeket mostantól mindig a layoutból (params.json) építi –
+a Fusion-modell a CAD-leszállítandó, az animációé a paraméterfájl.
 
 _(folytatás)_

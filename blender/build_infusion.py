@@ -448,6 +448,67 @@ def animate_and_export(layout, objs, cols, out_dir):
     for o in (resin_pot, resin_trap):
         smooth_keys(o)
 
+    # --- bontás: a technológiai rétegek (fólia → háló → letépő szövet) lekerülnek, majd a termék
+    #     (erősítő rétegek + gyanta) leemelkedik a szerszámról; a formaleválasztó a szerszámon marad
+    if F.get("demold") and F["demold"][1] > F["demold"][0]:
+        f_dm0, f_dm1 = F["demold"]
+        D = f_dm1 - f_dm0
+        strip_order = ["bag", "flowmesh", "peelply"]
+        fly = Vector((0.0, 0.55, 0.32))              # hátra-felfelé (a kamera a -Y oldalon áll)
+        lift = Vector((0.0, 0.0, 0.14))
+        strip = {}
+        product = []
+        for obj in objs.values():
+            lt = obj.get("layer_type")
+            if lt in strip_order:
+                strip.setdefault(lt, []).append(obj)
+            elif lt in ("glass", "carbon"):
+                product.append(obj)
+        product.append(resin_front)
+        for k, lt in enumerate(strip_order):
+            t0 = int(f_dm0 + D * (0.04 + 0.2 * k)); t1 = int(t0 + D * 0.36)
+            for obj in strip.get(lt, []):
+                rest = Vector(obj.location) if obj is not resin_front else home
+                key_loc(obj, t0, rest)
+                key_loc(obj, t1, rest + fly)
+                key_loc(obj, f_end, rest + fly)
+        t0 = int(f_dm0 + D * 0.66)
+        # a gyantahasáb az infúzió alatt a letépő szövetet és a hálót is kitölti (nagyobb a lapnál);
+        # a kész termékben csak a laminátum méretére zsugorodik (a felesleg a technológiai rétegekkel megy)
+        glass = [o for o in product if o is not resin_front]
+        if glass:
+            zs = [Vector(o.location).z for o in glass]
+            half = max(o.dimensions.z for o in glass) / 2
+            lam_z0, lam_z1 = min(zs) - half, max(zs) + half
+            lam_len, lam_wid = glass[0].dimensions.x, glass[0].dimensions.y
+        rf_len, rf_wid, rf_h = resin_front.dimensions.x, resin_front.dimensions.y, resin_front.dimensions.z
+        for obj in product:
+            rest = home if obj is resin_front else Vector(obj.location)
+            if obj is resin_front and glass:
+                # kicsit szélesebb a lapoknál (sárga gyantaperem látszik), de alacsonyabb (nincs z-fighting a lapokkal)
+                sx, sy, sz = lam_len / rf_len * 1.012, lam_wid / rf_wid * 1.012, (lam_z1 - lam_z0 - 0.0012) / rf_h
+                key_scale(obj, t0, (1, 1, 1))
+                key_scale(obj, f_dm1, (sx, sy, sz))
+                key_scale(obj, f_end, (sx, sy, sz))
+                smooth_keys(obj, only_path="scale")
+                shift = Vector(((rf_len - lam_len) / 2, 0.0, (lam_z0 + lam_z1) / 2 - home.z))
+                key_loc(obj, t0, rest)
+                key_loc(obj, f_dm1, rest + lift + shift)
+                key_loc(obj, f_end, rest + lift + shift)
+                continue
+            key_loc(obj, t0, rest)
+            key_loc(obj, f_dm1, rest + lift)
+            key_loc(obj, f_end, rest + lift)
+        for obj in list(strip.get("bag", [])) + list(strip.get("flowmesh", [])) + list(strip.get("peelply", [])) + product:
+            if obj is resin_front:
+                for fc in obj.animation_data.action.fcurves:        # a bontás kulcsai már simák
+                    if fc.data_path == "location":
+                        for kp in fc.keyframe_points:
+                            if kp.co.x >= f_dm0:
+                                kp.interpolation = "BEZIER"; kp.easing = "EASE_IN_OUT"
+            else:
+                smooth_keys(obj)
+
     # --- kamera, fény, világ
     scene.frame_start, scene.frame_end = 1, f_end
     scene.render.fps = F["fps"]
