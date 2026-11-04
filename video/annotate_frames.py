@@ -27,6 +27,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageChops
 HERE = os.path.dirname(os.path.abspath(__file__))
 FONT_B = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 SUB_BAND = 72          # px (720p) alul, ahol a felirat van – ide nem kerül buborék
+BAR = 48 if os.environ.get("ACTION") == "1" else 0   # akció-változat: fekete szélesvásznú sávok fent/lent
 PAD = 9
 
 
@@ -91,7 +92,7 @@ def layout(labels, W, H, font, scale, prev):
             box = (bx - tw / 2 - pad, by - th / 2 - pad, bx + tw / 2 + pad, by + th / 2 + pad)
             cost = 0.0
             # képen belül, felirat-sáv felett
-            if box[0] < 8 or box[2] > W - 8 or box[1] < 8 or box[3] > H - SUB_BAND * scale:
+            if box[0] < 8 or box[2] > W - 8 or box[1] < (8 + BAR) * scale or box[3] > H - (SUB_BAND + BAR) * scale:
                 cost += 1000
             # ne fedje a célpontját és más célpontokat
             for j, (ox, oy) in enumerate(anchors):
@@ -198,7 +199,7 @@ def draw_braces(img, braces, font, scale):
     H = img.size[1]
     for k in range(len(items) - 1, -1, -1):
         cur = items[k]
-        limit = (H - (SUB_BAND + 18) * scale) - cur["th"] / 2 - pad   # kétsoros felirat fölött
+        limit = (H - (SUB_BAND + BAR + 18) * scale) - cur["th"] / 2 - pad   # kétsoros felirat fölött
         if k < len(items) - 1:
             nxt = items[k + 1]
             limit = min(limit, nxt["cy"] - nxt["th"] / 2 - cur["th"] / 2 - 2 * pad - 4 * scale)

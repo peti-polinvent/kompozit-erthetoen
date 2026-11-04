@@ -47,20 +47,40 @@ def orbit(center, radius, height, angle_deg):
 
 # ---- Jelenetek: t ∈ [0,1] → (kamera hely, célpont, animációs képkocka, fókusz mm) --------
 
+def ease_out(t, p=3.0):
+    """Gyors indulás, lassú megérkezés (crash-zoom, becsapódás)."""
+    return 1 - (1 - min(max(t, 0.0), 1.0)) ** p
+
+
+def burst(t, t0, amp, decay=18.0):
+    """Ütésre rázkódás: t0-tól exponenciálisan lecsengő amplitúdó (m)."""
+    return amp * math.exp(-decay * (t - t0)) if t >= t0 else 0.0
+
+
+# Egy jelenet-függvény visszatérése: (kamera, célpont, animációs képkocka, fókusz mm[, roll°, rázkódás m])
+# A roll a kamera nézőtengelye körüli döntés (dutch angle), a rázkódás kézikamera-szerű mozgás amplitúdója.
+
 def scene_1_intro(t):
-    # lassú körbefordulás az összeállt asztal körül (infúzió előtt)
+    # AKCIÓ: messziről, magasról „becsapódunk” az asztalhoz, közben körbesöprünk; a döntés kiegyenesedik
     c = (0.1, 0.0, Z0 + 0.05)
-    return orbit(c, 1.65, 0.78, lerp(-125, -70, t)), c, F_INF0 - 5, 40
+    k = ease_out(t / 0.35, 3.5) if t < 0.35 else 1.0
+    r, h = lerp(2.9, 1.55, k), lerp(1.5, 0.62, k)
+    ang = lerp(-150, -60, ease(t))
+    roll = lerp(-8.0, 0.0, k)
+    return orbit(c, r, h, ang), c, F_INF0 - 5, lerp(32, 44, k), roll, 0.004 + burst(t, 0.35, 0.012)
 
 
 def scene_2_overview(t):
-    # robbantott rétegrend OLDALNÉZETBEN (a -Y oldalról, enyhe rálátás), lassú közeledés;
-    # a rétegcsoportokat kapcsos zárójelek jelölik (BRACES)
-    # majdnem tiszta oldalnézet (kb. 12° rálátás), a köteg a kép jobb felén; a rétegeket a
-    # render EXTRA_GAP-pel jobban széthúzza (csak ebben a jelenetben, a GLB-t nem érinti)
+    # robbantott rétegrend OLDALNÉZETBEN; AKCIÓ: az első 12%-ban crash-zoom a nézetbe, utána lassú közeledés
     c = (-0.22, 0.0, Z0 + 0.25)
-    cam = (lerp(-0.2, -0.22, ease(t)), lerp(-1.85, -1.75, ease(t)), Z0 + lerp(0.64, 0.6, ease(t)))
-    return cam, c, F_EXPLODED, 60
+    side = (-0.2, -1.85, Z0 + 0.64)
+    if t < 0.12:
+        k = ease_out(t / 0.12, 4.0)
+        cam = (lerp(-0.9, side[0], k), lerp(-3.4, side[1], k), lerp(Z0 + 1.6, side[2], k))
+        return cam, c, F_EXPLODED, lerp(30, 60, k), lerp(-6.0, 0.0, k), 0.003
+    u = ease((t - 0.12) / 0.88)
+    cam = (lerp(side[0], -0.22, u), lerp(side[1], -1.75, u), lerp(side[2], Z0 + 0.6, u))
+    return cam, c, F_EXPLODED, 60, 0.0, 0.0015 + burst(t, 0.12, 0.014)
 
 
 EXTRA_GAP_SCENE = {1: 0.022}   # jelenet-index → plusz hézag rétegenként (m) a robbantott nézetben
@@ -70,51 +90,63 @@ TOUR_END = 0.66   # a 3. jelenet első 66%-a a robbantott "túra", a maradék az
 
 
 def scene_3_layup(t):
-    # TISZTA oldalnézet (a -Y oldalról, a rétegek magasságából): a rétegek vékony
-    # csíkokként látszanak, és sorban ereszkednek a helyükre; lassú közelítés
-    # 0–TOUR_END: robbantott állapot, a rétegek egyenként kiemelve (alulról felfelé);
-    # TOUR_END–1: a rétegek sorban a helyükre ereszkednek
+    # TISZTA oldalnézet; AKCIÓ: minden réteg bemutatásakor „punch-in” (hirtelen ráközelítés, visszaengedés),
+    # az összeállásnál minden réteg becsapódására rázkódás
     c = (0.0, 0.0, Z0 + 0.14)
     cam = (0.0, lerp(-1.55, -1.42, ease(t)), Z0 + lerp(0.2, 0.17, ease(t)))
+    lens = 60.0
+    shake = 0.001
     if t < TOUR_END:
         f = F_EXPLODED
+        for i in range(NL):
+            t_i = 0.02 + (TOUR_END - 0.04) * i / NL
+            if t >= t_i:
+                lens += 9.0 * math.exp(-110.0 * (t - t_i))   # punch-in, kb. 1 s alatt visszaáll
     else:
-        f = lerp(F_ASM0 - 8, F_ASM1 + 6, (t - TOUR_END) / (1 - TOUR_END))
-    return cam, c, f, 60
-
+        u = (t - TOUR_END) / (1 - TOUR_END)
+        f = lerp(F_ASM0 - 8, F_ASM1 + 6, u)
+        for st in LAYER_SETTLE:
+            shake += burst(u, st, 0.012, decay=22.0)
+        cam = (lerp(0.0, 0.05, u), lerp(-1.42, -1.3, u), Z0 + lerp(0.17, 0.24, u))
+    return cam, c, f, lens, 0.0, shake
 
 
 def scene_4_infusion(t):
-    # 0–0.56: a gyantafront vonul (a bevezetés felől, kissé magasról)
-    # 0.56–1: vágás a berendezésekre (csapda, puffertartály, műszerek)
+    # 0–0.56: a gyantafront vonul – AKCIÓ: alacsony, döntött kamera a bevezetés felől, lassú dolly
+    # 0.56–1: vágás (ütéssel) a berendezésekre: csapda, puffertartály, műszerek – kézikamera, ráközelítés
     if t < 0.56:
         u = t / 0.56
         c = (0.05, -0.02, Z0 + 0.04)
-        cam = (lerp(-0.95, -0.55, u), lerp(-0.85, -1.0, u), Z0 + lerp(0.75, 0.65, u))
+        cam = (lerp(-1.05, -0.55, u), lerp(-0.7, -0.98, u), Z0 + lerp(0.42, 0.62, u))
         f = lerp(F_INF0, F_INF1, u)
-        return cam, c, f, 45
+        return cam, c, f, lerp(40, 46, u), lerp(-5.0, -1.5, u), 0.003
     u = (t - 0.56) / 0.44
     c = (0.56, 0.0, Z0 + 0.12)
-    cam = (lerp(0.2, 0.3, u), -0.95, Z0 + 0.55)
-    return cam, c, F_INF1 - 2, 50
+    k = ease_out(u / 0.25, 3.0) if u < 0.25 else 1.0
+    cam = (lerp(0.05, 0.3, k), lerp(-1.25, -0.95, k), Z0 + lerp(0.75, 0.55, k))
+    return cam, c, F_INF1 - 2, lerp(38, 50, k), lerp(4.0, 2.0, k), 0.004 + burst(u, 0.0, 0.014)
 
 
 def scene_5_result(t):
-    # kész lap felülről, majd a műszerekre közelítünk
+    # AKCIÓ: gyors ív a kész lap fölött (döntve), majd rántás a műszerekre
     if t < 0.6:
         u = t / 0.6
         c = (0.0, 0.0, Z0 + 0.03)
-        cam = (lerp(-0.1, 0.05, u), lerp(-0.75, -0.6, u), Z0 + lerp(0.95, 0.85, u))
-        return cam, c, F_END, 42
+        cam = orbit(c, lerp(1.0, 0.8, u), lerp(0.95, 0.8, u), lerp(-125, -65, ease(u)))
+        return cam, c, F_END, 42, lerp(-7.0, 0.0, ease(u)), 0.003
     u = (t - 0.6) / 0.4
     c = (0.5, 0.0, Z0 + 0.22)
-    cam = (lerp(0.0, 0.08, u), -0.85, Z0 + 0.62)
-    return cam, c, F_END, 55
+    k = ease_out(u / 0.3, 3.0) if u < 0.3 else 1.0
+    cam = (lerp(-0.15, 0.08, k), lerp(-1.1, -0.85, k), Z0 + lerp(0.8, 0.62, k))
+    return cam, c, F_END, lerp(42, 55, k), 0.0, 0.003 + burst(u, 0.0, 0.012)
 
 
 def scene_6_outro(t):
+    # AKCIÓ: hátrálva-emelkedve kisöprünk a jelenetből, a végén enyhe döntés
     c = (0.1, 0.0, Z0 + 0.05)
-    return orbit(c, 1.75, 0.82, lerp(-70, -20, t)), c, F_END, 38
+    k = ease(t)
+    cam = orbit(c, lerp(1.45, 2.8, k), lerp(0.6, 1.45, k), lerp(-30, -115, k))
+    return cam, c, F_END, lerp(40, 32, k), lerp(0.0, -7.0, k), 0.003
 
 
 SCENES = [scene_1_intro, scene_2_overview, scene_3_layup, scene_4_infusion, scene_5_result, scene_6_outro]
@@ -215,8 +247,22 @@ def render_mask(scene, objs, path, width, height):
         o.hide_render = False
 
 
-def look_at(cam, target):
-    cam.rotation_euler = (Vector(target) - Vector(cam.location)).to_track_quat("-Z", "Y").to_euler()
+def look_at(cam, target, roll_deg=0.0):
+    q = (Vector(target) - Vector(cam.location)).to_track_quat("-Z", "Y")
+    if roll_deg:
+        from mathutils import Quaternion
+        q = q @ Quaternion((0.0, 0.0, 1.0), math.radians(roll_deg))   # döntés a nézőtengely körül
+    cam.rotation_euler = q.to_euler()
+
+
+def handheld(time_s, amp):
+    """Kézikamera-szerű, sima, determinisztikus remegés (szinuszok összege), amplitúdó m-ben."""
+    if amp <= 0:
+        return (0.0, 0.0, 0.0)
+    x = math.sin(2 * math.pi * 1.3 * time_s) + 0.5 * math.sin(2 * math.pi * 3.1 * time_s + 1.0)
+    y = math.sin(2 * math.pi * 1.7 * time_s + 2.0) + 0.5 * math.sin(2 * math.pi * 2.6 * time_s)
+    z = math.sin(2 * math.pi * 2.2 * time_s + 0.7) + 0.5 * math.sin(2 * math.pi * 3.7 * time_s + 1.5)
+    return (amp * x / 1.5, amp * y / 1.5, amp * z / 1.5)
 
 
 def main(plan_path, out_dir, width=1280, height=720, start_at=0, only=None):
@@ -242,9 +288,13 @@ def main(plan_path, out_dir, width=1280, height=720, start_at=0, only=None):
         for k in range(n):
             if idx >= start_at and (only is None or idx in only):
                 t = k / max(n - 1, 1)
-                loc, target, aframe, lens = fn(t)
-                cam.location = loc
-                look_at(cam, target)
+                res = fn(t)
+                loc, target, aframe, lens = res[:4]
+                roll = res[4] if len(res) > 4 else 0.0
+                amp = res[5] if len(res) > 5 else 0.0
+                j = handheld(s["start"] + t * s["length"], amp)
+                cam.location = (loc[0] + j[0], loc[1] + j[1], loc[2] + j[2])
+                look_at(cam, target, roll)
                 cam.data.lens = lens
                 sc.frame_set(int(round(aframe)))
                 extra = EXTRA_GAP_SCENE.get(s["index"], 0.0)

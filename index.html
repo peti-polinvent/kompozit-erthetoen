@@ -4,383 +4,175 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kompozit érthetően – vákuuminfúzió 3D-ben</title>
-<meta name="description" content="Hogyan készül egy kompozit panel vákuuminfúzióval? Paraméterezhető 3D modell, narrált videó és tanulási napló – Polinvent AI Kihívás.">
-<script>
-  // Villanás nélkül: a mentett világos témát már a rajzolás előtt beállítjuk.
-  try{ if(localStorage.getItem('kompozit-theme')==='light'){ document.documentElement.setAttribute('data-theme','light'); } }catch(e){}
-</script>
+<meta name="description" content="Hogyan készül egy kompozit panel vákuuminfúzióval? Paraméterezhető 3D modell, narrált videó és tanulási napló – AI Kihívás.">
 <script type="module" src="assets/vendor/model-viewer.min.js"></script>
 <script src="assets/vendor/marked.min.js"></script>
 <style>
-  /* ---------- Témák: alapértelmezett a sötét; világos: <html data-theme="light"> ---------- */
   :root{
-    --bg:#0b0f14; --bg-2:#10161d; --card:rgba(255,255,255,.04); --card-solid:#141b24; --ink:#e9eef4; --muted:#93a0b0; --line:rgba(255,255,255,.09);
-    --accent:#6ea8ff; --accent-2:#e0a030; --glow:rgba(110,168,255,.35);
-    --mv-top:#141c26; --mv-bot:#0b0f14;
-    --resin:#e0a030; --glass:#d9cfae; --peel:#c84b4b; --flow:#4caf78; --bag:#7fb6ea; --tape:#f0c419;
-    --radius:20px; --radius-s:12px;
-    color-scheme:dark;
+    --bg:#f6f7f9; --card:#ffffff; --ink:#1c2430; --muted:#5b6675; --line:#e3e7ec;
+    --accent:#1f6feb; --resin:#e0a030; --glass:#d9cfae; --peel:#c84b4b; --flow:#4caf78; --bag:#7fb6ea; --tape:#f0c419;
   }
-  :root[data-theme="light"]{
-    --bg:#f5f6f8; --bg-2:#ffffff; --card:rgba(255,255,255,.7); --card-solid:#ffffff; --ink:#131a22; --muted:#5b6675; --line:rgba(15,25,40,.1);
-    --accent:#1f6feb; --accent-2:#c98a1a; --glow:rgba(31,111,235,.25);
-    --mv-top:#eef1f5; --mv-bot:#dfe5ec;
-    color-scheme:light;
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#0f141a; --card:#171e27; --ink:#e8edf3; --muted:#9aa7b6; --line:#273241; --accent:#6ea8ff; }
   }
-  @media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important} html{scroll-behavior:auto} }
-
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth;scroll-padding-top:72px}
-  body{margin:0;font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
   a{color:var(--accent)}
-  .wrap{max-width:1120px;margin:0 auto;padding:0 clamp(16px,3vw,32px)}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+  header{padding:48px 0 24px}
+  header h1{font-size:clamp(28px,5vw,44px);margin:0 0 8px;line-height:1.15}
+  header p.lead{font-size:clamp(16px,2.2vw,20px);color:var(--muted);max-width:720px;margin:0}
+  nav{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;gap:4px;overflow-x:auto;padding:8px 16px}
+  nav a{white-space:nowrap;text-decoration:none;color:var(--ink);padding:8px 12px;border-radius:8px;font-size:14px}
+  nav a:hover{background:var(--line)}
+  section{padding:40px 0;border-top:1px solid var(--line)}
+  h2{font-size:clamp(22px,3.5vw,30px);margin:0 0 16px}
+  h3{font-size:18px;margin:24px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .grid{display:grid;gap:16px}
+  @media(min-width:760px){.grid-2{grid-template-columns:1fr 1fr}.grid-3{grid-template-columns:repeat(3,1fr)}}
+  model-viewer{width:100%;height:min(70vh,560px);background:linear-gradient(#eef1f5,#dfe5ec);border-radius:12px}
+  @media (prefers-color-scheme: dark){ model-viewer{background:linear-gradient(#1b2430,#121923)} }
+  .controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+  .controls button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer;font-size:14px}
+  .controls button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .controls input[type=range]{flex:1;min-width:140px}
+  .legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-top:12px}
+  .legend div{display:flex;gap:10px;align-items:center;font-size:14px}
+  .sw{width:22px;height:14px;border-radius:4px;border:1px solid rgba(0,0,0,.15);flex:none}
+  .steps{counter-reset:s;display:grid;gap:12px}
+  .steps .card{position:relative;padding-left:56px}
+  .steps .card::before{counter-increment:s;content:counter(s);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:600;font-size:14px}
+  .steps h3{margin:0 0 6px}
+  .steps p{margin:0;color:var(--muted)}
+  video{width:100%;border-radius:12px;background:#000;aspect-ratio:16/9}
   .muted{color:var(--muted)}
-  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em;background:var(--line);padding:1px 6px;border-radius:6px}
-
-  /* ---------- Háttér: finom „aurora” fényfolt ---------- */
-  .bg-glow{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
-  .bg-glow::before,.bg-glow::after{content:"";position:absolute;border-radius:50%;filter:blur(90px);opacity:.55}
-  .bg-glow::before{width:60vw;height:60vw;max-width:800px;max-height:800px;top:-20vw;right:-15vw;background:radial-gradient(circle,var(--glow),transparent 65%)}
-  .bg-glow::after{width:45vw;height:45vw;max-width:600px;max-height:600px;bottom:-15vw;left:-10vw;background:radial-gradient(circle,rgba(224,160,48,.22),transparent 65%)}
-
-  /* ---------- Navigáció (üveges, lebegő) ---------- */
-  nav{position:sticky;top:0;z-index:20;padding:10px 0}
-  nav .bar{display:flex;align-items:center;gap:4px;padding:6px 8px 6px 14px;border:1px solid var(--line);border-radius:999px;background:color-mix(in srgb,var(--bg) 70%,transparent);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);box-shadow:0 10px 30px -18px rgba(0,0,0,.6)}
-  nav .brand{font-weight:700;letter-spacing:-.01em;text-decoration:none;color:var(--ink);margin-right:8px;white-space:nowrap;display:flex;align-items:center;gap:8px}
-  nav .brand .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2))}
-  nav .links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1}
-  nav .links::-webkit-scrollbar{display:none}
-  nav .links a{white-space:nowrap;text-decoration:none;color:var(--muted);padding:8px 12px;border-radius:999px;font-size:14px;transition:background .2s,color .2s}
-  nav .links a:hover{background:var(--line);color:var(--ink)}
-  nav .links a.active{background:var(--line);color:var(--ink);font-weight:600}
-  .theme-toggle{flex:none;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:transparent;color:var(--ink);padding:7px 12px;border-radius:999px;cursor:pointer;font-size:13px;line-height:1;transition:background .2s}
-  .theme-toggle:hover{background:var(--line)}
-  .theme-toggle .ico-sun,:root[data-theme="light"] .theme-toggle .ico-moon{display:none}
-  :root[data-theme="light"] .theme-toggle .ico-sun{display:inline}
-  @media(max-width:600px){ nav .brand span.t{display:none} .theme-toggle .theme-label{display:none} }
-
-  /* ---------- Hero ---------- */
-  .hero{padding-top:clamp(28px,6vw,72px);padding-bottom:24px}
-  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:var(--card)}
-  .eyebrow b{color:var(--accent);font-weight:600}
-  .hero h1{font-size:clamp(36px,7vw,76px);line-height:1.02;letter-spacing:-.03em;margin:18px 0 14px;font-weight:800}
-  .hero h1 .grad{background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .hero p.lead{font-size:clamp(16px,2vw,20px);color:var(--muted);max-width:640px;margin:0 0 22px}
-  .cta{display:flex;flex-wrap:wrap;gap:10px}
-  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:999px;text-decoration:none;font-weight:600;font-size:15px;border:1px solid var(--line);color:var(--ink);background:var(--card);transition:transform .15s,box-shadow .2s,background .2s}
-  .btn:hover{transform:translateY(-1px);background:var(--line)}
-  .btn.primary{background:var(--accent);color:#fff;border-color:transparent;box-shadow:0 10px 30px -10px var(--glow)}
-  .btn.primary:hover{background:var(--accent);filter:brightness(1.08)}
-
-  /* ---------- 3D néző kártya ---------- */
-  .viewer{margin-top:28px;border:1px solid var(--line);border-radius:var(--radius);background:var(--card-solid);overflow:hidden;box-shadow:0 30px 80px -40px rgba(0,0,0,.7)}
-  model-viewer{width:100%;height:min(72vh,620px);background:linear-gradient(var(--mv-top),var(--mv-bot));display:block}
-  .viewer .hint{position:absolute;left:14px;top:14px;font-size:12px;color:var(--muted);background:color-mix(in srgb,var(--bg) 70%,transparent);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:999px;padding:5px 10px;pointer-events:none}
-  .viewer .stage{position:relative}
-  .controls{display:flex;flex-wrap:wrap;gap:8px;padding:14px;align-items:center;border-top:1px solid var(--line)}
-  .controls button{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 14px;border-radius:999px;cursor:pointer;font-size:14px;transition:background .2s,border-color .2s}
-  .controls button:hover{background:var(--line)}
-  .controls button.active{background:var(--accent);color:#fff;border-color:transparent}
-  .controls input[type=range]{flex:1;min-width:160px;accent-color:var(--accent)}
-  details.legend-box{border-top:1px solid var(--line)}
-  details.legend-box summary{cursor:pointer;padding:12px 14px;font-size:14px;color:var(--muted);list-style:none;display:flex;align-items:center;gap:8px}
-  details.legend-box summary::-webkit-details-marker{display:none}
-  details.legend-box summary::before{content:"";width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform .2s;margin-left:4px}
-  details.legend-box[open] summary::before{transform:rotate(45deg)}
-  .legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px 16px;padding:0 14px 14px}
-  .legend div{display:flex;gap:10px;align-items:center;font-size:13.5px;color:var(--muted)}
-  .sw{width:22px;height:14px;border-radius:4px;border:1px solid rgba(0,0,0,.2);flex:none}
-
-  /* ---------- Szekciók ---------- */
-  section{padding:clamp(48px,8vw,96px) 0}
-  .sec-head{display:grid;gap:8px;margin-bottom:28px;max-width:720px}
-  .sec-head .num{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
-  h2{font-size:clamp(26px,4vw,40px);letter-spacing:-.02em;line-height:1.1;margin:0}
-  .sec-head p{margin:0;color:var(--muted);font-size:clamp(15px,1.6vw,17px)}
-  h3{font-size:18px;margin:0 0 8px;letter-spacing:-.01em}
-
-  /* ---------- Bento rács ---------- */
-  .bento{display:grid;gap:14px;grid-template-columns:repeat(6,1fr)}
-  .tile{grid-column:span 6;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;position:relative;overflow:hidden;transition:transform .2s,border-color .2s}
-  .tile:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
-  .tile p{margin:0;color:var(--muted)}
-  .tile p+p{margin-top:10px}
-  .tile .big{font-size:clamp(34px,5vw,52px);font-weight:800;letter-spacing:-.03em;line-height:1;margin:0 0 6px;background:linear-gradient(90deg,var(--ink),var(--muted));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .tile .label{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);font-weight:700;margin-bottom:10px;display:block}
-  .tile.accent{background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 18%,transparent),color-mix(in srgb,var(--accent-2) 10%,transparent)),var(--card)}
-  @media(min-width:760px){
-    .tile.c3{grid-column:span 3} .tile.c2{grid-column:span 2} .tile.c4{grid-column:span 4}
-  }
-
-  /* ---------- Folyamat: idővonal ---------- */
-  .timeline{display:grid;gap:0;position:relative;counter-reset:s}
-  .timeline::before{content:"";position:absolute;left:19px;top:12px;bottom:12px;width:2px;background:linear-gradient(var(--accent),var(--accent-2));opacity:.5}
-  .step{position:relative;padding:14px 0 14px 60px}
-  .step::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:14px;width:40px;height:40px;border-radius:50%;background:var(--bg);border:2px solid var(--accent);color:var(--accent);display:grid;place-items:center;font-weight:700;font-size:15px;box-shadow:0 0 0 6px var(--bg)}
-  .step h3{margin:8px 0 4px}
-  .step p{margin:0;color:var(--muted);max-width:720px}
-  @media(min-width:900px){
-    .timeline{grid-template-columns:1fr 1fr;column-gap:96px}
-    .timeline::before{left:50%;transform:translateX(-1px)}
-    .step{padding:14px 0}
-    .step:nth-child(odd){grid-column:1;text-align:right}
-    .step:nth-child(even){grid-column:2}
-    .step:nth-child(1){grid-row:1} .step:nth-child(2){grid-row:2} .step:nth-child(3){grid-row:3} .step:nth-child(4){grid-row:4}
-    .step:nth-child(5){grid-row:5} .step:nth-child(6){grid-row:6} .step:nth-child(7){grid-row:7} .step:nth-child(8){grid-row:8}
-    .step:nth-child(odd)::before{left:auto;right:-68px}
-    .step:nth-child(even)::before{left:-68px}
-    .step:nth-child(odd) p{margin-left:auto}
-  }
-
-  /* ---------- Táblázat ---------- */
-  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
   table{width:100%;border-collapse:collapse;font-size:14px}
-  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
-  th{color:var(--muted);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.06em}
-  tbody tr:last-child td,tbody tr:last-child th{border-bottom:0}
-  tbody tr:hover td{background:var(--line)}
-
-  /* ---------- Videó ---------- */
-  .video-card{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#000;box-shadow:0 30px 80px -40px rgba(0,0,0,.7)}
-  video{width:100%;display:block;background:#000;aspect-ratio:16/9}
-
-  /* ---------- Napló ---------- */
+  th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600}
+  .dl a{display:inline-block;margin:4px 8px 4px 0;padding:10px 14px;border:1px solid var(--line);border-radius:10px;text-decoration:none;background:var(--card)}
   #naplo{font-size:15px}
-  #naplo h2{font-size:22px;margin:28px 0 10px}
-  #naplo h3{font-size:17px;margin:20px 0 6px}
-  #naplo blockquote{border-left:3px solid var(--accent);margin:12px 0;padding:6px 14px;color:var(--muted);background:var(--line);border-radius:0 10px 10px 0}
-  #naplo pre{background:var(--line);padding:12px;border-radius:10px;overflow:auto}
+  #naplo h2{font-size:22px;margin-top:28px}
+  #naplo h3{font-size:17px}
+  #naplo blockquote{border-left:3px solid var(--accent);margin:12px 0;padding:4px 14px;color:var(--muted);background:var(--card);border-radius:0 8px 8px 0}
+  #naplo code{background:var(--line);padding:1px 5px;border-radius:4px;font-size:13px}
+  #naplo pre{background:var(--line);padding:12px;border-radius:8px;overflow:auto}
   #naplo hr{border:0;border-top:1px solid var(--line);margin:24px 0}
-  details.naplo-box summary{cursor:pointer;font-weight:600;padding:4px 0;list-style:none;display:flex;align-items:center;gap:10px}
-  details.naplo-box summary::-webkit-details-marker{display:none}
-  details.naplo-box summary .chev{width:8px;height:8px;border-right:2px solid var(--accent);border-bottom:2px solid var(--accent);transform:rotate(-45deg);transition:transform .2s}
-  details.naplo-box[open] summary .chev{transform:rotate(45deg)}
-
-  /* ---------- Letöltések ---------- */
-  .dl{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
-  .dl a{display:flex;flex-direction:column;gap:4px;padding:16px;border:1px solid var(--line);border-radius:var(--radius-s);text-decoration:none;background:var(--card);color:var(--ink);transition:transform .15s,border-color .2s}
-  .dl a:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
-  .dl a b{font-size:14.5px}
-  .dl a span{font-size:12.5px;color:var(--muted)}
-  .dl a .tag{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
-
-  /* ---------- Lábléc + vissza a tetejére ---------- */
-  footer{padding:40px 0 48px;color:var(--muted);font-size:14px;border-top:1px solid var(--line)}
-  footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center}
-  #toTop{position:fixed;right:18px;bottom:18px;z-index:15;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:blur(8px);color:var(--ink);cursor:pointer;display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .25s}
-  #toTop.show{opacity:1;pointer-events:auto}
-
-  /* ---------- Görgetéses megjelenés ---------- */
-  .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
-  .reveal.in{opacity:1;transform:none}
+  footer{padding:32px 0;color:var(--muted);font-size:14px;border-top:1px solid var(--line)}
 </style>
 </head>
 <body>
-<div class="bg-glow" aria-hidden="true"></div>
 
-<nav><div class="wrap"><div class="bar">
-  <a class="brand" href="#top"><span class="dot"></span><span class="t">Kompozit érthetően</span></a>
-  <div class="links" id="navLinks">
-    <a href="#modell">3D modell</a><a href="#attekintes">Áttekintés</a><a href="#folyamat">Folyamat</a><a href="#retegrend">Rétegrend</a><a href="#video">Videó</a><a href="#naplo-sec">Napló</a><a href="#letoltes">Letöltések</a>
-  </div>
-  <button class="theme-toggle" id="themeToggle" type="button" aria-label="Világos/sötét téma váltása" title="Világos/sötét téma">
-    <svg class="ico-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-    <svg class="ico-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-    <span class="theme-label">Sötét</span>
-  </button>
-</div></div></nav>
-<script>
-  // Témakapcsoló: alapértelmezett a sötét; a választást a localStorage őrzi.
-  (function(){
-    var KEY='kompozit-theme', root=document.documentElement, btn=document.getElementById('themeToggle');
-    function apply(t){
-      if(t==='light'){ root.setAttribute('data-theme','light'); } else { root.removeAttribute('data-theme'); t='dark'; }
-      btn.querySelector('.theme-label').textContent = (t==='light') ? 'Világos' : 'Sötét';
-      btn.setAttribute('aria-pressed', t==='light' ? 'true' : 'false');
-    }
-    var saved=null; try{ saved=localStorage.getItem(KEY); }catch(e){}
-    apply(saved);
-    btn.addEventListener('click', function(){
-      var next = root.getAttribute('data-theme')==='light' ? 'dark' : 'light';
-      apply(next);
-      try{ localStorage.setItem(KEY,next); }catch(e){}
-    });
-  })();
-</script>
-
-<!-- ============ HERO + 3D ============ -->
-<header class="hero wrap" id="top">
-  <span class="eyebrow"><b>Polinvent</b> · AI Kihívás · 2026. november</span>
-  <h1>Kompozit <span class="grad">érthetően</span><br>vákuuminfúzió 3D-ben</h1>
-  <p class="lead">Hogyan lesz száraz üvegszövetből és gyantából egy kompozit panel – úgy, hogy a gyantát nem mi nyomjuk be, hanem a vákuum húzza át a rétegeken: a zsákból kiszívjuk a levegőt, és a külső légnyomás tolja be helyére a gyantát. Forgasd meg a modellt, nézd végig a folyamatot.</p>
-  <div class="cta">
-    <a class="btn primary" href="#modell">Nézd meg 3D-ben ↓</a>
-    <a class="btn" href="#video">Videó (2 perc)</a>
-    <a class="btn" href="#folyamat">Hogyan működik?</a>
-  </div>
-
-  <div class="viewer" id="modell">
-    <div class="stage">
-      <model-viewer id="mv"
-        src="assets/infusion.glb"
-        alt="Vákuuminfúziós összeállítás 3D modellje: asztal, szerszám, rétegrend, vákuumzsák, gyantatartály, gyantacsapda, szivattyú"
-        camera-controls touch-action="pan-y" autoplay
-        shadow-intensity="1" exposure="1" environment-image="neutral" tone-mapping="neutral"
-        camera-orbit="-30deg 60deg 2.6m" camera-target="0.1m 0.78m 0m" min-camera-orbit="auto auto 0.8m" max-camera-orbit="auto auto 5m"
-        interaction-prompt="auto">
-      </model-viewer>
-      <span class="hint">Húzd a forgatáshoz · görgess a nagyításhoz</span>
-    </div>
-    <div class="controls">
-      <button id="btnPlay">⏸ Szünet</button>
-      <button data-t="0.5">Robbantott nézet</button>
-      <button data-t="5.0">Összeállítva</button>
-      <button data-t="8.0">Infúzió közben</button>
-      <button data-t="11.5">Kész</button>
-      <input id="scrub" type="range" min="0" max="12" step="0.02" value="0" aria-label="Animáció időpontja">
-    </div>
-    <details class="legend-box">
-      <summary>Jelmagyarázat – mi micsoda a modellben</summary>
-      <div class="legend" id="legend"></div>
-    </details>
-  </div>
-  <p class="muted" style="font-size:14px;margin:14px 0 0">Az animáció: a rétegek szétnyitva lebegnek → összeállnak a szerszámon → a gyanta a bevezetéstől (narancs spirálcső) az elszívás (kék spirálcső) felé átitatja a laminátumot.</p>
+<header class="wrap">
+  <h1>Kompozit érthetően<br><span class="muted" style="font-weight:500">vákuuminfúzió 3D-ben</span></h1>
+  <p class="lead">Egyetlen történet: hogyan készül egy egyszerű kompozit panel vákuuminfúzióval? Paraméterezhető CAD-modell (Fusion 360), animáció (Blender), narrált videó és tanulási napló – a belső AI Kihívásra, 2026. november 2–6.</p>
 </header>
 
-<!-- ============ ÁTTEKINTÉS (bento) ============ -->
-<section id="attekintes"><div class="wrap">
-  <div class="sec-head reveal">
-    <span class="num">01 · Áttekintés</span>
-    <h2>Mi az a vákuuminfúzió?</h2>
-    <p>Zárt rendszerű kompozitgyártás: a száraz erősítőanyagot egy merev szerszám és egy rugalmas vákuumfólia közé zárjuk, kiszívjuk a levegőt, és a külső légnyomás tolja be a gyantát a rétegek közé.</p>
+<nav><div class="wrap">
+  <a href="#modell">3D modell</a><a href="#video">Videó</a><a href="#technologia">Technológia</a><a href="#retegrend">Rétegrend</a><a href="#naplo-sec">Napló</a><a href="#letoltes">Letöltések</a>
+</div></nav>
+
+<section id="modell"><div class="wrap">
+  <h2>Forgatható 3D modell</h2>
+  <p class="muted">Húzd az egérrel/ujjaddal a forgatáshoz, görgess a nagyításhoz. Az animáció: a rétegek szétnyitva lebegnek → összeállnak a szerszámon → a gyanta a bevezetéstől (narancs spirálcső) az elszívás (kék spirálcső) felé átitatja a laminátumot.</p>
+  <model-viewer id="mv"
+    src="assets/infusion.glb"
+    alt="Vákuuminfúziós összeállítás 3D modellje: asztal, szerszám, rétegrend, vákuumzsák, gyantatartály, gyantacsapda, szivattyú"
+    camera-controls touch-action="pan-y" autoplay
+    shadow-intensity="1" exposure="1" environment-image="neutral" tone-mapping="neutral"
+    camera-orbit="-30deg 60deg 2.6m" camera-target="0.1m 0.78m 0m" min-camera-orbit="auto auto 0.8m" max-camera-orbit="auto auto 5m"
+    interaction-prompt="auto">
+  </model-viewer>
+  <div class="controls">
+    <button id="btnPlay">⏸ Szünet</button>
+    <button data-t="0.5">Robbantott nézet</button>
+    <button data-t="5.0">Összeállítva</button>
+    <button data-t="8.0">Infúzió közben</button>
+    <button data-t="11.5">Kész</button>
+    <input id="scrub" type="range" min="0" max="12" step="0.02" value="0" aria-label="Animáció időpontja">
   </div>
-  <div class="bento">
-    <div class="tile c4 reveal">
-      <span class="label">A lényeg</span>
-      <p>A <strong style="color:var(--ink)">vákuuminfúzió</strong> (VARTM) során a <em>száraz</em> erősítőanyagot (üveg-, szén- vagy aramidszövetet) a szerszámra fektetjük, a segédanyagokkal együtt vákuumzsákba zárjuk, majd a zsákból kiszívott levegő helyére – a légköri nyomás hatására – <strong style="color:var(--ink)">a gyanta magától beáramlik</strong> és átitatja a rétegeket. A vákuum közben össze is préseli a száraz rétegeket (kompaktálás), ezért kevés gyanta marad a szálak között.</p>
-      <p>Előnyei a kézi laminálással szemben: egyenletes, magas száltartalom (jellemzően 50–60 térfogat%, kézi laminálásnál 30–40%), kevesebb légzárvány, jól ismételhető minőség, és mivel a gyanta zárt rendszerben mozog, lényegesen kevesebb illékony anyag (poliésztergyantánál sztirol) jut a műhely levegőjébe.</p>
+  <div class="legend" id="legend"></div>
+</div></section>
+
+<section id="video"><div class="wrap">
+  <h2>Videó (kb. 2 perc, narrációval és felirattal)</h2>
+  <video id="vid" controls playsinline preload="metadata" poster="assets/poster.jpg">
+    <source src="assets/kompozit_erthetoen.mp4" type="video/mp4">
+    <track kind="subtitles" src="assets/kompozit_erthetoen.vtt" srclang="hu" label="magyar" default>
+    A böngésződ nem támogatja a videó lejátszását.
+  </video>
+  <p class="muted" id="videoNote">A videó Blenderből renderelt képsorokból, AI-generált magyar narrációval és felirattal készült.</p>
+</div></section>
+
+<section id="technologia"><div class="wrap">
+  <h2>Mi az a vákuuminfúzió?</h2>
+  <div class="grid grid-2">
+    <div class="card">
+      <p>A <strong>vákuuminfúzió</strong> (VARTM) zárt szerszámos kompozitgyártási eljárás: a <em>száraz</em> erősítőanyagot (üveg-, szén- vagy aramidszövetet) a szerszámra fektetjük, a segédanyagokkal együtt vákuumzsákba zárjuk, majd a zsákból kiszívott levegő helyére – a légköri nyomás hatására – <strong>a gyanta magától beáramlik</strong> és átitatja a rétegeket.</p>
+      <p>Előnyei a kézi laminálással szemben: egyenletes, magas száltartalom (jellemzően 50–60 tf%), kevesebb légzárvány, jól ismételhető minőség és lényegesen kevesebb oldószer-/sztirolkibocsátás a műhelyben – a gyanta zárt rendszerben mozog.</p>
     </div>
-    <div class="tile c2 accent reveal">
-      <span class="label">Így csináljuk a Polinventnél</span>
-      <div class="big" id="procVac">–0,65 bar</div>
-      <p>relatív vákuum az infúzió alatt – a zsákban a külső légnyomásnál 0,65 barral kisebb a nyomás, ez a nyomáskülönbség hajtja a gyantát</p>
+    <div class="card">
+      <h3 style="margin-top:0">Hol áramlik a gyanta?</h3>
+      <p>A <span style="color:var(--flow);font-weight:600">gyantavezető háló</span> a zsák alatti „gyorsforgalmi út”: a gyanta ezen fut végig a panel felett, és onnan szivárog <em>lefelé</em>, a vastagságon át a szövetrétegekbe. Ezért ér véget a háló az elszívó oldal előtt néhány centivel: így a gyanta nem rohan a vákuumcsőbe, előbb átitatja a laminátumot.</p>
+      <h3>Mire való a gyantacsapda?</h3>
+      <p>A <strong>gyantacsapda</strong> (catch pot) a vákuumvezetékbe iktatott tartály: ha a gyanta eléri az elszívó csövet, itt gyűlik össze – és <strong>nem jut a szivattyúba</strong>, ami tönkretenné azt. Egyúttal itt látszik, mikor „telt be” a panel.</p>
     </div>
-    <div class="tile c3 reveal">
-      <span class="label">Hol áramlik a gyanta?</span>
-      <p>A <span style="color:var(--flow);font-weight:600">gyantavezető háló</span> a zsák alatti „gyorsforgalmi út”: a gyanta ezen fut végig a panel felett, és onnan szivárog <em>lefelé</em>, a vastagságon át a szövetrétegekbe – a sűrű szövetben ugyanis sokkal lassabban haladna. Ezért ér véget a háló az elszívó oldal előtt néhány centivel: így a gyanta nem rohan a vákuumcsőbe, előbb átitatja a laminátumot.</p>
+  </div>
+  <div class="card" style="margin-top:16px;border-left:4px solid var(--accent)">
+    <h3 style="margin-top:0">Így csináljuk a gyakorlatban</h3>
+    <div class="grid grid-3" id="processGrid">
+      <div><strong id="procVac">–0,65 bar</strong><br><span class="muted">relatív vákuum az infúzió alatt</span></div>
+      <div><strong>Epoxi gyanta</strong><br><span class="muted" id="procResin">kétkomponensű, infúziós epoxi gyantával dolgozunk</span></div>
+      <div><strong>Puffertartály</strong><br><span class="muted" id="procSys">a gyantacsapda és a szivattyú között, hogy a vákuum folyamatos és egyenletes maradjon – a 3D modellben is látható</span></div>
     </div>
-    <div class="tile c3 reveal">
-      <span class="label">Mire való a gyantacsapda?</span>
-      <p>A <strong style="color:var(--ink)">gyantacsapda</strong> (catch pot) a vákuumvezetékbe iktatott tartály: ha a gyanta eléri az elszívó csövet, itt gyűlik össze – és <strong style="color:var(--ink)">nem jut a szivattyúba</strong>, ahol megkötve tönkretenné azt. Egyúttal itt látszik, mikor ért körbe a gyanta: ha a csapdába már gyanta érkezik, a panel átitatódott.</p>
-    </div>
-    <div class="tile c3 reveal">
-      <span class="label">Saját gyanta</span>
-      <h3>Polinvent epoxi</h3>
-      <p id="procResin">a Polinvent által előállított epoxi gyantával dolgozunk</p>
-    </div>
-    <div class="tile c3 reveal">
-      <span class="label">Egyenletes vákuum</span>
-      <h3>Puffertartály</h3>
-      <p id="procSys">a gyantacsapda és a szivattyú között, hogy a vákuum folyamatos és egyenletes maradjon – a 3D modellben is látható</p>
-    </div>
+  </div>
+
+  <h3>A folyamat lépésről lépésre</h3>
+  <div class="steps">
+    <div class="card"><h3>Szerszám előkészítése</h3><p>Tiszta, sima szerszámfelület (itt alumínium lap), formaleválasztó, opcionálisan gelcoat – ez adja a kész felületet.</p></div>
+    <div class="card"><h3>Száraz rétegrend lerakása</h3><p>Az erősítőszövetek a tervezett irányban (pl. 0/90°, ±45°), a rétegrend szerint. Ragasztóspray tartja a helyén őket.</p></div>
+    <div class="card"><h3>Segédanyagok</h3><p>Tépőszövet (peel ply) – leszedhető, érdes felületet hagy; gyantavezető háló – a gyanta elosztása; spirálcsövek – gyantabevezetés az egyik, elszívás a másik oldalon.</p></div>
+    <div class="card"><h3>Zsákolás és tömörségpróba</h3><p>Tömítőszalaggal lezárt vákuumzsák, szivattyú bekapcsolva. Zárt csappal a nyomásnak tartania kell: szivárgó zsákból porózus alkatrész lesz. A puffertartály (vákuumtartály) a csapda és a szivattyú között simítja a vákuumot, így az egyenletes marad az infúzió teljes ideje alatt.</p></div>
+    <div class="card"><h3>Gyanta előkészítése</h3><p>A gyantát (infúziós epoxi rendszer) a keverési arány szerint bekeverjük, és szükség esetén vákuum alatt gáztalanítjuk, hogy ne vigyünk buborékot a laminátumba. A fazékidőt a panel kitöltési idejéhez kell méretezni.</p></div>
+    <div class="card"><h3>Infúzió</h3><p>A bevezető csapot kinyitjuk: a gyanta a tartályból a bevezető spirálcsőbe, a gyantavezető hálón át a laminátumba áramlik, amíg a front el nem éri az elszívó oldalt. Nálunk ez –0,65 bar relatív vákuum mellett történik.</p></div>
+    <div class="card"><h3>Kikeményedés és kiszerelés</h3><p>Bevezetés lezárva, vákuum tartva a gélesedésig. Utána zsák, háló, tépőszövet le – és kész a panel: sima szerszámoldal, egyenletes vastagság.</p></div>
   </div>
 </div></section>
 
-<!-- ============ FOLYAMAT (idővonal) ============ -->
-<section id="folyamat"><div class="wrap">
-  <div class="sec-head reveal">
-    <span class="num">02 · Folyamat</span>
-    <h2>Lépésről lépésre</h2>
-    <p>Hét lépés a tiszta szerszámlaptól a kész panelig – ugyanebben a sorrendben, ahogy a 3D-animációban összeállnak a rétegek.</p>
-  </div>
-  <div class="timeline">
-    <div class="step reveal"><h3>Szerszám előkészítése</h3><p>Tiszta, sima szerszámfelület (itt alumínium lap), formaleválasztó, opcionálisan gelcoat – ez adja a kész panel sima, zárt felületét. A gelcoatnak meg kell gélesednie (ujjal érintve már nem kenődik), mielőtt a száraz szövet rákerül.</p></div>
-    <div class="step reveal"><h3>Száraz rétegrend lerakása</h3><p>Az erősítőszövetek a tervezett szálirányban (pl. 0/90°, ±45°), a rétegrend szerint – a szálirány dönti el, melyik irányban lesz erős a panel. Kevés rögzítőspray tartja a helyén őket, hogy zsákoláskor ne csússzanak el.</p></div>
-    <div class="step reveal"><h3>Segédanyagok</h3><p>Tépőszövet (peel ply) – kikeményedés után lehúzható, és tiszta, érdes, ragasztható felületet hagy; gyantavezető háló (flow mesh) – gyorsan szétteríti a gyantát a panel felett; spirálcsövek – gyantabevezetés az egyik, elszívás a másik oldalon. Ezek nem részei a kész panelnek, bontáskor mind lekerülnek.</p></div>
-    <div class="step reveal"><h3>Zsákolás és szivárgásvizsgálat</h3><p>Tömítőszalaggal lezárt vákuumfólia, szivattyú bekapcsolva. Vákuumesés-teszt: a szivattyú felé zárt csappal a vákuumnak tartania kell, a műszer percek alatt sem mozdulhat érdemben – szivárgó zsákból légzárványos, porózus alkatrész lesz. A puffertartály (vákuumtartály) a csapda és a szivattyú között simítja a vákuumot, így az egyenletes marad az infúzió teljes ideje alatt.</p></div>
-    <div class="step reveal"><h3>Gyanta előkészítése</h3><p>A gyantát (nálunk a Polinvent saját epoxi rendszere) a keverési arány szerint bekeverjük, és szükség esetén vákuum alatt gáztalanítjuk, hogy a keveréskor bevitt és a gyantában oldott levegő ne a laminátumban jelenjen meg buborékként. A gyanta fazékidejének (ameddig még folyik) hosszabbnak kell lennie a panel kitöltési idejénél, tartalékkal – a kitöltési idő a folyási hossz négyzetével nő.</p></div>
-    <div class="step reveal"><h3>Infúzió</h3><p>A bevezető csapot kinyitjuk: a nyitott, légköri nyomású tartályból a gyanta a bevezető spirálcsőbe, onnan a gyantavezető hálón át a laminátumba áramlik, amíg az áramlási front el nem éri az elszívó oldalt. Nálunk ez –0,65 bar relatív vákuum mellett történik. Amikor a gyanta mindenhol körbeért, a bevezetést lezárjuk.</p></div>
-    <div class="step reveal"><h3>Kikeményedés és kiszerelés</h3><p>A vákuumot a gyanta megszilárdulásáig tartjuk – így a rétegek préselve maradnak, és a felesleges gyanta a csapdába távozik. Kikeményedés után fólia, háló, tépőszövet le, a panel leválik a szerszámról – sima szerszámoldal, egyenletes vastagság. Epoxinál a végső szilárdságot gyakran melegítéses utókezelés adja meg.</p></div>
-  </div>
-</div></section>
-
-<!-- ============ RÉTEGREND ============ -->
 <section id="retegrend"><div class="wrap">
-  <div class="sec-head reveal">
-    <span class="num">03 · Rétegrend</span>
-    <h2>Rétegrend és paraméterek</h2>
-    <p>A modell a <code>blender/params.json</code> fájlból épül: a rétegek neve, típusa, valós és megjelenített vastagsága, színe mind paraméter. A vékony rétegeket a 3D-ben szándékosan vastagabban mutatjuk, hogy látszódjanak. A valós vastagságok tipikus, becsült értékek, nem mért adatok: egy 0,45 mm-es üvegszövet-réteg kb. 600 g/m²-es szövetnek felel meg ~50 térfogat% száltartalomnál.</p>
-  </div>
-  <div class="card reveal" style="overflow:auto">
+  <h2>Rétegrend és paraméterek</h2>
+  <p class="muted">A modell a <code>blender/params.json</code> fájlból épül: a rétegek neve, típusa, valós és megjelenített (felnagyított) vastagsága, színe mind paraméter. A vékony rétegeket a 3D-ben szándékosan vastagabban mutatjuk, hogy látszódjanak. A geometriát egy eszközfüggetlen modul (<code>infusion_layout.py</code>) számolja; ugyanebből épít a <strong>Fusion 360</strong>-szkript (CAD-modell, f3d/STEP) és a <strong>Blender</strong>-szkript (animáció, render, GLB a webre).</p>
+  <div class="card" style="overflow:auto">
     <table id="layupTable"><thead><tr><th>#</th><th>Réteg (alulról felfelé)</th><th>Típus</th><th>Valós vastagság</th><th>Megjelenítve</th></tr></thead><tbody></tbody></table>
   </div>
-  <div class="bento" style="margin-top:14px">
-    <div class="tile c3 reveal">
-      <span class="label">Egy forrás, két eszköz</span>
-      <p>A geometriát egy eszközfüggetlen modul (<code>infusion_layout.py</code>) számolja; ugyanebből épít a <strong style="color:var(--ink)">Fusion 360</strong>-szkript (CAD-modell, f3d/STEP) és a <strong style="color:var(--ink)">Blender</strong>-szkript (animáció, render, GLB a webre).</p>
-    </div>
-    <div class="tile c3 reveal">
-      <span class="label">Következő lépés</span>
-      <p>A kihíváson túl ugyanebből a paraméterlogikából a <strong style="color:var(--ink)">sewerbot Compact</strong> kompozit dobjának hengeres szerszáma és rétegrendje, majd Darcy-törvény alapú kitöltésiidő-becslés a paraméterekből.</p>
-    </div>
-  </div>
+  <p class="muted" style="margin-top:12px">Következő lépés a kihíváson túl: ugyanebből a paraméterlogikából a <strong>sewerbot Compact</strong> kompozit dobjának hengeres szerszáma és rétegrendje, majd Darcy-törvény alapú kitöltésiidő-becslés a paraméterekből.</p>
 </div></section>
 
-<!-- ============ VIDEÓ ============ -->
-<section id="video"><div class="wrap">
-  <div class="sec-head reveal">
-    <span class="num">04 · Videó</span>
-    <h2>Két perc, narrációval és felirattal</h2>
-    <p id="videoNote">Blenderből renderelt képsorok, magyar narrációval és felirattal.</p>
-  </div>
-  <div class="video-card reveal">
-    <video id="vid" controls playsinline preload="metadata" poster="assets/poster.jpg">
-      <source src="assets/kompozit_erthetoen.mp4" type="video/mp4">
-      <track kind="subtitles" src="assets/kompozit_erthetoen.vtt" srclang="hu" label="magyar" default>
-      A böngésződ nem támogatja a videó lejátszását.
-    </video>
-  </div>
-</div></section>
-
-<!-- ============ NAPLÓ ============ -->
 <section id="naplo-sec"><div class="wrap">
-  <div class="sec-head reveal">
-    <span class="num">05 · Tanulási napló</span>
-    <h2>Hogyan készült – AI-val</h2>
-    <p>Milyen eszközöket használtam, hogyan dolgoztam az AI-jal (példa promptokkal), hol akadtam el, és hogyan jutottam túl rajta.</p>
-  </div>
-  <details class="naplo-box card reveal" open>
-    <summary><span class="chev"></span>Teljes napló (NAPLO.md)</summary>
-    <div id="naplo"><p class="muted">Napló betöltése…</p></div>
-  </details>
+  <h2>Tanulási napló</h2>
+  <p class="muted">Milyen eszközöket használtam, hogyan dolgoztam az AI-jal (példa promptokkal), hol akadtam el, és hogyan jutottam túl rajta.</p>
+  <div class="card" id="naplo"><p class="muted">Napló betöltése…</p></div>
 </div></section>
 
-<!-- ============ LETÖLTÉSEK ============ -->
 <section id="letoltes"><div class="wrap">
-  <div class="sec-head reveal">
-    <span class="num">06 · Letöltések</span>
-    <h2>Fájlok és forráskód</h2>
-    <p>Minden nyílt: a CAD-modell, a Blender-fájl, a webes 3D és a szkriptek, amelyek az egészet építik.</p>
-  </div>
-  <div class="dl reveal">
-    <a href="fusion/export/infusion.f3d" download><span class="tag">CAD</span><b>infusion.f3d</b><span>Fusion 360 modell</span></a>
-    <a href="fusion/export/infusion.step" download><span class="tag">CAD</span><b>infusion.step</b><span>STEP – bármely CAD-be</span></a>
-    <a href="build/infusion.blend" download><span class="tag">3D</span><b>infusion.blend</b><span>Blender 4.5 jelenet</span></a>
-    <a href="assets/infusion.glb" download><span class="tag">3D</span><b>infusion.glb</b><span>webes modell animációval</span></a>
-    <a href="blender/params.json" download><span class="tag">Paraméterek</span><b>params.json</b><span>rétegrend, méretek, folyamat</span></a>
-    <a href="fusion/KompozitInfuzio/KompozitInfuzio.py" download><span class="tag">Szkript</span><b>KompozitInfuzio.py</b><span>Fusion 360 API</span></a>
-    <a href="blender/infusion_layout.py" download><span class="tag">Szkript</span><b>infusion_layout.py</b><span>közös geometria</span></a>
-    <a href="blender/build_infusion.py" download><span class="tag">Szkript</span><b>build_infusion.py</b><span>Blender animáció + export</span></a>
-    <a href="NAPLO.md" download><span class="tag">Napló</span><b>NAPLO.md</b><span>tanulási napló Markdownban</span></a>
-    <a id="ghLink" href="#" target="_blank" rel="noopener"><span class="tag">Forrás</span><b>GitHub repó →</b><span>a teljes projekt</span></a>
+  <h2>Letöltések és forrás</h2>
+  <div class="dl">
+    <a href="fusion/export/infusion.f3d" download>⬇ infusion.f3d (Fusion 360)</a>
+    <a href="fusion/export/infusion.step" download>⬇ infusion.step (STEP)</a>
+    <a href="build/infusion.blend" download>⬇ infusion.blend (Blender 4.5)</a>
+    <a href="assets/infusion.glb" download>⬇ infusion.glb (3D, animációval)</a>
+    <a href="blender/params.json" download>⬇ params.json (rétegrend)</a>
+    <a href="fusion/KompozitInfuzio/KompozitInfuzio.py" download>⬇ KompozitInfuzio.py (Fusion-szkript)</a>
+    <a href="blender/infusion_layout.py" download>⬇ infusion_layout.py (geometria)</a>
+    <a href="blender/build_infusion.py" download>⬇ build_infusion.py (Blender)</a>
+    <a href="NAPLO.md" download>⬇ NAPLO.md</a>
+    <a id="ghLink" href="#" target="_blank" rel="noopener">GitHub repó →</a>
   </div>
 </div></section>
 
-<footer><div class="wrap">
-  <span>Mészáros Péter · Polinvent · AI Kihívás 2026. november</span>
-  <span>Készült Claude-dal, Fusion 360-nal, Blenderrel, ffmpeg-gel és &lt;model-viewer&gt;-rel.</span>
-</div></footer>
-<button id="toTop" type="button" aria-label="Vissza a tetejére" title="Vissza a tetejére">↑</button>
+<footer><div class="wrap">Mészáros Péter · AI Kihívás 2026. november · Készült Claude-dal, Fusion 360-nal, Blenderrel, ffmpeg-gel és &lt;model-viewer&gt;-rel.</div></footer>
 
 <script>
   // --- 3D animáció vezérlés ---
@@ -426,8 +218,7 @@
     const tb = document.querySelector('#layupTable tbody');
     const typeNames = {release:'formaleválasztó', gelcoat:'gelcoat', glass:'üvegszövet', carbon:'szénszövet', peelply:'tépőszövet', flowmesh:'gyantavezető háló', bag:'vákuumzsák'};
     tb.innerHTML = p.layup.map((l, i) => `<tr><td>${i+1}</td><td><span class="sw" style="background:${l.color};display:inline-block;vertical-align:middle;margin-right:6px"></span>${l.name}</td><td>${typeNames[l.type]||l.type}</td><td>${l.thickness_mm} mm</td><td>${l.display_thickness_mm} mm</td></tr>`).join('')
-      + `<tr><th colspan="3">Kész panel (gelcoat + erősítőrétegek)</th><th>${p.layup.filter(l=>['gelcoat','glass','carbon'].includes(l.type)).reduce((a,l)=>a+l.thickness_mm,0).toFixed(2)} mm</th><th>–</th></tr>`
-      + `<tr><th colspan="3">Teljes köteg a segédanyagokkal (bontáskor lekerülnek)</th><th>${p.layup.reduce((a,l)=>a+l.thickness_mm,0).toFixed(2)} mm</th><th>${p.layup.reduce((a,l)=>a+l.display_thickness_mm,0)} mm</th></tr>`;
+      + `<tr><th colspan="3">Összesen (valós laminátum + segédanyagok)</th><th>${p.layup.reduce((a,l)=>a+l.thickness_mm,0).toFixed(2)} mm</th><th>${p.layup.reduce((a,l)=>a+l.display_thickness_mm,0)} mm</th></tr>`;
   }).catch(() => {});
 
   // --- napló Markdownból ---
@@ -438,22 +229,7 @@
   // --- GitHub link: ha GitHub Pages-en fut, a repóra mutat ---
   const gh = document.getElementById('ghLink');
   const m = location.hostname.match(/^(.+)\.github\.io$/);
-  if (m) { gh.href = `https://github.com/${m[1]}/${location.pathname.split('/')[1] || ''}`; } else { gh.querySelector('b').textContent = 'GitHub repó (publikálás után)'; }
-
-  // --- görgetéses megjelenés (reveal) ---
-  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), {rootMargin:'0px 0px -8% 0px'});
-  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-
-  // --- aktív menüpont (scroll-spy) + vissza a tetejére ---
-  const navA = [...document.querySelectorAll('#navLinks a')];
-  const targets = navA.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
-  const spy = new IntersectionObserver(es => {
-    es.forEach(e => { if (e.isIntersecting) { navA.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id)); } });
-  }, {rootMargin:'-40% 0px -55% 0px'});
-  targets.forEach(t => spy.observe(t));
-  const toTop = document.getElementById('toTop');
-  addEventListener('scroll', () => toTop.classList.toggle('show', scrollY > 600), {passive:true});
-  toTop.addEventListener('click', () => scrollTo({top:0, behavior:'smooth'}));
+  if (m) { gh.href = `https://github.com/${m[1]}/${location.pathname.split('/')[1] || ''}`; } else { gh.textContent = 'GitHub repó (publikálás után)'; }
 </script>
 </body>
 </html>

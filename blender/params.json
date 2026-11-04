@@ -41,9 +41,9 @@
   },
 
   "process": {
-    "_comment": "A Polinvent gyakorlata – a weboldal és a narráció innen veszi az adatokat.",
+    "_comment": "Az infúzió gyakorlati paraméterei – a weboldal és a narráció innen veszi az adatokat.",
     "vacuum_bar_relative": -0.65,
-    "resin": "Polinvent által előállított epoxi gyanta",
+    "resin": "kétkomponensű, infúziós epoxi gyanta",
     "vacuum_system": "Puffertartály (vákuumtartály) a gyantacsapda és a szivattyú között, megfelelően kiépített rendszerrel – a folyamatos, egyenletes vákuum fenntartására."
   },
 

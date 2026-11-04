@@ -1,6 +1,6 @@
 # Tanulási napló – „Kompozit érthetően”
 
-AI Kihívás, 2026. november 2–6. · Mészáros Péter (Polinvent)
+AI Kihívás, 2026. november 2–6. · Mészáros Péter
 
 A napló célja: lépésről lépésre rögzíteni, milyen eszközöket használtam, hogyan
 dolgoztam az AI-jal (példa promptokkal), hol akadtam el, és hogyan jutottam túl
@@ -11,7 +11,7 @@ az első verziót, én futtatom, ellenőrzöm, javítom – és közben megérte
 
 ## 0. nap – hétfő este: tervezés és keretek
 
-**Eszközök:** Claude (Cowork mód, a `polinvent-ai` mappához kötve), Blender 4.5
+**Eszközök:** Claude (Cowork mód, a projektmappához kötve), Blender 4.5
 LTS `bpy` Python-csomagként a felhőben, ffmpeg, GitHub Pages (tervezett).
 
 **Döntések:**
@@ -113,8 +113,8 @@ szögletesek, nem íveltek. Javítási ötlet a későbbre: Fusionban illesztett
 spline-pálya mentén *sweep* – ez már „igazi” CAD-művelet, jó következő tanulási
 lépés.
 
-**Szakmai bemenet a Polinvent gyakorlatából** (az én kérésemre került be):
-–0,65 bar relatív vákuum az infúzió alatt; a Polinvent saját epoxi gyantája;
+**Szakmai bemenet a gyakorlatból** (az én kérésemre került be):
+–0,65 bar relatív vákuum az infúzió alatt; infúziós epoxi gyanta;
 puffertartály a gyantacsapda és a szivattyú között, megfelelően kiépített
 rendszerrel a folyamatos vákuumért. Ezek a `params.json` új `process`
 blokkjába kerültek (innen olvassa a weboldal), a puffertartály pedig
@@ -250,5 +250,8 @@ procedurálisan generált PNG (16 fonalköteg, sötét–világos mustársárga)
 UV-vetítéssel, 64 mm-es csempemérettel. **Elakadás #8:** a Workbench
 renderelő nem veszi figyelembe a Mapping-csomópont skálázását, ezért a
 csempeméretet közvetlenül az UV-koordináták szorzásával állítjuk be.
+Döntés: a dob csak a Blender-jelenetben (weboldal, videó) szerepel, afféle
+easter eggként, felirat nélkül – a Fusion CAD-modellbe nem kerül be, az
+marad tisztán az infúziós összeállítás.
 
 _(folytatás)_

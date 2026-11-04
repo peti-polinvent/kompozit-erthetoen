@@ -29,6 +29,9 @@ TTS = os.path.join(HERE, "tts")
 FRAMES = os.path.join(HERE, "frames")
 ASSETS = os.path.join(ROOT, "assets")
 PREVIEW = os.environ.get("PREVIEW") == "1"   # PREVIEW=1 → 640×360, 12 fps (gyors ellenőrzés)
+ACTION = os.environ.get("ACTION") == "1"     # ACTION=1 → akciófilmes változat: trailer-hang, zene, effektek, szélesvászon
+BAR = 48                                      # px (720p): fekete sáv fent/lent az akció-változatban
+MUSIC = os.path.join(HERE, "music")
 FPS = 12 if PREVIEW else 24
 RES = (640, 360) if PREVIEW else (1280, 720)
 GAP = 0.8            # s szünet a jelenetek között
@@ -46,6 +49,9 @@ TITLES = [  # (jelenet-index, cím) – a jelenet első 3,5 másodpercében jele
     (4, "Az eredmény"),
     (5, "Így készült: Fusion 360 + Blender + AI"),
 ]
+if os.environ.get("ACTION") == "1":   # akció-változat: rövid, ütős címek (nagy betűvel jelennek meg)
+    TITLES = [(0, "Kompozit érthetően"), (1, "A vákuum dolgozik"), (2, "A rétegrend"),
+              (3, "Indul a gyanta"), (4, "Az eredmény"), (5, "Így készült")]
 
 
 def dur(path):
@@ -63,12 +69,30 @@ def trim_silence(src, i):
           "areverse,silenceremove=start_periods=1:start_threshold=-35dB:start_silence=0.25,areverse,"
           "highpass=f=80,aformat=sample_rates=48000:channel_layouts=mono")
     subprocess.check_call(["ffmpeg", "-y", "-v", "error", "-i", src, "-af", af, dst])
+    if ACTION:
+        return trailer_voice(dst, i)
+    return dst
+
+
+def trailer_voice(src, i):
+    """Akció-változat: mélyebb, rekedtesebb „előzetes-hang” – 3 félhanggal lejjebb (rubberband),
+    mély-kiemelés, kompresszor, enyhe terem-zengés, limiter. A felvétel maga nem változik."""
+    dst = os.path.join(TTS, "trimmed", f"{i:02d}_trailer.wav")
+    shift = "" if os.environ.get("VOICE") == "ai" else "rubberband=pitch=0.84:tempo=0.97,"   # az AI-hang már mély
+    af = (shift +
+          "equalizer=f=110:t=q:w=1.2:g=5,equalizer=f=250:t=q:w=1:g=2,equalizer=f=3000:t=q:w=1:g=-2,"
+          "acompressor=threshold=-22dB:ratio=4:attack=5:release=120:makeup=6,"
+          "aecho=0.8:0.6:40|75:0.14|0.08,alimiter=limit=0.95")
+    subprocess.check_call(["ffmpeg", "-y", "-v", "error", "-i", src, "-af", af, dst])
     return dst
 
 
 def pick_audio(i):
     # saját felvétel (m4a/wav/caf/mp3) előnyben; az .aiff a "say" TTS tartaléké
-    for ext in (".m4a", ".wav", ".caf", ".mp3", ".mp4", ".aiff"):
+    exts = (".m4a", ".wav", ".caf", ".mp3", ".mp4", ".aiff")
+    if os.environ.get("VOICE") == "ai":      # VOICE=ai → az AI-hang (ai_hang.py → NN.mp3) az első
+        exts = (".mp3",) + exts
+    for ext in exts:
         p = os.path.join(TTS, f"{i:02d}{ext}")
         if os.path.exists(p):
             return trim_silence(p, i), "felvetel"
@@ -180,24 +204,74 @@ def main(render=True):
     audio_mix = os.path.join(HERE, "narracio_mix.m4a")
     subprocess.check_call(["ffmpeg", "-y", "-v", "error", *inputs, "-filter_complex", ";".join(fc),
                            "-map", "[aout]", "-c:a", "aac", "-b:a", "128k", audio_mix])
+    if ACTION:
+        # zene (make_music.py, a jelenetek kezdőidejéhez igazítva) + whoosh a címek előtt;
+        # a zene a narráció alatt automatikusan lehalkul (sidechain-kompresszor)
+        subprocess.check_call(["/usr/local/bin/python3", os.path.join(HERE, "make_music.py"), "--plan",
+                               os.path.join(HERE, "scene_plan.json"), "--out", MUSIC])
+        whoosh = os.path.join(MUSIC, "whoosh.wav")
+        w_in, w_fc, w_lbl = [], [], []
+        for idx, _ in TITLES:
+            d = int(round((scenes[idx]["start"] - 1.2) * 1000))
+            if d < 0:
+                continue
+            n = len(w_lbl)
+            w_in += ["-i", whoosh]
+            w_fc.append(f"[{n + 2}:a]aformat=sample_rates=48000:channel_layouts=stereo,adelay={d}|{d},volume=0.7[w{n}]")
+            w_lbl.append(f"[w{n}]")
+        fc2 = w_fc + [
+            f"[1:a]volume=0.9[mus]",
+            f"[0:a]aformat=sample_rates=48000:channel_layouts=stereo,asplit=2[nar][key]",
+            f"[mus][key]sidechaincompress=threshold=0.02:ratio=6:attack=40:release=600:makeup=1[duck]",
+            "".join(w_lbl) + f"[duck]amix=inputs={len(w_lbl) + 1}:normalize=0[bed]" if w_lbl else "[duck]anull[bed]",
+            f"[nar][bed]amix=inputs=2:normalize=0,apad=whole_dur={total_frames/FPS:.3f},"
+            f"loudnorm=I=-15:TP=-1.0:LRA=9[aout]"]
+        full_mix = os.path.join(HERE, "akcio_mix.m4a")
+        subprocess.check_call(["ffmpeg", "-y", "-v", "error", "-i", audio_mix, "-i", os.path.join(MUSIC, "music.wav"),
+                               *w_in, "-filter_complex", ";".join(fc2), "-map", "[aout]",
+                               "-c:a", "aac", "-b:a", "160k", full_mix])
+        audio_mix = full_mix
 
     # ---- 5. kép + címek + felirat + hang ---------------------------------------
     def esc(s):
         return s.replace("\\", "\\\\").replace(":", "\\:").replace("'", "\\'").replace(",", "\\,")
     vf = []
+    sc_px = RES[0] / 1280.0
+    if ACTION:
+        # színezés (teal–orange), kontraszt, vignetta, filmszemcse – a címek és a sávok elé
+        # hideg, acélos look: a mélyekben kékes, a fények semlegesek (az erős teal–orange sárgított)
+        vf += ["colorbalance=rs=-0.05:gs=-0.01:bs=0.07:rm=-0.02:bm=0.02:rh=-0.03:gh=0.0:bh=0.03",
+               "eq=contrast=1.16:saturation=1.08:brightness=-0.03",
+               "vignette=PI/4.2", "noise=alls=6:allf=t+u"]
     for idx, title in TITLES:
         s = scenes[idx]
         a, b = s["start"] - 0.6, s["start"] + 3.4
+        if ACTION:
+            # ütésre bevágódó, nagy, középre zárt cím; fehér villanás az ütés pillanatában
+            fs = int(54 * sc_px)
+            a, b = s["start"] - 0.35, s["start"] + 1.9     # rövid, ütős cím – a címkék előtt eltűnik
+            vf.append(f"drawbox=c=white@0.55:t=fill:enable='between(t,{a:.2f},{a + 0.09:.2f})'")
+            vf.append(f"drawtext=fontfile={FONT_B}:text='{esc(title.upper())}':fontsize={fs}:fontcolor=white:"
+                      f"shadowcolor=black@0.7:shadowx=3:shadowy=3:x=(w-text_w)/2:y=h*0.42-text_h/2:"
+                      f"alpha='if(lt(t,{a + 0.12:.2f}),1,if(lt(t,{b - 0.4:.2f}),1,({b:.2f}-t)/0.4))':"
+                      f"enable='between(t,{a:.2f},{b:.2f})'")
+            continue
         fs, bw, m = (19, 7, 20) if PREVIEW else (38, 14, 40)
         vf.append(f"drawtext=fontfile={FONT_B}:text='{esc(title)}':fontsize={fs}:fontcolor=white:"
                   f"box=1:boxcolor=black@0.45:boxborderw={bw}:x={m}:y={m}:enable='between(t,{a:.2f},{b:.2f})'")
+    if ACTION:
+        bar = int(BAR * sc_px)
+        vf.append(f"drawbox=x=0:y=0:w=iw:h={bar}:c=black:t=fill")
+        vf.append(f"drawbox=x=0:y=ih-{bar}:w=iw:h={bar}:c=black:t=fill")
     srt_esc = srt.replace("\\", "/").replace(":", "\\:")
     # felirat: nagyobb, félkövér, sötét áttetsző sávval (BorderStyle=4), csak alul
     # (libass a méreteket 384×288-as virtuális vászonhoz skálázza: FontSize=11 ≈ 27 px 720p-n)
     vf.append(f"subtitles='{srt_esc}':force_style='FontName=DejaVu Sans,Bold=1,FontSize=11,"
-              f"BorderStyle=4,Outline=0,Shadow=0,MarginV=9,MarginL=14,MarginR=14,"
+              f"BorderStyle=4,Outline=0,Shadow=0,MarginV={9 + (19 if ACTION else 0)},MarginL=14,MarginR=14,"
               f"PrimaryColour=&H00FFFFFF,BackColour=&H73000000'")
     out_mp4 = os.path.join(HERE, "elonezet.mp4") if PREVIEW else os.path.join(ASSETS, "kompozit_erthetoen.mp4")
+    if ACTION and not PREVIEW:
+        out_mp4 = os.path.join(ASSETS, "kompozit_erthetoen_akcio.mp4")
     subprocess.check_call(["ffmpeg", "-y", "-v", "error", "-framerate", str(FPS),
                            "-i", os.path.join(FRAMES, "%05d.png"), "-i", audio_mix,
                            "-vf", ",".join(vf), "-c:v", "libx264", "-preset", "slow", "-crf", "23",
