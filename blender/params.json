@@ -37,7 +37,7 @@
     "resin_trap": { "name": "Gyantacsapda", "diameter_mm": 140, "height_mm": 200, "color": "#b0bec5" },
     "pump":       { "name": "Vákuumszivattyú", "length_mm": 220, "width_mm": 140, "height_mm": 160, "color": "#37474f" },
     "buffer_tank":{ "name": "Puffertartály (vákuumtartály)", "diameter_mm": 170, "length_mm": 340, "color": "#78909c" },
-    "table":      { "name": "Bemutatóasztal", "length_mm": 1600, "width_mm": 800, "height_mm": 750, "top_thickness_mm": 30, "color": "#8d6e63" }
+    "table":      { "name": "Bemutatóasztal", "length_mm": 1600, "width_mm": 800, "height_mm": 750, "top_thickness_mm": 30, "color": "#4e342e" }
   },
 
   "process": {
