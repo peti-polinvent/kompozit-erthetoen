@@ -25,7 +25,9 @@ import shutil
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
-TTS = os.path.join(HERE, "tts")
+VLANG = os.environ.setdefault("VLANG", "hu")   # hu | en | de | zh – a cues.py és az annotate_frames.py is ezt olvassa
+TTS = os.path.join(HERE, "tts") if VLANG == "hu" else os.path.join(HERE, "tts", VLANG)
+SUFFIX = "" if VLANG == "hu" else f"_{VLANG}"   # assets/kompozit_erthetoen{SUFFIX}.mp4/.vtt
 FRAMES = os.path.join(HERE, "frames")
 ASSETS = os.path.join(ROOT, "assets")
 PREVIEW = os.environ.get("PREVIEW") == "1"   # PREVIEW=1 → 640×360, 12 fps (gyors ellenőrzés)
@@ -134,12 +136,45 @@ def fmt_ts(s):
 
 
 def split_sentences(text):
+    if VLANG == "zh":
+        parts = re.split(r"(?<=[。！？：])", text.strip())
+        return [p for p in parts if p.strip()]
     parts = re.split(r"(?<=[.!?:])\s+", text.strip())
     return [p for p in parts if p]
 
 
+def _norm(s):
+    return re.sub(r"[\W_]+", "", s.lower())
+
+
+def align_sentences(sents, wl):
+    """Mondatok → (első szó indexe, utolsó szó indexe) a szóhatár-listában, karakterszám alapján
+    (nyelvfüggetlen; kínaiban is működik, ahol a szóhatár nem szóköz). None, ha nem egyezik."""
+    wl_n = [_norm(w["text"]) for w in wl]
+    if "".join(wl_n) != "".join(_norm(s) for s in sents):
+        return None
+    out, pos, i = [], 0, 0
+    for s in sents:
+        end = pos + len(_norm(s))
+        first = i
+        while i < len(wl) and pos < end:
+            pos += len(wl_n[i]); i += 1
+        if pos != end or i == first:
+            return None
+        out.append((first, i - 1))
+    return out
+
+
 def wrap2(s, width=48):
     """Legfeljebb két sorra tördel, szóhatáron."""
+    if VLANG == "zh":
+        width = 24
+        if len(s) <= width:
+            return s
+        mid = len(s) // 2
+        while mid < len(s) - 1 and s[mid] in "，。、；：！？":
+            mid += 1
+        return s[:mid] + "\n" + s[mid:]
     if len(s) <= width:
         return s
     words = s.split()
@@ -195,19 +230,18 @@ def main(render=True):
     for s in scenes:
         sents = split_sentences(segs[s["key"]])
         wl = s.get("words")
-        counts = [len(re.findall(r"\w+", x)) for x in sents]
-        if wl and sum(counts) == len(wl):
+        al = align_sentences(sents, wl) if wl else None
+        if al:
             # pontos időzítés a TTS szóhatár-eseményeiből: a mondat az első szavánál indul,
             # és a következő mondat előtt (legfeljebb 0,8 s-mal az utolsó szava után) tűnik el
-            starts, ends, n = [], [], 0
-            for c in counts:
-                starts.append(wl[n]["start"]); ends.append(wl[n + c - 1]["end"]); n += c
+            starts = [wl[a]["start"] for a, b in al]
+            ends = [wl[b]["end"] for a, b in al]
             for j, sent in enumerate(sents):
                 nxt = starts[j + 1] - 0.09 if j + 1 < len(sents) else s["audio_len"] + 0.3
                 cues.append((s["start"] + starts[j] - 0.05, s["start"] + min(nxt, ends[j] + 0.8), wrap2(sent)))
             continue
         if wl:
-            print(f"[felirat] {s['key']}: a szóhatárok száma nem egyezik ({len(wl)} ≠ {sum(counts)}), arányos időzítés")
+            print(f"[felirat] {s['key']}: a szóhatárok nem illeszkednek a szöveghez, arányos időzítés")
         weights = [len(x) for x in sents]
         W = sum(weights)
         t0 = s["start"]
@@ -216,7 +250,7 @@ def main(render=True):
             cues.append((t0, t0 + d - 0.05, wrap2(sent)))
             t0 += d
     os.makedirs(ASSETS, exist_ok=True)
-    with open(os.path.join(ASSETS, "kompozit_erthetoen.vtt"), "w", encoding="utf-8") as f:
+    with open(os.path.join(ASSETS, f"kompozit_erthetoen{SUFFIX}.vtt"), "w", encoding="utf-8") as f:
         f.write("WEBVTT\n\n")
         for a, b, txt in cues:
             f.write(f"{fmt_ts(a)} --> {fmt_ts(b)}\n{txt}\n\n")
@@ -227,6 +261,13 @@ def main(render=True):
     with open(os.path.join(HERE, "subs.json"), "w", encoding="utf-8") as f:
         json.dump(cues, f, ensure_ascii=False)          # a LIGHT felirat Pillow-val rajzolva (annotate_frames)
     print(f"[felirat] {len(cues)} cue")
+    if "--plan-only" in sys.argv:
+        import cues as C
+        for s in scenes:
+            if s.get("words"):
+                print(s["key"], [(e["label"], round(e["t0"], 2)) for e in C.resolve(s)],
+                      {n: C.extra(s, n) for n in C.EXTRA.get(s["index"], {})})
+        return
     if LIGHT:
         return light_finish(scenes, total_frames, render)
 
@@ -356,12 +397,14 @@ def light_finish(scenes, total_frames, render):
     import time
     T0 = time.time()
     plan_p = os.path.join(HERE, "scene_plan.json")
+    # rögzített feliratsáv alul (~13 %): a 3D a sáv fölötti W×(H−sáv) területre renderel
+    band = int(round(0.13 * RES[1] / 2)) * 2
     if render:
         if os.path.isdir(FRAMES):
             shutil.rmtree(FRAMES)
         env = dict(os.environ, RENDER_AA="8" if PREVIEW else os.environ.get("RENDER_AA", "16"), STYLE="light")
         subprocess.check_call([BPY_PY, os.path.join(HERE, "render_scenes.py"), "--plan", plan_p, "--out", FRAMES,
-                               "--size", f"{RES[0]}x{RES[1]}"], env=env)
+                               "--size", f"{RES[0]}x{RES[1] - band}"], env=env)
         print(f"[idő] render {time.time() - T0:.0f} s", flush=True)
     # poszter: tiszta (grafika nélküli) képkocka az infúzió közepéről
     s4 = scenes[3]
@@ -371,7 +414,8 @@ def light_finish(scenes, total_frames, render):
         shutil.copy(os.path.join(FRAMES, f"{pf:05d}.png"), raw_poster)
     if "--no-annotate" not in sys.argv:
         subprocess.check_call([PY, os.path.join(HERE, "annotate_frames.py"), "--frames", FRAMES,
-                               "--plan", plan_p, "--subs", os.path.join(HERE, "subs.json")])
+                               "--plan", plan_p, "--subs", os.path.join(HERE, "subs.json"),
+                               "--canvas", f"{RES[0]}x{RES[1]}"])
     # hang: narráció (−16 LUFS-re hozva) + zene (a szóhatárokból lehalkítva) + effektek
     inputs, fc = [], []
     for n, s in enumerate(scenes):
@@ -393,14 +437,16 @@ def light_finish(scenes, total_frames, render):
                            f"[0:a][1:a][2:a]amix=inputs=3:normalize=0,atrim=0:{dur_s:.3f}[m]", "-map", "[m]", mix_raw])
     audio_mix = os.path.join(HERE, "light_mix.m4a")
     loudnorm2(mix_raw, audio_mix, ["-c:a", "aac", "-b:a", "160k"])
-    out_mp4 = os.path.join(HERE, "elonezet.mp4") if PREVIEW else os.path.join(ASSETS, "kompozit_erthetoen.mp4")
+    out_mp4 = os.path.join(HERE, "elonezet.mp4") if PREVIEW else os.path.join(ASSETS, f"kompozit_erthetoen{SUFFIX}.mp4")
     subprocess.check_call(["ffmpeg", "-y", "-v", "error", "-framerate", str(FPS),
                            "-i", os.path.join(FRAMES, "%05d.png"), "-i", audio_mix,
                            "-c:v", "libx264", "-preset", "slow", "-crf", os.environ.get("CRF", "20"),
                            "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-c:a", "copy", "-shortest", out_mp4])
-    poster = os.path.join(HERE, "elonezet_poster.jpg") if PREVIEW else os.path.join(ASSETS, "poster.jpg")
-    if os.path.exists(raw_poster):
-        subprocess.check_call(["ffmpeg", "-y", "-v", "error", "-i", raw_poster, "-q:v", "3", poster])
+    poster = os.path.join(HERE, "elonezet_poster.jpg") if PREVIEW else \
+        os.path.join(ASSETS, "poster.jpg" if VLANG == "hu" else f"poster_{VLANG}.jpg")
+    if os.path.exists(raw_poster):   # 16:9 poszter: a 3D-kép + üres feliratsáv
+        subprocess.check_call(["ffmpeg", "-y", "-v", "error", "-i", raw_poster, "-vf",
+                               f"pad={RES[0]}:{RES[1]}:0:0:color=0xF7F8F7", "-q:v", "3", poster])
     mb = os.path.getsize(out_mp4) / 1e6
     print(f"[kész] {out_mp4}  {mb:.1f} MB, {dur_s:.1f} s, {RES[0]}x{RES[1]}, össz. idő {time.time() - T0:.0f} s")
 

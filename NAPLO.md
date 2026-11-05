@@ -365,4 +365,14 @@ A sewerbot Compact dob a nyitó és a záró nagytotálon is látszik az asztal 
 eszközt – az elveit (időzítés a hangból, rugós/ease-out animációk, komponensként felépített
 grafika) a meglévő Blender + Pillow + ffmpeg láncban alkalmaztuk.
 
+**Feliratsáv és négy nyelv.** A felirat többé nem takarja a 3D-t: a kép alján rögzített,
+oldalszínű (#f7f8f7) sáv van (a képmagasság ~13 %-a), benne legfeljebb kétsoros, középre zárt
+Archivo felirat; a 3D-t a sáv fölötti, laposabb területre rendereljük (függőleges látószög-illesztés,
+így semmi nem vágódik le), a címkék és ábrák a sáv fölött maradnak. Elkészült az angol, a német és
+a kínai változat is (Ryan, Conrad, Yunjian hang; saját, természetes narráció nyelvenként,
+video/tts/{en,de,zh}/), lokalizált címekkel, checklistával, rétegábrával és zárókártyával. A
+kulcsszavas események (cues.py) nyelvenként vannak megadva; a kínaiban szóköz híján karakteres
+egyezéssel keresünk, a betűtípus ott Microsoft YaHei. A kimenetek: assets/kompozit_erthetoen.mp4
+(magyar) és kompozit_erthetoen_{en,de,zh}.mp4, mindegyik saját .vtt felirattal.
+
 _(folytatás)_

@@ -577,7 +577,8 @@ def draw_end_card(img, t, t0, W, H, sc):
         fu = font(36 * sc, 500, 100)
         url = "peti-polinvent.github.io/kompozit-erthetoen"
         uw = d.textbbox((0, 0), url, font=fu)[2]
-        d.text(((W - uw) / 2, y + 170 * sc + (1 - ku) * 16 * sc), url, font=fu, fill=MUTED + (int(255 * ku),))
+        uy = y + max(170 * sc, d.textbbox((0, 0), txt, font=f)[3] + 44 * sc)   # CJK-betűnél mélyebb a doboz
+        d.text(((W - uw) / 2, uy + (1 - ku) * 16 * sc), url, font=fu, fill=MUTED + (int(255 * ku),))
     img.alpha_composite(ov)
     return k
 
