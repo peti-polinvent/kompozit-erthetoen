@@ -9,7 +9,7 @@ export const DEF = {
   rhoR: 1.15,                        // kevert, kikeményedett epoxi g/cm³ (1,10–1,20)
   rhoF: { glass: 2.56, carbon: 1.76, aramid: 1.44, basalt: 2.65 },
   vf: {                               // szálvolumen-hányad, óvatos (kisebb Vf = több gyanta)
-    infusion: { fabric: 48, csm: 30 },
+    infusion: { fabric: 50, csm: 30 },
     bag:      { fabric: 38, csm: 25 },
     hand:     { fabric: 30, csm: 17.5 }
   },
@@ -25,7 +25,9 @@ export const DEF = {
     LRC: 0.35                          // kg/m² per mm
   },
   soricDryPerMm: 0.06,                // száraz tömeg kb. kg/m² per mm (XF 2–6: 135–345 g/m²)
-  foamSurf: 0.15,                     // sima habfelület gyantafelvétele oldalanként kg/m² (0–0,15)
+  // sima habfelület gyantafelvétele oldalanként kg/m²: Gurit Structural Core Processing Guide rev 7
+  // (2024) Table 4, infúzió, két oldal: PVC 80 0,62, PVC 100 0,56, Kerdyn (PET) 100 1,04 → ÷ 2
+  foamSurf: { pvc: 0.30, pet: 0.50 },
   foamDensity: { pvc: 80, pet: 100 },
   groove: { w: 1.2, d: 2.5, pitch: 20 },   // Airex GP geometria
   perf: { d: 2, pitch: 50 },
@@ -147,13 +149,14 @@ const S = {
     fib: 'Szálarány a szövetekben', net: 'Beépül és a segédanyagokban marad', wasteL: 'Ráhagyás', potL: 'Edény és tömlők',
     rowOut: 'gyanta', how: 'Hogyan számol?',
     how1: 'Szövet és paplan: a gyanta tömege a szál tömegéből jön. Egy réteg gyantája = felületi tömeg × (gyanta sűrűsége ÷ szál sűrűsége) × (1 − Vf) ÷ Vf. A Vf az eljárástól függ: infúzióval a szál jobban tömörödik, kevesebb gyanta kell, mint kézi laminálásnál. A paplan (CSM) mindig több gyantát visz.',
-    how2: 'Magok: a Soric-típusú paplan a gyártói táblázat szerint vastagságtól függően vesz fel gyantát (3 mm ≈ 1,4 kg/m²). A habmag sima felülete csak keveset szív, a hornyok, furatok és vágások viszont megtelnek gyantával: ezek térfogatát a megadott méretekből számolja.',
+    how2: 'Magok: a Soric-típusú paplan a gyártói táblázat szerint vastagságtól függően vesz fel gyantát (3 mm ≈ 1,4 kg/m²). A habmag sima felületén csak a felvágott cellák telnek meg (80-as PVC ≈ 0,3 kg/m² oldalanként, PET-nél több), a hornyok, furatok és vágások viszont megtelnek gyantával: ezek térfogatát a megadott méretekből számolja.',
     how3: 'Segédanyagok: a leszakítószövet és az infúziós háló a lap felett telítődik, és a gyantájuk a bontáskor a szemétbe kerül. A cső belseje is megtelik.',
     how4: 'A végén hozzáadja a ráhagyást és az edényben maradó gyantát, majd a tömegarány szerint szétosztja gyantára és edzőre. A liter a gyanta sűrűségével számolt.',
     defs: 'Alapértékek, tartományok, források', dVal: 'Alapérték', dRange: 'Tartomány', dSrc: 'Forrás',
     dVf: 'Vf szövet, infúzió / vákuumzsák / kézi', dVfC: 'Vf paplan, infúzió / vákuumzsák / kézi', dRho: 'Szálsűrűség üveg / szén / aramid / bazalt (g/cm³)',
     dSoric: 'Soric XF felvétel 2 / 3 / 4 / 6 mm (kg/m²)', dFoam: 'Habfelület felvétele oldalanként (kg/m²)', dGroove: 'Horony (szél. × mély. @ táv., mm)',
-    dMesh: 'Infúziós háló (kg/m²)', dPeel: 'Leszakítószövet (kg/m²)', dPot: 'Edény és tömlők (kg)', dWaste: 'Ráhagyás (%)'
+    dMesh: 'Infúziós háló (kg/m²)', dPeel: 'Leszakítószövet (kg/m²)', dPot: 'Edény és tömlők (kg)', dWaste: 'Ráhagyás (%)',
+    src1: 'csak egy megbízható forrás – próbalapon érdemes mérni', src0: 'nincs számszerű forrás, gyakorlati becslés'
   },
   en: {
     title: 'How much resin to mix?',
@@ -183,13 +186,14 @@ const S = {
     fib: 'Fibre content of the fabrics', net: 'In the part and the consumables', wasteL: 'Allowance', potL: 'Pot and tubing',
     rowOut: 'resin', how: 'How it works',
     how1: 'Fabrics and mats: resin follows from the fibre mass. Resin per layer = areal weight × (resin density ÷ fibre density) × (1 − Vf) ÷ Vf. Vf depends on the process: infusion compacts the fibres more, so it needs less resin than hand lay-up. Chopped strand mat always takes more resin.',
-    how2: 'Cores: a Soric-type mat takes up resin by thickness, as in the maker’s table (3 mm ≈ 1.4 kg/m²). A plain foam surface absorbs little, but grooves, holes and cuts fill with resin; their volume comes from the dimensions you enter.',
+    how2: 'Cores: a Soric-type mat takes up resin by thickness, as in the maker’s table (3 mm ≈ 1.4 kg/m²). On a plain foam surface only the cut cells fill (PVC 80 ≈ 0.3 kg/m² per side, more for PET), while grooves, holes and cuts fill with resin; their volume comes from the dimensions you enter.',
     how3: 'Consumables: peel ply and flow mesh soak up resin above the part, and it goes in the bin on demoulding. The tube fills up too.',
     how4: 'Finally the allowance and the resin left in the pot are added, and the total is split into resin and hardener by the weight ratio. Litres use the resin density.',
     defs: 'Defaults, ranges, sources', dVal: 'Default', dRange: 'Range', dSrc: 'Source',
     dVf: 'Fabric Vf, infusion / bagging / hand', dVfC: 'Mat Vf, infusion / bagging / hand', dRho: 'Fibre density glass / carbon / aramid / basalt (g/cm³)',
     dSoric: 'Soric XF uptake 2 / 3 / 4 / 6 mm (kg/m²)', dFoam: 'Foam surface uptake per side (kg/m²)', dGroove: 'Groove (width × depth @ spacing, mm)',
-    dMesh: 'Flow mesh (kg/m²)', dPeel: 'Peel ply (kg/m²)', dPot: 'Pot and tubing (kg)', dWaste: 'Allowance (%)'
+    dMesh: 'Flow mesh (kg/m²)', dPeel: 'Peel ply (kg/m²)', dPot: 'Pot and tubing (kg)', dWaste: 'Allowance (%)',
+    src1: 'single reputable source only – worth measuring on a test panel', src0: 'no numerical source, rule of thumb'
   },
   de: {
     title: 'Wie viel Harz anmischen?',
@@ -203,13 +207,13 @@ const S = {
     pSandwich: 'Sandwich: 2+2× 450 g/m² Glas, 10 mm PVC genutet und perforiert, 1 m²',
     pSoric: 'Soric XF 3 mm, 2+2× 300 g/m² Glas, 1 m²',
     layers: 'Lagenaufbau', add: 'Zeile hinzufügen', remove: 'Zeile entfernen', type: 'Material',
-    t_fabric: 'Gewebe oder Gelege (NCF)', t_csm: 'Glasmatte (Wirrfaser, CSM)',
+    t_fabric: 'Gewebe oder Gelege (NCF)', t_csm: 'Wirrfasermatte (CSM)',
     t_soric: 'Infusions-Kernvlies (Typ Soric)', t_foam: 'Schaumkern (PVC, PET)',
     t_peel: 'Abreißgewebe', t_mesh: 'Fließhilfe (Infusionsnetz)', t_sheet: 'Aufnahme laut Datenblatt', t_line: 'Infusionsschlauch',
     fibre: 'Faser', glass: 'Glas (E)', carbon: 'Kohlenstoff', aramid: 'Aramid', basalt: 'Basalt',
     gsm: 'Flächengewicht (g/m²)', nl: 'Lagen', area: 'Fläche (m²)', thick: 'Dicke (mm)',
     grade: 'Typ', mat: 'Schaum', pvc: 'PVC', pet: 'PET', density: 'Dichte (kg/m³)', finish: 'Oberfläche',
-    plain: 'Glatt', g1: 'Genutet, einseitig', g2: 'Genutet, beidseitig', p: 'Perforiert', gp: 'Genutet und perforiert', grid: 'Geschlitzt auf Gitter',
+    plain: 'Glatt', g1: 'Genutet, einseitig', g2: 'Genutet, beidseitig', p: 'Perforiert', gp: 'Genutet und perforiert', grid: 'Gitterschnitt auf Trägergewebe',
     surf: 'Oberflächenaufnahme je Seite (kg/m²)', gw: 'Nutbreite (mm)', gd: 'Nuttiefe (mm)', gpitch: 'Nutabstand (mm)',
     pd: 'Lochdurchmesser (mm)', pp: 'Lochabstand (mm)', kerf: 'Schlitzbreite (mm)', kp: 'Schlitzabstand (mm)',
     u: 'Harzaufnahme (kg/m²)', len: 'Länge (m)', id: 'Innendurchmesser (mm)',
@@ -219,13 +223,14 @@ const S = {
     fib: 'Fasergehalt der Gewebe', net: 'Im Bauteil und in den Hilfsstoffen', wasteL: 'Zuschlag', potL: 'Becher und Schläuche',
     rowOut: 'Harz', how: 'So wird gerechnet',
     how1: 'Gewebe und Matten: Die Harzmenge folgt aus der Fasermasse. Harz je Lage = Flächengewicht × (Harzdichte ÷ Faserdichte) × (1 − Vf) ÷ Vf. Vf hängt vom Verfahren ab: Bei der Infusion wird die Faser stärker verdichtet, es braucht weniger Harz als beim Handlaminieren. Wirrfasermatte nimmt immer mehr Harz auf.',
-    how2: 'Kerne: Ein Kernvlies vom Typ Soric nimmt je nach Dicke Harz auf, wie in der Herstellertabelle (3 mm ≈ 1,4 kg/m²). Eine glatte Schaumoberfläche nimmt wenig auf, Nuten, Bohrungen und Schlitze füllen sich dagegen mit Harz; ihr Volumen ergibt sich aus den eingegebenen Maßen.',
+    how2: 'Kerne: Ein Kernvlies vom Typ Soric nimmt je nach Dicke Harz auf, wie in der Herstellertabelle (3 mm ≈ 1,4 kg/m²). Auf einer glatten Schaumoberfläche füllen sich nur die angeschnittenen Zellen (PVC 80 ≈ 0,3 kg/m² je Seite, PET mehr), Nuten, Bohrungen und Schlitze füllen sich dagegen mit Harz; ihr Volumen ergibt sich aus den eingegebenen Maßen.',
     how3: 'Hilfsstoffe: Abreißgewebe und Fließhilfe saugen sich über dem Bauteil voll, dieses Harz landet beim Entformen im Müll. Auch der Schlauch füllt sich.',
     how4: 'Zum Schluss kommen Zuschlag und Becherrest dazu, dann wird die Summe nach dem Gewichtsverhältnis auf Harz und Härter aufgeteilt. Die Liter sind mit der Harzdichte gerechnet.',
     defs: 'Standardwerte, Bereiche, Quellen', dVal: 'Standard', dRange: 'Bereich', dSrc: 'Quelle',
     dVf: 'Vf Gewebe, Infusion / Vakuumsack / Hand', dVfC: 'Vf Matte, Infusion / Vakuumsack / Hand', dRho: 'Faserdichte Glas / Kohlenstoff / Aramid / Basalt (g/cm³)',
     dSoric: 'Soric XF Aufnahme 2 / 3 / 4 / 6 mm (kg/m²)', dFoam: 'Schaumoberfläche je Seite (kg/m²)', dGroove: 'Nut (Breite × Tiefe @ Abstand, mm)',
-    dMesh: 'Fließhilfe (kg/m²)', dPeel: 'Abreißgewebe (kg/m²)', dPot: 'Becher und Schläuche (kg)', dWaste: 'Zuschlag (%)'
+    dMesh: 'Fließhilfe (kg/m²)', dPeel: 'Abreißgewebe (kg/m²)', dPot: 'Becher und Schläuche (kg)', dWaste: 'Zuschlag (%)',
+    src1: 'nur eine belastbare Quelle – am Probelaminat nachmessen', src0: 'keine Zahlenquelle, Erfahrungswert'
   },
   zh: {
     title: '需要调配多少树脂？',
@@ -255,13 +260,14 @@ const S = {
     fib: '织物的纤维含量', net: '进入制件及辅材', wasteL: '余量', potL: '杯和管路',
     rowOut: '树脂', how: '计算方法',
     how1: '织物和短切毡：树脂量由纤维质量推算。每层树脂 = 面密度 ×（树脂密度 ÷ 纤维密度）×（1 − Vf）÷ Vf。Vf 取决于工艺：真空导入压实程度更高，所需树脂比手糊少。短切毡总是吸更多树脂。',
-    how2: '芯材：Soric 类芯毡按厂家表格随厚度吸胶（3 mm ≈ 1.4 kg/m²）。平面泡沫表面吸胶很少，但槽、孔和切缝会被树脂填满，其体积按输入的尺寸计算。',
+    how2: '芯材：Soric 类芯毡按厂家表格随厚度吸胶（3 mm ≈ 1.4 kg/m²）。平面泡沫表面只有被切开的泡孔会吸胶（PVC 80 每面约 0.3 kg/m²，PET 更多），而槽、孔和切缝会被树脂填满，其体积按输入的尺寸计算。',
     how3: '辅材：脱模布和导流网在制件上方被树脂浸透，脱模时随之丢弃。导入管内部也会充满树脂。',
     how4: '最后加上余量和杯中残留，再按质量配比分成树脂和固化剂。升数按树脂密度换算。',
     defs: '默认值、范围与来源', dVal: '默认值', dRange: '范围', dSrc: '来源',
     dVf: '织物 Vf：真空导入 / 真空袋压 / 手糊', dVfC: '短切毡 Vf：真空导入 / 真空袋压 / 手糊', dRho: '纤维密度 玻纤 / 碳纤 / 芳纶 / 玄武岩（g/cm³）',
     dSoric: 'Soric XF 吸胶量 2 / 3 / 4 / 6 mm（kg/m²）', dFoam: '泡沫每面表面吸胶量（kg/m²）', dGroove: '槽（宽 × 深 @ 间距，mm）',
-    dMesh: '导流网（kg/m²）', dPeel: '脱模布（kg/m²）', dPot: '杯和管路（kg）', dWaste: '余量（%）'
+    dMesh: '导流网（kg/m²）', dPeel: '脱模布（kg/m²）', dPot: '杯和管路（kg）', dWaste: '余量（%）',
+    src1: '仅有一个可靠来源，建议用试板实测', src0: '无数值来源，经验值'
   }
 };
 
@@ -279,7 +285,7 @@ function newRow(type, o = {}) {
   if (type === 'fabric') Object.assign(b, { fibre: 'glass', gsm: '300' });
   if (type === 'csm') Object.assign(b, { gsm: '450' });
   if (type === 'soric') Object.assign(b, { grade: 'XF', t: '3' });
-  if (type === 'foam') Object.assign(b, { mat: 'pvc', t: '10', density: '80', finish: 'plain', surf: String(DEF.foamSurf),
+  if (type === 'foam') Object.assign(b, { mat: 'pvc', t: '10', density: '80', finish: 'plain', surf: String(DEF.foamSurf.pvc),
     gw: String(DEF.groove.w), gd: String(DEF.groove.d), gpitch: String(DEF.groove.pitch),
     pd: String(DEF.perf.d), pp: String(DEF.perf.pitch), kerf: String(DEF.grid.kerf), kp: String(DEF.grid.pitch) });
   if (type === 'sheet') Object.assign(b, { u: '1' });
@@ -408,20 +414,20 @@ export function mount(el) {
     const q = (a, d = 2) => a.map(x => f(x, d)).join(' / ');
     const rg = (a, b, d = 2) => `${f(a, d)}–${f(b, d)}`;
     const rows = [
-      ['dVf', q([v.infusion.fabric, v.bag.fabric, v.hand.fabric], 0), [L.infusion, L.bag, L.hand].map(x => rg(x.fabric[0], x.fabric[1], 0)).join(' / '), 'Easy Composites (60:40); Gurit Guide to Composites'],
-      ['dVfC', q([v.infusion.csm, v.bag.csm, v.hand.csm], 1), [L.infusion, L.bag, L.hand].map(x => rg(x.csm[0], x.csm[1], 0)).join(' / '), 'Saertex SAERcore 2025 (17.5 / 33 %); CSM 1:2–1:2.5'],
-      ['dRho', q([2.56, 1.76, 1.44, 2.65]), `${rg(2.54, 2.6)} / ${rg(1.75, 1.95)} / ${rg(1.44, 1.45)} / ${rg(2.6, 2.8, 1)}`, 'Gurit Guide; fibre-density tables'],
+      ['dVf', q([v.infusion.fabric, v.bag.fabric, v.hand.fabric], 0), [L.infusion, L.bag, L.hand].map(x => rg(x.fabric[0], x.fabric[1], 0)).join(' / '), 'JEC Composites Mag. 35 (2007): infusion Vf 0.5, hand 0.3; Gurit Guide to Composites (hand 30–40 %); bagging: {1}'],
+      ['dVfC', q([v.infusion.csm, v.bag.csm, v.hand.csm], 1), [L.infusion, L.bag, L.hand].map(x => rg(x.csm[0], x.csm[1], 0)).join(' / '), 'Saertex SAERcore 2025 (17.5 / 33 %); fram.nl (hand ≈ 1/3 glass by weight); bagging: {1}'],
+      ['dRho', q([2.56, 1.76, 1.44, 2.65]), `${rg(2.54, 2.6)} / ${rg(1.75, 1.95)} / ${rg(1.44, 1.45)} / ${rg(2.63, 2.7)}`, 'Gurit Guide; fibre-density tables; basalt: Mafic TDS 2.63, GBF 2.65'],
       ['rhoR', f(DEF.rhoR), rg(1.1, 1.2), 'Gurit Guide; epoxy TDS'],
       ['dSoric', q([1.0, 1.4, 1.9, 2.8], 1), `≈ ${rg(0.47, 0.67)} / mm`, 'Lantor Soric XF TDS v2.2; ACP Composites'],
-      ['dFoam', f(DEF.foamSurf), rg(0, 0.15), 'Easy Composites EasyCell 75; Evonik Rohacell patent'],
-      ['dGroove', `${f(1.2, 1)} × ${f(2.5, 1)} @ 20`, '—', 'Airex GP (Univ. Plymouth FPCM-10); Easy Composites 75G'],
+      ['dFoam', `${f(DEF.foamSurf.pvc)} (PVC) / ${f(DEF.foamSurf.pet)} (PET)`, rg(0, 0.5), 'Gurit Structural Core Processing Guide 2024, Table 4 (÷ 2 sides); boatdesign.net (H80 ≈ 0.3); {1}'],
+      ['dGroove', `${f(1.2, 1)} × ${f(2.5, 1)} @ 20`, '—', 'Airex GP (Univ. Plymouth FPCM-10); Gurit: 2 × 2 mm; {1}'],
       ['dMesh', f(DEF.mesh), rg(0.35, 0.7), 'Diatex via R&G; Easy Composites FM100'],
-      ['dPeel', f(DEF.peel), rg(0.05, 0.15), 'Easy Composites; boatdesign.net'],
+      ['dPeel', f(DEF.peel), rg(0.03, 0.1), 'Explore Composites (30–50 g/m²); Directeck WS877 (83 g/m²)'],
       ['dPot', f(DEF.pot), f(0.1), 'Easy Composites; Univ. Texas wiki'],
-      ['dWaste', f(DEF.waste, 0), rg(5, 20, 0), '—']
+      ['dWaste', f(DEF.waste, 0), rg(5, 20, 0), '{0}']
     ];
     return `<div class="gk-tw"><table><thead><tr><th scope="col"></th><th scope="col">${esc(T('dVal'))}</th><th scope="col">${esc(T('dRange'))}</th><th scope="col">${esc(T('dSrc'))}</th></tr></thead><tbody>${
-      rows.map(r => `<tr><th scope="row">${esc(T(r[0]))}</th><td>${r[1]}</td><td>${r[2]}</td><td>${esc(r[3])}</td></tr>`).join('')}</tbody></table></div>`;
+      rows.map(r => `<tr><th scope="row">${esc(T(r[0]))}</th><td>${r[1]}</td><td>${r[2]}</td><td>${esc(r[3].replace('{1}', T('src1')).replace('{0}', T('src0')))}</td></tr>`).join('')}</tbody></table></div>`;
   }
 
   function render() {
@@ -506,7 +512,7 @@ export function mount(el) {
     if (k === 'type') state.rows[i] = newRow(t.value, { nl: state.rows[i].nl, area: state.rows[i].area ?? '1' });
     else {
       state.rows[i][k] = t.value;
-      if (k === 'mat') state.rows[i].density = String(DEF.foamDensity[t.value]);
+      if (k === 'mat') { state.rows[i].density = String(DEF.foamDensity[t.value]); state.rows[i].surf = String(DEF.foamSurf[t.value]); }
     }
     render();
     const again = el.querySelector(`select[data-k="${k}"][data-i="${i}"]`); if (again) again.focus();

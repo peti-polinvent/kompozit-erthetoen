@@ -1,6 +1,6 @@
 // Kézzel számolt referenciaesetek a gyantakalkulátor compute() függvényéhez.
 // Futtatás: node tests/calc/resin_check.mjs
-import { compute, rowResin } from '../../assets/calc/resin.js';
+import { compute, rowResin, DEF } from '../../assets/calc/resin.js';
 
 let fail = 0, n = 0;
 function eq(name, got, want, tol = 1e-6) {
@@ -49,15 +49,36 @@ eq('szendvics Wf', sw.wf, 0.9 / 1.304296875);
 // 6) Infúziós cső 2 m, belső Ø 10 mm: π·0,005²·2·1150 = 0,1806416 kg
 eq('cső 2 m Ø10', rowResin({ type: 'line', len: 2, id: 10 }, G()).resin, Math.PI * 0.005 ** 2 * 2 * 1150);
 
-// 7) "A mi lapunk": 4×300 g/m² üveg, 0,12 m², infúzió (Vf 48 %), peel + háló 0,12 m², 10 %, 0,1 kg
-//    szál 0,144 kg; gyanta 0,144·1,15/2,56·0,52/0,48 = 0,0700781; +0,012 +0,072 = 0,1540781; ×1,1 +0,1 = 0,2694859
-const ours = compute(G({ vfFabric: 48, waste: 10, pot: 0.1 }), [
+// 7) "A mi lapunk": 4×300 g/m² üveg, 0,12 m², infúzió (Vf 50 % = DEF), peel + háló 0,12 m², 10 %, 0,1 kg
+//    szál 0,144 kg; gyanta 0,144·1,15/2,56 = 0,0646875; +0,012 +0,072 = 0,1486875; ×1,1 +0,1 = 0,26355625
+//    Easy Composites szabály (rétegtömeg/1,5 + 0,7 kg/m² háló+peel, +100 g): 0,096+0,084+0,1 = 0,280 kg → −5,9 %.
+//    Csak a laminátgyanta 33 %-kal kevesebb: az EC osztója szénre (Wf 60 %, Vf ≈ 49 %) szól; üvegnél
+//    Vf 50 % ↔ Wf 69 % (JEC: infúzió Gc 0,65 ≈ Vf 0,5).
+eq('DEF Vf infúzió szövet', DEF.vf.infusion.fabric, 50);
+const ours = compute(G({ vfFabric: DEF.vf.infusion.fabric, waste: 10, pot: 0.1 }), [
   { type: 'fabric', fibre: 'glass', gsm: 300, layers: 4, area: 0.12 },
   { type: 'peel', u: 0.1, layers: 1, area: 0.12 },
   { type: 'mesh', u: 0.6, layers: 1, area: 0.12 }
 ]);
-eq('a mi lapunk összesen', ours.total, (0.144 * 1.15 / 2.56 * 0.52 / 0.48 + 0.084) * 1.1 + 0.1);
-eq('a mi lapunk (szám)', ours.total, 0.2694859, 1e-6);
+eq('a mi lapunk összesen', ours.total, (0.144 * 1.15 / 2.56 + 0.084) * 1.1 + 0.1);
+eq('a mi lapunk (szám)', ours.total, 0.26355625, 1e-8);
+eq('a mi lapunk vs. Easy Composites (|eltérés| < 15 %)', Math.abs(ours.total / 0.280 - 1) < 0.15 ? 1 : 0, 1);
+
+// 9) Független kézi eset (bíráló): 1 m² szendvics, 2+2× 450 g/m² üveg, 10 mm PET 100 kg/m³,
+//    két oldalon keresztben hornyolt 1,2×2,5 @20 mm, felület 0,50/oldal (DEF PET), peel 0,1, háló 0,6, Vf 50, 10 %, 0,1 kg
+//    szövet: 1,8·1,15/2,56 = 0,80859375; hornyok 2·2·1,2·2,5/20 = 0,6 mm = 0,6 l/m² → 0,69 kg; felület 1,0
+//    nettó 0,80859375+1,69+0,7 = 3,19859375; összesen ×1,1+0,1 = 3,618453125
+//    kontroll: Gurit Table 4 Kerdyn 100 sima, két oldal 1,04 kg/m² ≈ 1,0 ✓
+const pet = compute(G({ waste: 10, pot: 0.1 }), [
+  { type: 'fabric', fibre: 'glass', gsm: 450, layers: 2, area: 1 },
+  { type: 'foam', finish: 'g2', t: 10, density: 100, surf: DEF.foamSurf.pet, gw: 1.2, gd: 2.5, gpitch: 20, layers: 1, area: 1 },
+  { type: 'fabric', fibre: 'glass', gsm: 450, layers: 2, area: 1 },
+  { type: 'peel', u: 0.1, layers: 1, area: 1 },
+  { type: 'mesh', u: 0.6, layers: 1, area: 1 }
+]);
+eq('PET szendvics nettó', pet.net, 3.19859375, 1e-9);
+eq('PET szendvics összesen', pet.total, 3.618453125, 1e-9);
+eq('PET szendvics liter (÷1,15)', pet.litres, 3.618453125 / 1.15, 1e-9);
 
 // 8) Szén 200 g/m², Vf 50 %: 0,2 · 1,15/1,76 = 0,1306818 kg (Wf ≈ 60,5 %, egyezik az Easy Composites 60:40-nel)
 eq('szénszövet 200', rowResin({ type: 'fabric', fibre: 'carbon', gsm: 200, layers: 1, area: 1 }, G()).resin, 0.2 * 1.15 / 1.76);
