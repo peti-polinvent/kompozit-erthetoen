@@ -1,13 +1,14 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="hu">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kompozit érthetően – egy kompozit lap receptje</title>
-<meta name="description" content="Mi kell egy kompozit lap elkészítéséhez? Vákuuminfúzió egyszerűen: hozzávalók, rétegrend, lépések, 3D modell és egyperces videó.">
-<meta property="og:title" content="Kompozit érthetően">
-<meta property="og:description" content="Egy kompozit lap receptje: vákuuminfúzió a hozzávalóktól a bontásig.">
+<title data-i18n="meta.title">Kompozit érthetően – egy kompozit lap receptje</title>
+<meta name="description" content="Mi kell egy kompozit lap elkészítéséhez? Vákuuminfúzió egyszerűen: hozzávalók, rétegrend, lépések, 3D modell és egyperces videó." data-i18n-attr="content:meta.desc">
+<meta property="og:title" content="Kompozit érthetően" data-i18n-attr="content:site.name">
+<meta property="og:description" content="Egy kompozit lap receptje: vákuuminfúzió a hozzávalóktól a bontásig." data-i18n-attr="content:meta.og">
 <meta property="og:image" content="assets/poster.jpg">
+<script src="assets/i18n.js"></script>
 <script src="assets/theme.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -247,16 +248,27 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
 .bexplain li.warn{list-style:none;margin-left:-1.1em;padding:10px 14px;background:var(--raised)}
 .bexplain li.warn b{color:var(--peel)}
 .bdisc{grid-column:1/-1;font-size:var(--s1);color:var(--muted);margin:8px 0 0}
+
+/* nyelvváltó + többnyelvűség (assets/i18n.js) */
+.lang-sel{position:relative;flex:none;font:600 var(--s1)/1 var(--display);padding:9px 26px 9px 10px;border:0;border-radius:2px;color:var(--ink);cursor:pointer;-webkit-appearance:none;appearance:none;background-color:var(--sunk)}
+.lang-sel{background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:right 14px center,right 9px center;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+.lang-sel:hover{box-shadow:inset 0 0 0 2px var(--ink)}
+.bar .theme-btn{margin-left:-14px}
+.film-note[data-local="1"] .n-hu,.film-note[data-local="0"] .n-local{display:none}
+:root:lang(zh){--display:"Archivo","Microsoft YaHei","PingFang SC","Noto Sans SC",system-ui,sans-serif}
+:lang(zh) h1,:lang(zh) h2,:lang(zh) h3{letter-spacing:0;line-height:1.2}
+:lang(zh) .hero h1{font-size:clamp(40px,7vw,84px)}
+:lang(de) h1,:lang(de) h2,:lang(de) h3{-webkit-hyphens:auto;hyphens:auto;overflow-wrap:break-word}
 </style>
-</head>
 <body>
 
 <header class="bar">
   <div class="wrap">
-    <a class="name" href="#top">Kompozit érthetően</a>
-    <nav aria-label="Fő navigáció">
-      <a href="#hozzavalok">Hozzávalók</a><a href="#retegrend">Rétegrend</a><a href="#modell">3D modell</a><a href="#elkeszites">Elkészítés</a><a href="#ido">Kitöltési idő</a><a href="#epits">Rétegrend-építő</a><a href="szerszam.html">Szerszámkészítés</a><a href="#keszites">Hogyan készült</a>
+    <a class="name" href="#top" data-i18n="site.name">Kompozit érthetően</a>
+    <nav aria-label="Fő navigáció" data-i18n-attr="aria-label:nav.label">
+      <a href="#hozzavalok" data-i18n="nav.ing">Hozzávalók</a><a href="#retegrend" data-i18n="nav.layup">Rétegrend</a><a href="#modell" data-i18n="nav.model">3D modell</a><a href="#elkeszites" data-i18n="nav.method">Elkészítés</a><a href="#ido" data-i18n="nav.time">Kitöltési idő</a><a href="#epits" data-i18n="nav.build">Rétegrend-építő</a><a href="szerszam.html" data-i18n="nav.tool">Szerszámkészítés</a><a href="#keszites" data-i18n="nav.making">Hogyan készült</a>
     </nav>
+    <select class="lang-sel" id="langSel" aria-label="Nyelv" title="Nyelv" data-i18n-attr="aria-label:lang.label;title:lang.label"><option value="hu" lang="hu">HU</option><option value="en" lang="en">EN</option><option value="de" lang="de">DE</option><option value="zh" lang="zh-Hans">中文</option></select>
     <button class="theme-btn" id="themeToggle" type="button" aria-pressed="false" title="Világos / sötét téma"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg><span>Sötét téma</span></button>
   </div>
 </header>
@@ -265,11 +277,11 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
 <section class="hero" aria-labelledby="h-hero">
   <div class="wrap hero-grid">
     <div>
-      <h1 id="h-hero">Egy kompozit lap <span>receptje</span></h1>
-      <p class="lead">Száraz üvegszövet, egy kis gyanta és a levegő ereje: így készül egy erős, könnyű kompozit lap vákuuminfúzióval – a hozzávalóktól a bontásig.</p>
+      <h1 id="h-hero" data-i18n-html="hero.h1">Egy kompozit lap <span>receptje</span></h1>
+      <p class="lead" data-i18n="hero.lead">Száraz üvegszövet, egy kis gyanta és a levegő ereje: így készül egy erős, könnyű kompozit lap vákuuminfúzióval – a hozzávalóktól a bontásig.</p>
       <div class="actions">
-        <button class="btn btn-main" id="playFilm" type="button">Videó lejátszása <span aria-hidden="true">▶</span></button>
-        <a class="btn btn-plain" href="#modell">Forgasd meg 3D-ben</a>
+        <button class="btn btn-main" id="playFilm" type="button"><span data-i18n="hero.play">Videó lejátszása</span> <span aria-hidden="true">▶</span></button>
+        <a class="btn btn-plain" href="#modell" data-i18n="hero.rotate">Forgasd meg 3D-ben</a>
       </div>
     </div>
     <div>
@@ -280,7 +292,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
           A böngésződ nem tudja lejátszani a videót – <a href="assets/kompozit_erthetoen.mp4">töltsd le itt</a>.
         </video>
       </div>
-      <p class="film-note">Bő egyperces videó, magyar narrációval és felirattal. Minden képkocka a lenti 3D modellből renderelve.</p>
+      <p class="film-note" id="filmNote" data-local="1"><span class="n-local" data-i18n="film.note">Bő egyperces videó, magyar narrációval és felirattal. Minden képkocka a lenti 3D modellből renderelve.</span><span class="n-hu" data-i18n="film.noteHu">Bő egyperces videó, magyar narrációval és felirattal. Minden képkocka a lenti 3D modellből renderelve.</span></p>
     </div>
   </div>
   <div class="wrap"><div class="strata" id="strata" aria-hidden="true"></div></div>
@@ -288,10 +300,10 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
 
 <section aria-labelledby="h-what">
   <div class="wrap what">
-    <h2 id="h-what">Mi az a vákuuminfúzió?</h2>
+    <h2 id="h-what" data-i18n="what.h2">Mi az a vákuuminfúzió?</h2>
     <div>
-      <p class="big">A szövetet <strong>szárazon</strong> fektetjük a szerszámra, fóliával légmentesen lezárjuk, és kiszívjuk alóla a levegőt. Ezután megnyitjuk a gyanta útját – és <strong>a külső légnyomás tolja be</strong> a gyantát a rétegek közé, ahogy a szívószálban is a légnyomás hozza fel az üdítőt.</p>
-      <p class="muted">Miért jó ez? A gyanta pontosan annyi lesz, amennyi kell: a lapban több a szál és kevesebb a felesleges gyanta, mint kézi laminálásnál, és alig marad benne légbuborék. A gyanta zárt rendszerben mozog, így a műhelybe alig jut belőle pára, és a minőség darabról darabra ismételhető.</p>
+      <p class="big" data-i18n-html="what.big">A szövetet <strong>szárazon</strong> fektetjük a szerszámra, fóliával légmentesen lezárjuk, és kiszívjuk alóla a levegőt. Ezután megnyitjuk a gyanta útját – és <strong>a külső légnyomás tolja be</strong> a gyantát a rétegek közé, ahogy a szívószálban is a légnyomás hozza fel az üdítőt.</p>
+      <p class="muted" data-i18n="what.why">Miért jó ez? A gyanta pontosan annyi lesz, amennyi kell: a lapban több a szál és kevesebb a felesleges gyanta, mint kézi laminálásnál, és alig marad benne légbuborék. A gyanta zárt rendszerben mozog, így a műhelybe alig jut belőle pára, és a minőség darabról darabra ismételhető.</p>
     </div>
   </div>
 </section>
@@ -299,31 +311,31 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
 <section class="recipe" id="hozzavalok" aria-labelledby="h-ing">
   <div class="wrap">
     <div class="recipe-head">
-      <h2 id="h-ing">Hozzávalók</h2>
-      <p class="muted">Ami a műhelyben kell, és ami a lapba vagy a lap köré kerül. Mindegyiknél azt is leírjuk, mire való – mert mindegyik nélkül elrontható a termék.</p>
+      <h2 id="h-ing" data-i18n="ing.h2">Hozzávalók</h2>
+      <p class="muted" data-i18n="ing.lead">Ami a műhelyben kell, és ami a lapba vagy a lap köré kerül. Mindegyiknél azt is leírjuk, mire való – mert mindegyik nélkül elrontható a termék.</p>
     </div>
     <div class="ing">
       <div>
-        <h3>Eszközök</h3>
+        <h3 data-i18n="ing.tools">Eszközök</h3>
         <dl>
-          <div><dt><i class="chip" style="background:var(--steel)"></i>Szerszám</dt><dd>Sík, sima alumínium lap. Ennek a felületét „másolja le” a kész termék.</dd></div>
-          <div><dt><i class="chip" style="background:var(--resin)"></i>Gyantatartály</dt><dd>Innen szívja fel a rendszer a bekevert gyantát. Egy csappal indítjuk és állítjuk le az infúziót.</dd></div>
-          <div><dt><i class="chip" style="background:#b0bec5"></i>Gyantacsapda</dt><dd>Tartály a vákuumvezetékben. Ha a gyanta túlfut, itt gyűlik össze – nem jut a szivattyúba.</dd></div>
-          <div><dt><i class="chip" style="background:#78909c"></i>Puffertartály</dt><dd>Vákuumtartály a csapda és a szivattyú között. Kisimítja a vákuumot, hogy végig egyenletes maradjon.</dd></div>
-          <div><dt><i class="chip" style="background:#37474f"></i>Vákuumszivattyú</dt><dd>Kiszívja a levegőt a fólia alól, és az infúzió teljes ideje alatt fenntartja a vákuumot.</dd></div>
-          <div><dt><i class="chip" style="background:#f5f5f5;box-shadow:inset 0 0 0 2px var(--steel)"></i>Vákuummérők és csövek</dt><dd>A mérő mutatja, tart-e a vákuum; a csövek kötik össze a tartályt, a lapot, a csapdát és a szivattyút.</dd></div>
+          <div><dt><i class="chip" style="background:var(--steel)"></i><span data-i18n="ing.mould">Szerszám</span></dt><dd data-i18n="ing.mouldD">Sík, sima alumínium lap. Ennek a felületét „másolja le” a kész termék.</dd></div>
+          <div><dt><i class="chip" style="background:var(--resin)"></i><span data-i18n="ing.pot">Gyantatartály</span></dt><dd data-i18n="ing.potD">Innen szívja fel a rendszer a bekevert gyantát. Egy csappal indítjuk és állítjuk le az infúziót.</dd></div>
+          <div><dt><i class="chip" style="background:#b0bec5"></i><span data-i18n="ing.trap">Gyantacsapda</span></dt><dd data-i18n="ing.trapD">Tartály a vákuumvezetékben. Ha a gyanta túlfut, itt gyűlik össze – nem jut a szivattyúba.</dd></div>
+          <div><dt><i class="chip" style="background:#78909c"></i><span data-i18n="ing.buffer">Puffertartály</span></dt><dd data-i18n="ing.bufferD">Vákuumtartály a csapda és a szivattyú között. Kisimítja a vákuumot, hogy végig egyenletes maradjon.</dd></div>
+          <div><dt><i class="chip" style="background:#37474f"></i><span data-i18n="ing.pump">Vákuumszivattyú</span></dt><dd data-i18n="ing.pumpD">Kiszívja a levegőt a fólia alól, és az infúzió teljes ideje alatt fenntartja a vákuumot.</dd></div>
+          <div><dt><i class="chip" style="background:#f5f5f5;box-shadow:inset 0 0 0 2px var(--steel)"></i><span data-i18n="ing.gauge">Vákuummérők és csövek</span></dt><dd data-i18n="ing.gaugeD">A mérő mutatja, tart-e a vákuum; a csövek kötik össze a tartályt, a lapot, a csapdát és a szivattyút.</dd></div>
         </dl>
       </div>
       <div>
-        <h3>Anyagok</h3>
+        <h3 data-i18n="ing.mats">Anyagok</h3>
         <dl>
-          <div><dt><i class="chip" style="background:#9ad4ff"></i>Formaleválasztó</dt><dd>Vékony réteg a szerszámon, hogy a kész lap leváljon róla, és ne ragadjon oda.</dd></div>
-          <div><dt><i class="chip" style="background:#e0d8bf"></i>Erősítő szövetek</dt><dd>Üveg-, szén- vagy aramidszövet, a megfelelő irányokban egymásra fektetve. Ez adja a lap szilárdságát.</dd></div>
-          <div><dt><i class="chip" style="background:var(--peel)"></i>Letépő szövet</dt><dd>A végén letépjük: magával viszi a segédanyagokat, és érdes, jól ragasztható felületet hagy.</dd></div>
-          <div><dt><i class="chip" style="background:var(--mesh)"></i>Gyantavezető háló</dt><dd>A gyanta „autópályája”: ezen fut végig gyorsan a lap felett, és innen szivárog le a szövetekbe.</dd></div>
-          <div><dt><i class="chip" style="background:#ff9f43"></i>Spirálcsövek</dt><dd>Az egyik oldalon a gyanta belépési pontja (meglövés), a másikon a vákuum elszívási pontja.</dd></div>
-          <div><dt><i class="chip" style="background:#f0c419"></i>Tömítőszalag és vákuumfólia</dt><dd>A ragacsos szalag a szerszám szélén körbe fut, erre simítjuk rá a fóliát: így lesz légmentes a csomag.</dd></div>
-          <div><dt><i class="chip" style="background:var(--resin-deep)"></i>Infúziós epoxi gyanta</dt><dd>Kétkomponensű, hígan folyó gyanta. Bekeverés után nem sokáig folyékony – ezért kell időre dolgozni.</dd></div>
+          <div><dt><i class="chip" style="background:#9ad4ff"></i><span data-i18n="ing.release">Formaleválasztó</span></dt><dd data-i18n="ing.releaseD">Vékony réteg a szerszámon, hogy a kész lap leváljon róla, és ne ragadjon oda.</dd></div>
+          <div><dt><i class="chip" style="background:#e0d8bf"></i><span data-i18n="ing.fabric">Erősítő szövetek</span></dt><dd data-i18n="ing.fabricD">Üveg-, szén- vagy aramidszövet, a megfelelő irányokban egymásra fektetve. Ez adja a lap szilárdságát.</dd></div>
+          <div><dt><i class="chip" style="background:var(--peel)"></i><span data-i18n="ing.peel">Letépő szövet</span></dt><dd data-i18n="ing.peelD">A végén letépjük: magával viszi a segédanyagokat, és érdes, jól ragasztható felületet hagy.</dd></div>
+          <div><dt><i class="chip" style="background:var(--mesh)"></i><span data-i18n="ing.mesh">Gyantavezető háló</span></dt><dd data-i18n="ing.meshD">A gyanta „autópályája”: ezen fut végig gyorsan a lap felett, és innen szivárog le a szövetekbe.</dd></div>
+          <div><dt><i class="chip" style="background:#ff9f43"></i><span data-i18n="ing.spiral">Spirálcsövek</span></dt><dd data-i18n="ing.spiralD">Az egyik oldalon a gyanta belépési pontja (meglövés), a másikon a vákuum elszívási pontja.</dd></div>
+          <div><dt><i class="chip" style="background:#f0c419"></i><span data-i18n="ing.bag">Tömítőszalag és vákuumfólia</span></dt><dd data-i18n="ing.bagD">A ragacsos szalag a szerszám szélén körbe fut, erre simítjuk rá a fóliát: így lesz légmentes a csomag.</dd></div>
+          <div><dt><i class="chip" style="background:var(--resin-deep)"></i><span data-i18n="ing.resin">Infúziós epoxi gyanta</span></dt><dd data-i18n="ing.resinD">Kétkomponensű, hígan folyó gyanta. Bekeverés után nem sokáig folyékony – ezért kell időre dolgozni.</dd></div>
         </dl>
       </div>
     </div>
@@ -332,38 +344,38 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
 
 <section id="retegrend" aria-labelledby="h-lay">
   <div class="wrap">
-    <h2 id="h-lay" style="margin-bottom:clamp(28px,4vw,56px)">A rétegrend, alulról felfelé</h2>
+    <h2 id="h-lay" style="margin-bottom:clamp(28px,4vw,56px)" data-i18n="lay.h2">A rétegrend, alulról felfelé</h2>
     <div class="layup-grid">
       <div class="stack-wrap">
-        <div class="stack" id="stack" role="group" aria-label="Rétegek – válassz egyet"></div>
-        <div class="tool-slab"><span>Szerszám</span></div>
+        <div class="stack" id="stack" role="group" aria-label="Rétegek – válassz egyet" data-i18n-attr="aria-label:lay.group"></div>
+        <div class="tool-slab"><span data-i18n="ing.mould">Szerszám</span></div>
       </div>
       <div class="layer-info" id="layerInfo" aria-live="polite">
-        <div class="k"><i style="background:var(--steel)"></i><h3>Kattints egy rétegre</h3></div>
-        <p class="muted">Minden réteg mellett elolvashatod, mire való, és milyen vastag a valóságban.</p>
+        <div class="k"><i style="background:var(--steel)"></i><h3 data-i18n="lay.click">Kattints egy rétegre</h3></div>
+        <p class="muted" data-i18n="lay.clickD">Minden réteg mellett elolvashatod, mire való, és milyen vastag a valóságban.</p>
       </div>
     </div>
-    <p class="layup-note">A rajzon a vékony rétegek felnagyítva látszanak. A valóságban a négy szövetréteggel a kész lap kb. 2 mm vastag – a segédanyagok pedig a bontáskor lekerülnek róla.</p>
+    <p class="layup-note" data-i18n="lay.note">A rajzon a vékony rétegek felnagyítva látszanak. A valóságban a négy szövetréteggel a kész lap kb. 2 mm vastag – a segédanyagok pedig a bontáskor lekerülnek róla.</p>
   </div>
 </section>
 
 <section class="model" id="modell" aria-labelledby="h-model">
   <div class="wrap">
-    <h2 id="h-model">Nézd meg közelről</h2>
-    <p class="muted" style="margin-top:14px">Húzd a forgatáshoz, csípd vagy görgesd a nagyításhoz. A gombokkal a folyamat egy-egy pillanatára ugorhatsz.</p>
+    <h2 id="h-model" data-i18n="model.h2">Nézd meg közelről</h2>
+    <p class="muted" style="margin-top:14px" data-i18n="model.lead">Húzd a forgatáshoz, csípd vagy görgesd a nagyításhoz. A gombokkal a folyamat egy-egy pillanatára ugorhatsz.</p>
     <model-viewer id="mv" src="assets/infusion.glb?v=20261105c"
-      alt="Vákuuminfúziós összeállítás 3D modellje: asztal, szerszám, rétegek, vákuumfólia, gyantatartály, gyantacsapda, puffertartály és szivattyú"
+      alt="Vákuuminfúziós összeállítás 3D modellje: asztal, szerszám, rétegek, vákuumfólia, gyantatartály, gyantacsapda, puffertartály és szivattyú" data-i18n-attr="alt:model.alt"
       camera-controls touch-action="pan-y" autoplay shadow-intensity="1" exposure="1.05" environment-image="neutral" tone-mapping="neutral"
       camera-orbit="-30deg 62deg 2.6m" camera-target="0.1m 0.78m 0m" min-camera-orbit="auto auto 0.6m" max-camera-orbit="auto auto 5m"
       interaction-prompt="auto" loading="lazy"></model-viewer>
-    <div class="scrub" role="group" aria-label="Animáció vezérlése">
+    <div class="scrub" role="group" aria-label="Animáció vezérlése" data-i18n-attr="aria-label:model.ctl">
       <button type="button" id="btnPlay">Szünet</button>
-      <button type="button" data-t="0.5">Szétszedve</button>
-      <button type="button" data-t="5.0">Összerakva</button>
-      <button type="button" data-t="8.5">Infúzió közben</button>
-      <button type="button" data-t="12.4">Bontás</button>
-      <button type="button" data-t="15.4">Kész</button>
-      <input id="scrub" type="range" min="0" max="12" step="0.02" value="0" aria-label="Animáció időpontja">
+      <button type="button" data-t="0.5" data-i18n="model.t1">Szétszedve</button>
+      <button type="button" data-t="5.0" data-i18n="model.t2">Összerakva</button>
+      <button type="button" data-t="8.5" data-i18n="model.t3">Infúzió közben</button>
+      <button type="button" data-t="12.4" data-i18n="model.t4">Bontás</button>
+      <button type="button" data-t="15.4" data-i18n="model.t5">Kész</button>
+      <input id="scrub" type="range" min="0" max="12" step="0.02" value="0" aria-label="Animáció időpontja" data-i18n-attr="aria-label:model.time">
     </div>
     <div class="legend" id="legend"></div>
   </div>
@@ -372,19 +384,19 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
 <section id="elkeszites" aria-labelledby="h-method">
   <div class="wrap method">
     <div class="side">
-      <h2 id="h-method">Elkészítés</h2>
-      <p class="lead" style="margin-top:20px">Kilenc lépés. A sorrend számít: amit kihagysz, azt a kész lapon fogod látni.</p>
+      <h2 id="h-method" data-i18n="nav.method">Elkészítés</h2>
+      <p class="lead" style="margin-top:20px" data-i18n="m.lead">Kilenc lépés. A sorrend számít: amit kihagysz, azt a kész lapon fogod látni.</p>
     </div>
     <ol>
-      <li><h3>A szerszám előkészítése</h3><p>Megtisztítjuk, majd felvisszük a formaleválasztót.</p><p class="why"><b>Miért?</b> A gyanta mindenhez odaragad – a leválasztó nélkül a lap a szerszámon maradna.</p></li>
-      <li><h3>A száraz szövetek lerakása</h3><p>Az erősítő szöveteket a terv szerinti irányokban (pl. 0/90° és ±45°) egymásra fektetjük, ragasztóspray tartja őket.</p><p class="why"><b>Miért?</b> A szálak iránya dönti el, merre lesz erős a lap.</p></li>
-      <li><h3>Letépő szövet és gyantavezető háló</h3><p>A szövetek tetejére jön a letépő szövet, rá a háló, a két szélén a spirálcsövek.</p><p class="why"><b>Miért?</b> A háló az elszívó oldal előtt pár centivel véget ér, így a gyanta előbb átitatja a lapot, és csak utána ér a vákuumcsőhöz.</p></li>
-      <li><h3>Zsákolás</h3><p>Tömítőszalag a szerszám szélére, rá a vákuumfólia. A csöveket bekötjük: tartály → lap → csapda → puffertartály → szivattyú.</p></li>
-      <li><h3>Vákuum és tömörségpróba</h3><p>Bekapcsoljuk a szivattyút, a fólia ráfeszül a rétegekre. Aztán lezárjuk a szivattyú felé, és figyeljük a mérőt.</p><p class="why"><b>Miért?</b> Ha a vákuum esik, valahol szivárog a csomag – abból buborékos, gyenge lap lenne. Ilyenkor keressük meg és tömítsük.</p></li>
-      <li><h3>A gyanta bekeverése</h3><p>A két komponenst a gyártó szerinti arányban, mérlegen kimérve keverjük össze, szükség esetén vákuum alatt gáztalanítjuk.</p><p class="why"><b>Miért?</b> Rossz arány mellett a gyanta sosem keményedik ki rendesen.</p></li>
-      <li><h3>Infúzió</h3><p>Kinyitjuk a csapot: a gyanta a hálón végigfut, és lefelé átitatja a szöveteket, amíg a front el nem éri az elszívó oldalt.</p></li>
-      <li><h3>Térhálósodás</h3><p>A bevezetést lezárjuk, a vákuumot tartjuk, és hagyjuk a gyantát kikeményedni.</p><p class="why"><b>Miért?</b> A gyanta nem szárad, hanem kémiai reakcióval szilárdul meg – ehhez idő és megfelelő hőmérséklet kell.</p></li>
-      <li><h3>Bontás</h3><p>Lehúzzuk a fóliát, a letépő szövettel együtt lejön a háló is, végül a lapot leválasztjuk a szerszámról. Kész.</p></li>
+      <li><h3 data-i18n="m1.h">A szerszám előkészítése</h3><p data-i18n="m1.p">Megtisztítjuk, majd felvisszük a formaleválasztót.</p><p class="why" data-i18n-html="m1.w"><b>Miért?</b> A gyanta mindenhez odaragad – a leválasztó nélkül a lap a szerszámon maradna.</p></li>
+      <li><h3 data-i18n="m2.h">A száraz szövetek lerakása</h3><p data-i18n="m2.p">Az erősítő szöveteket a terv szerinti irányokban (pl. 0/90° és ±45°) egymásra fektetjük, ragasztóspray tartja őket.</p><p class="why" data-i18n-html="m2.w"><b>Miért?</b> A szálak iránya dönti el, merre lesz erős a lap.</p></li>
+      <li><h3 data-i18n="m3.h">Letépő szövet és gyantavezető háló</h3><p data-i18n="m3.p">A szövetek tetejére jön a letépő szövet, rá a háló, a két szélén a spirálcsövek.</p><p class="why" data-i18n-html="m3.w"><b>Miért?</b> A háló az elszívó oldal előtt pár centivel véget ér, így a gyanta előbb átitatja a lapot, és csak utána ér a vákuumcsőhöz.</p></li>
+      <li><h3 data-i18n="m4.h">Zsákolás</h3><p data-i18n="m4.p">Tömítőszalag a szerszám szélére, rá a vákuumfólia. A csöveket bekötjük: tartály → lap → csapda → puffertartály → szivattyú.</p></li>
+      <li><h3 data-i18n="m5.h">Vákuum és tömörségpróba</h3><p data-i18n="m5.p">Bekapcsoljuk a szivattyút, a fólia ráfeszül a rétegekre. Aztán lezárjuk a szivattyú felé, és figyeljük a mérőt.</p><p class="why" data-i18n-html="m5.w"><b>Miért?</b> Ha a vákuum esik, valahol szivárog a csomag – abból buborékos, gyenge lap lenne. Ilyenkor keressük meg és tömítsük.</p></li>
+      <li><h3 data-i18n="m6.h">A gyanta bekeverése</h3><p data-i18n="m6.p">A két komponenst a gyártó szerinti arányban, mérlegen kimérve keverjük össze, szükség esetén vákuum alatt gáztalanítjuk.</p><p class="why" data-i18n-html="m6.w"><b>Miért?</b> Rossz arány mellett a gyanta sosem keményedik ki rendesen.</p></li>
+      <li><h3 data-i18n="m7.h">Infúzió</h3><p data-i18n="m7.p">Kinyitjuk a csapot: a gyanta a hálón végigfut, és lefelé átitatja a szöveteket, amíg a front el nem éri az elszívó oldalt.</p></li>
+      <li><h3 data-i18n="m8.h">Térhálósodás</h3><p data-i18n="m8.p">A bevezetést lezárjuk, a vákuumot tartjuk, és hagyjuk a gyantát kikeményedni.</p><p class="why" data-i18n-html="m8.w"><b>Miért?</b> A gyanta nem szárad, hanem kémiai reakcióval szilárdul meg – ehhez idő és megfelelő hőmérséklet kell.</p></li>
+      <li><h3 data-i18n="m9.h">Bontás</h3><p data-i18n="m9.p">Lehúzzuk a fóliát, a letépő szövettel együtt lejön a háló is, végül a lapot leválasztjuk a szerszámról. Kész.</p></li>
     </ol>
   </div>
 </section>
@@ -392,22 +404,22 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
 <section class="calc" id="ido" aria-labelledby="h-calc">
   <div class="wrap calc-grid">
     <div>
-      <h2 id="h-calc">Odaér a gyanta időben?</h2>
-      <p class="muted" style="margin-top:18px">A bekevert gyanta csak korlátozott ideig folyékony (fazékidő). A gyantának ennyi idő alatt végig kell érnie a lapon. Próbáld ki, hogyan változik a kitöltési idő a lap hosszával.</p>
-      <label for="len">A gyanta útja (a lap hossza): <span id="lenOut">0,4 m</span></label>
+      <h2 id="h-calc" data-i18n="calc.h2">Odaér a gyanta időben?</h2>
+      <p class="muted" style="margin-top:18px" data-i18n="calc.lead">A bekevert gyanta csak korlátozott ideig folyékony (fazékidő). A gyantának ennyi idő alatt végig kell érnie a lapon. Próbáld ki, hogyan változik a kitöltési idő a lap hosszával.</p>
+      <label for="len"><span data-i18n="calc.len">A gyanta útja (a lap hossza):</span> <span id="lenOut">0,4 m</span></label>
       <input id="len" type="range" min="0.2" max="3" step="0.05" value="0.4">
-      <label id="meshLbl">Van gyantavezető háló?</label>
+      <label id="meshLbl" data-i18n="calc.mesh">Van gyantavezető háló?</label>
       <div class="seg" role="group" aria-labelledby="meshLbl">
-        <button type="button" data-mesh="1" aria-pressed="true">Igen, hálóval</button>
-        <button type="button" data-mesh="0" aria-pressed="false">Háló nélkül</button>
+        <button type="button" data-mesh="1" aria-pressed="true" data-i18n="calc.yes">Igen, hálóval</button>
+        <button type="button" data-mesh="0" aria-pressed="false" data-i18n="calc.no">Háló nélkül</button>
       </div>
     </div>
     <div>
       <div class="readout" aria-live="polite"><span id="tOut">1,5</span><small id="tUnit">perc</small></div>
       <div class="track" aria-hidden="true"><div class="fill" id="fill"></div><div class="pot" id="pot"></div></div>
-      <p class="muted" style="font-size:var(--s1);margin:8px 0 0">A fehér vonal: a gyanta fazékideje (példaként 60 perc).</p>
+      <p class="muted" style="font-size:var(--s1);margin:8px 0 0" data-i18n="calc.pot">A fehér vonal: a gyanta fazékideje (példaként 60 perc).</p>
       <p class="verdict" id="verdict"></p>
-      <p class="formula muted">Becslés a Darcy-törvényből: t ≈ μ·φ·L² / (2·K·Δp). A hossz a <b>négyzetével</b> számít: kétszer olyan hosszú lap négyszer annyi ideig töltődik. Feltevések: gyanta viszkozitása 0,2 Pa·s, porozitás 0,5, nyomáskülönbség 0,9 bar, áteresztőképesség hálóval 10⁻⁹ m², háló nélkül 3·10⁻¹¹ m² (üvegszövet). Tájékoztató érték, nem méretezés.</p>
+      <p class="formula muted" data-i18n-html="calc.formula">Becslés a Darcy-törvényből: t ≈ μ·φ·L² / (2·K·Δp). A hossz a <b>négyzetével</b> számít: kétszer olyan hosszú lap négyszer annyi ideig töltődik. Feltevések: gyanta viszkozitása 0,2 Pa·s, porozitás 0,5, nyomáskülönbség 0,9 bar, áteresztőképesség hálóval 10⁻⁹ m², háló nélkül 3·10⁻¹¹ m² (üvegszövet). Tájékoztató érték, nem méretezés.</p>
     </div>
   </div>
 </section>
@@ -415,57 +427,57 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
 <section class="build" id="epits" aria-labelledby="h-build">
   <div class="wrap">
     <div class="build-head">
-      <h2 id="h-build">Építs saját rétegrendet</h2>
-      <p class="muted">Rakj össze legfeljebb húsz réteget, tegyél terhet a lapra, és nézd meg, mennyit hajlik, és hol jelenik meg rajta az első repedés. A lap 400 × 300 mm-es, és a négy szélén alátámasztva fekszik, mint egy polclap a keretén.</p>
+      <h2 id="h-build" data-i18n="b.h2">Építs saját rétegrendet</h2>
+      <p class="muted" data-i18n="b.lead">Rakj össze legfeljebb húsz réteget, tegyél terhet a lapra, és nézd meg, mennyit hajlik, és hol jelenik meg rajta az első repedés. A lap 400 × 300 mm-es, és a négy szélén alátámasztva fekszik, mint egy polclap a keretén.</p>
     </div>
     <div class="build-grid">
       <div class="build-make">
-        <h3 id="b-pre">Kezdd egy kész rétegrenddel</h3>
+        <h3 id="b-pre" data-i18n="b.pre">Kezdd egy kész rétegrenddel</h3>
         <div class="bseg" id="bPresets" role="group" aria-labelledby="b-pre"></div>
-        <h3 id="b-pal">Tegyél rá egy réteget</h3>
+        <h3 id="b-pal" data-i18n="b.pal">Tegyél rá egy réteget</h3>
         <div class="bpal" id="bPalette" role="group" aria-labelledby="b-pal"></div>
-        <div class="bstack-head"><h3 id="b-st">A rétegrended, felülről lefelé</h3><span id="bCount" aria-live="polite"></span></div>
+        <div class="bstack-head"><h3 id="b-st" data-i18n="b.st">A rétegrended, felülről lefelé</h3><span id="bCount" aria-live="polite"></span></div>
         <div class="bxsec" id="bXsec" aria-hidden="true"></div>
         <ol class="bplies" id="bPlies" aria-labelledby="b-st"></ol>
-        <p class="bnote">Legalul a szerszám felőli oldal. Az új réteg mindig felülre kerül.</p>
+        <p class="bnote" data-i18n="b.note">Legalul a szerszám felőli oldal. Az új réteg mindig felülre kerül.</p>
       </div>
       <div class="build-see">
         <canvas id="bCanvas" role="img" aria-label="A terhelt lap lehajlása"></canvas>
         <p class="bcap" id="bCap"></p>
-        <h3 id="b-load">Terhelés</h3>
+        <h3 id="b-load" data-i18n="b.load">Terhelés</h3>
         <div class="bseg" id="bMode" role="group" aria-labelledby="b-load">
-          <button type="button" data-mode="pressure" aria-pressed="true">Egyenletes nyomás</button>
-          <button type="button" data-mode="patch" aria-pressed="false">Ráálló súly középen</button>
+          <button type="button" data-mode="pressure" aria-pressed="true" data-i18n="b.pressure">Egyenletes nyomás</button>
+          <button type="button" data-mode="patch" aria-pressed="false" data-i18n="b.patch">Ráálló súly középen</button>
         </div>
         <label class="bl" for="bLoad" id="bLoadLbl">Nyomás</label>
         <input id="bLoad" type="range">
         <dl class="bread">
-          <div class="big"><dt>Legnagyobb lehajlás</dt><dd><span id="rW">–</span><small>mm</small></dd><p id="rWp"></p></div>
-          <div class="big" id="rFbox"><dt>Első repedés ennél a terhelésnél</dt><dd><span id="rF">–</span><small id="rFu"></small></dd><p id="rFm"></p></div>
-          <div><dt>Vastagság</dt><dd><span id="rH">–</span><small>mm</small></dd></div>
-          <div><dt>Tömeg</dt><dd><span id="rM">–</span><small>kg/m²</small></dd><p id="rMp"></p></div>
-          <div class="wide"><dt>Merevség húzásra (x / y)</dt><dd><span id="rE">–</span><small>GPa</small></dd><p id="rEp"></p></div>
-          <div class="wide"><dt><label for="bTarget">Mekkora terhelés kell <input id="bTarget" type="number" min="0.1" max="200" step="0.5" value="5"> mm lehajláshoz?</label></dt><dd><span id="rT">–</span><small id="rTu"></small></dd><p id="rTp"></p></div>
+          <div class="big"><dt data-i18n="b.rW">Legnagyobb lehajlás</dt><dd><span id="rW">–</span><small>mm</small></dd><p id="rWp"></p></div>
+          <div class="big" id="rFbox"><dt data-i18n="b.rF">Első repedés ennél a terhelésnél</dt><dd><span id="rF">–</span><small id="rFu"></small></dd><p id="rFm"></p></div>
+          <div><dt data-i18n="b.rH">Vastagság</dt><dd><span id="rH">–</span><small>mm</small></dd></div>
+          <div><dt data-i18n="b.rM">Tömeg</dt><dd><span id="rM">–</span><small>kg/m²</small></dd><p id="rMp"></p></div>
+          <div class="wide"><dt data-i18n="b.rE">Merevség húzásra (x / y)</dt><dd><span id="rE">–</span><small>GPa</small></dd><p id="rEp"></p></div>
+          <div class="wide"><dt><label for="bTarget"><span data-i18n="b.tgt1">Mekkora terhelés kell</span> <input id="bTarget" type="number" min="0.1" max="200" step="0.5" value="5"> <span data-i18n="b.tgt2">mm lehajláshoz?</span></label></dt><dd><span id="rT">–</span><small id="rTu"></small></dd><p id="rTp"></p></div>
         </dl>
       </div>
     </div>
     <div class="bexplain">
-      <h3>Mit jelentenek a számok?</h3>
+      <h3 data-i18n="b.explain">Mit jelentenek a számok?</h3>
       <ul id="bExplain" aria-live="polite"></ul>
-      <p class="bdisc">Egyszerűsített mérnöki becslés (klasszikus rétegelmélet), nem méretezés.</p>
+      <p class="bdisc" data-i18n="b.disc">Egyszerűsített mérnöki becslés (klasszikus rétegelmélet), nem méretezés.</p>
     </div>
   </div>
 </section>
 
 <section aria-labelledby="h-faults">
   <div class="wrap">
-    <h2 id="h-faults" style="margin-bottom:clamp(28px,4vw,56px)">Ahol a recept elcsúszhat</h2>
+    <h2 id="h-faults" style="margin-bottom:clamp(28px,4vw,56px)" data-i18n="f.h2">Ahol a recept elcsúszhat</h2>
     <div class="faults">
-      <article><h3>Szivárgó csomag</h3><p>A leggyakoribb hiba. Egy apró lyuk a fólián vagy egy rosszul lenyomott tömítőszalag, és a levegő bejut: a lapban buborékok, száraz foltok lesznek. Ezért nem indul infúzió tömörségpróba nélkül.</p></article>
-      <article><h3>Gyanta a szivattyúban</h3><p>Ha nincs gyantacsapda, a túlfutó gyanta a szivattyúba jut és tönkreteszi.</p></article>
-      <article><h3>Elfogy az idő</h3><p>Ha a gyanta a fazékidő alatt nem ér végig, a lap vége száraz marad. Nagy darabnál több meglövési pont kell.</p></article>
-      <article><h3>Rossz keverési arány</h3><p>A gyanta ragacsos marad, a lap gyenge lesz. Mindig mérlegen, a gyártó arányával.</p></article>
-      <article><h3>Rövidzár a vákuum felé</h3><p>Ha a háló az elszívásig ér, a gyanta azon „elszalad” a vákuumcsőbe, mielőtt a lapot átitatná.</p></article>
+      <article><h3 data-i18n="f1.h">Szivárgó csomag</h3><p data-i18n="f1.p">A leggyakoribb hiba. Egy apró lyuk a fólián vagy egy rosszul lenyomott tömítőszalag, és a levegő bejut: a lapban buborékok, száraz foltok lesznek. Ezért nem indul infúzió tömörségpróba nélkül.</p></article>
+      <article><h3 data-i18n="f2.h">Gyanta a szivattyúban</h3><p data-i18n="f2.p">Ha nincs gyantacsapda, a túlfutó gyanta a szivattyúba jut és tönkreteszi.</p></article>
+      <article><h3 data-i18n="f3.h">Elfogy az idő</h3><p data-i18n="f3.p">Ha a gyanta a fazékidő alatt nem ér végig, a lap vége száraz marad. Nagy darabnál több meglövési pont kell.</p></article>
+      <article><h3 data-i18n="f4.h">Rossz keverési arány</h3><p data-i18n="f4.p">A gyanta ragacsos marad, a lap gyenge lesz. Mindig mérlegen, a gyártó arányával.</p></article>
+      <article><h3 data-i18n="f5.h">Rövidzár a vákuum felé</h3><p data-i18n="f5.p">Ha a háló az elszívásig ér, a gyanta azon „elszalad” a vákuumcsőbe, mielőtt a lapot átitatná.</p></article>
     </div>
   </div>
 </section>
@@ -474,37 +486,39 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
   <div class="wrap">
     <div class="making-grid">
       <div>
-        <h2 id="h-making">Hogyan készült</h2>
-        <p class="lead" style="margin-top:20px">Egy hét, egy kérdés: el lehet-e magyarázni a vákuuminfúziót úgy, hogy bárki megértse?</p>
-        <p>A geometriát egyetlen paraméterfájl írja le (rétegek, méretek, berendezések). Ebből épül a <b>Fusion 360</b> CAD-modell és a <b>Blender</b>-animáció is; a videó képkockái a Blenderből, a hang és a zene szkriptből készült. A munkát <b>Claude</b> AI-jal végeztem: ő írta a kód első változatát, én futtattam, ellenőriztem, és a szakmai hibáit javítottam. A teljes folyamat, a promptokkal és az elakadásokkal együtt, lent a naplóban.</p>
-        <p><a href="szerszam.html"><b>Haladóknak: szerszámkészítés lépésről lépésre →</b></a> Hogyan készül a mintáról olyan kompozit szerszám, ami száz–ezer darabot is kibír.</p>
-        <p class="muted">Következő lépés: ugyanebből a logikából egy kompozit dob rétegrendje és tekercselése – a dob a 3D modellben már ott van, az asztal alatt.</p>
+        <h2 id="h-making" data-i18n="nav.making">Hogyan készült</h2>
+        <p class="lead" style="margin-top:20px" data-i18n="mk.lead">Egy hét, egy kérdés: el lehet-e magyarázni a vákuuminfúziót úgy, hogy bárki megértse?</p>
+        <p data-i18n-html="mk.p1">A geometriát egyetlen paraméterfájl írja le (rétegek, méretek, berendezések). Ebből épül a <b>Fusion 360</b> CAD-modell és a <b>Blender</b>-animáció is; a videó képkockái a Blenderből, a hang és a zene szkriptből készült. A munkát <b>Claude</b> AI-jal végeztem: ő írta a kód első változatát, én futtattam, ellenőriztem, és a szakmai hibáit javítottam. A teljes folyamat, a promptokkal és az elakadásokkal együtt, lent a naplóban.</p>
+        <p data-i18n-html="mk.p2"><a href="szerszam.html"><b>Haladóknak: szerszámkészítés lépésről lépésre →</b></a> Hogyan készül a mintáról olyan kompozit szerszám, ami száz–ezer darabot is kibír.</p>
+        <p class="muted" data-i18n="mk.next">Következő lépés: ugyanebből a logikából egy kompozit dob rétegrendje és tekercselése – a dob a 3D modellben már ott van, az asztal alatt.</p>
       </div>
       <div class="files">
-        <a href="fusion/export/infusion.f3d" download>infusion.f3d <span>Fusion 360 modell</span></a>
-        <a href="fusion/export/infusion.step" download>infusion.step <span>STEP, bármely CAD-hez</span></a>
-        <a href="assets/infusion.glb" download>infusion.glb <span>3D, animációval</span></a>
+        <a href="fusion/export/infusion.f3d" download>infusion.f3d <span data-i18n="fl.f3d">Fusion 360 modell</span></a>
+        <a href="fusion/export/infusion.step" download>infusion.step <span data-i18n="fl.step">STEP, bármely CAD-hez</span></a>
+        <a href="assets/infusion.glb" download>infusion.glb <span data-i18n="fl.glb">3D, animációval</span></a>
         <a href="build/infusion.blend" download>infusion.blend <span>Blender 4.5</span></a>
-        <a href="assets/kompozit_erthetoen.mp4" download>kompozit_erthetoen.mp4 <span>a videó</span></a>
-        <a href="blender/params.json" download>params.json <span>rétegrend, méretek</span></a>
-        <a href="fusion/KompozitInfuzio/KompozitInfuzio.py" download>KompozitInfuzio.py <span>Fusion-szkript</span></a>
-        <a href="NAPLO.md" download>NAPLO.md <span>tanulási napló</span></a>
-        <a href="https://github.com/peti-polinvent/kompozit-erthetoen" rel="noopener">Forráskód <span>GitHub</span></a>
+        <a href="assets/kompozit_erthetoen.mp4" download data-video-link>kompozit_erthetoen.mp4 <span data-i18n="fl.mp4">a videó</span></a>
+        <a href="blender/params.json" download>params.json <span data-i18n="fl.params">rétegrend, méretek</span></a>
+        <a href="fusion/KompozitInfuzio/KompozitInfuzio.py" download>KompozitInfuzio.py <span data-i18n="fl.py">Fusion-szkript</span></a>
+        <a href="NAPLO.md" download>NAPLO.md <span data-i18n="fl.naplo">tanulási napló</span></a>
+        <a href="https://github.com/peti-polinvent/kompozit-erthetoen" rel="noopener"><span data-i18n="fl.src">Forráskód</span> <span>GitHub</span></a>
       </div>
     </div>
     <details class="journal" id="naploBox">
-      <summary>Tanulási napló – eszközök, promptok, elakadások</summary>
-      <div id="naplo"><p class="muted">Betöltés…</p></div>
+      <summary data-i18n="naplo.sum">Tanulási napló – eszközök, promptok, elakadások</summary>
+      <div id="naplo" lang="hu"><p class="muted">Betöltés…</p></div>
     </details>
   </div>
 </section>
 </main>
 
-<footer><div class="wrap"><span>Kompozit érthetően – Mészáros Péter, AI Kihívás, 2026. november</span><span>Fusion 360, Blender, ffmpeg, Claude</span></div></footer>
+<footer><div class="wrap"><span data-i18n="foot.a">Kompozit érthetően – Mészáros Péter, AI Kihívás, 2026. november</span><span>Fusion 360, Blender, ffmpeg, Claude</span></div></footer>
 
 <script>
 const $ = s => document.querySelector(s);
-const fmt = (n, d=1) => n.toLocaleString('hu-HU', {maximumFractionDigits:d, minimumFractionDigits:d});
+const T = (k, hu, v) => window.I18N ? I18N.t(k, hu, v) : hu;
+const LOC = () => window.I18N ? I18N.locale : 'hu-HU';
+const fmt = (n, d=1) => n.toLocaleString(LOC(), {maximumFractionDigits:d, minimumFractionDigits:d});
 
 /* videó gomb */
 $('#playFilm').addEventListener('click', () => { const v = $('#vid'); v.scrollIntoView({behavior:'smooth', block:'center'}); v.play().catch(()=>{}); });
@@ -528,27 +542,35 @@ const WHY = {
   bag:'Légmentesen lezárja a csomagot. Vákuum alatt ráfeszül a rétegekre, és összenyomja őket.'
 };
 const KEEP = {release:1, glass:1, carbon:1};
+const PN = n => T('p:' + n, n);
+let PAR = null, selLayer = -1;
+function layerInfo(l){
+  const keep = l.type === 'release' ? T('lay.stays', 'a szerszám felületén marad, nem a lap része') : KEEP[l.type] ? T('lay.part', 'a kész lap része marad') : T('lay.aux', 'segédanyag, a bontáskor lekerül');
+  $('#layerInfo').innerHTML = `<div class="k"><i style="background:${l.color}"></i><h3>${PN(l.name)}</h3></div>
+    <p>${WHY[l.type] ? T('why.' + l.type, WHY[l.type]) : ''}</p>
+    <p class="t">${T('lay.real', 'Valós vastagság: {t} mm', {t: l.thickness_mm.toLocaleString(LOC())})} · ${keep}</p>`;
+}
 function buildLayup(p){
-  const stack = $('#stack'), info = $('#layerInfo'), strata = $('#strata');
+  const stack = $('#stack'), strata = $('#strata');
   stack.innerHTML = ''; strata.innerHTML = '';
   p.layup.forEach((l, i) => {
     const b = document.createElement('button');
-    b.type = 'button'; b.setAttribute('aria-pressed','false');
+    b.type = 'button'; b.setAttribute('aria-pressed', String(i === selLayer));
     b.style.background = l.color; b.style.height = (l.display_thickness_mm * 5 + 6) + 'px';
     if (l.alpha && l.alpha < 1) b.style.opacity = Math.max(.75, l.alpha);
-    b.innerHTML = `<span class="lbl">${l.name.replace(/\s*\(.*\)/,'')}</span>`;
-    b.setAttribute('aria-label', l.name);
+    b.innerHTML = `<span class="lbl">${PN(l.name).replace(/\s*\(.*\)/,'')}</span>`;
+    b.setAttribute('aria-label', PN(l.name));
     b.addEventListener('click', () => {
+      selLayer = i;
       stack.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
-      info.innerHTML = `<div class="k"><i style="background:${l.color}"></i><h3>${l.name}</h3></div>
-        <p>${WHY[l.type] || ''}</p>
-        <p class="t">Valós vastagság: ${String(l.thickness_mm).replace('.',',')} mm · ${l.type === 'release' ? 'a szerszám felületén marad, nem a lap része' : KEEP[l.type] ? 'a kész lap része marad' : 'segédanyag, a bontáskor lekerül'}</p>`;
+      layerInfo(l);
     });
     stack.appendChild(b);
     const s = document.createElement('i'); s.style.background = l.color; s.style.height = (l.display_thickness_mm * 1.5) + 'px';
     strata.prepend(s);
   });
   const tool = document.createElement('i'); tool.style.background = 'var(--steel)'; tool.style.height = '14px'; strata.appendChild(tool);
+  if (selLayer >= 0 && p.layup[selLayer]) layerInfo(p.layup[selLayer]);
 }
 function buildLegend(p){
   const items = [
@@ -561,18 +583,19 @@ function buildLegend(p){
     [p.equipment.buffer_tank.color, p.equipment.buffer_tank.name],
     [p.equipment.pump.color, p.equipment.pump.name],
     [p.tool.color, p.tool.name],
-    ...(p.extras || []).map(e => [e.color, e.name + ' (az asztal alatt – a következő projekt)'])
+    ...(p.extras || []).map(e => [e.color, PN(e.name) + T('lg.extra', ' (az asztal alatt – a következő projekt)')])
   ];
-  $('#legend').innerHTML = items.map(([c, n]) => `<div><i style="background:${c}"></i>${n}</div>`).join('');
+  $('#legend').innerHTML = items.map(([c, n]) => `<div><i style="background:${c}"></i>${PN(n)}</div>`).join('');
 }
-fetch('blender/params.json').then(r => r.json()).then(p => { buildLayup(p); buildLegend(p); })
-  .catch(() => buildLayup(FALLBACK));
+function renderParams(){ if (!PAR) return; buildLayup(PAR); if (PAR.consumables) buildLegend(PAR); }
+fetch('blender/params.json').then(r => r.json()).then(p => { PAR = p; renderParams(); })
+  .catch(() => { PAR = FALLBACK; renderParams(); });
 
 /* 3D animáció */
 const mv = $('#mv'), scrub = $('#scrub'), btnPlay = $('#btnPlay');
-let scrubbing = false;
-const label = () => btnPlay.textContent = mv.paused ? 'Lejátszás' : 'Szünet';
-mv.addEventListener('load', () => { scrub.max = (mv.duration || 15.5).toFixed(2); mv.play(); label(); });
+let scrubbing = false, mvLoaded = false;
+const label = () => btnPlay.textContent = mvLoaded && mv.paused ? T('model.play', 'Lejátszás') : T('model.pause', 'Szünet');
+mv.addEventListener('load', () => { mvLoaded = true; scrub.max = (mv.duration || 15.5).toFixed(2); mv.play(); label(); });
 btnPlay.addEventListener('click', () => { mv.paused ? mv.play() : mv.pause(); label(); });
 document.querySelectorAll('.scrub button[data-t]').forEach(b => b.addEventListener('click', () => {
   mv.pause(); mv.currentTime = parseFloat(b.dataset.t); scrub.value = mv.currentTime; label();
@@ -588,16 +611,16 @@ let mesh = true;
 function calc(){
   const L = parseFloat($('#len').value), K = mesh ? 1e-9 : 3e-11;
   const tMin = MU * PHI * L * L / (2 * K * DP) / 60;
-  $('#lenOut').textContent = fmt(L, 2).replace(/0$/,'') + ' m';
-  if (tMin < 1) { $('#tOut').textContent = fmt(tMin * 60, 0); $('#tUnit').textContent = 'mp'; }
-  else if (tMin < 120) { $('#tOut').textContent = fmt(tMin, tMin < 10 ? 1 : 0); $('#tUnit').textContent = 'perc'; }
-  else { $('#tOut').textContent = fmt(tMin / 60, 1); $('#tUnit').textContent = 'óra'; }
+  $('#lenOut').textContent = L.toLocaleString(LOC(), {maximumFractionDigits:2}) + ' m';
+  if (tMin < 1) { $('#tOut').textContent = fmt(tMin * 60, 0); $('#tUnit').textContent = T('u.s', 'mp'); }
+  else if (tMin < 120) { $('#tOut').textContent = fmt(tMin, tMin < 10 ? 1 : 0); $('#tUnit').textContent = T('u.min', 'perc'); }
+  else { $('#tOut').textContent = fmt(tMin / 60, 1); $('#tUnit').textContent = T('u.h', 'óra'); }
   const span = Math.max(POT_MIN * 1.6, tMin * 1.1);
   $('#fill').style.width = Math.min(100, tMin / span * 100) + '%';
   $('#pot').style.left = (POT_MIN / span * 100) + '%';
-  $('#verdict').textContent = tMin <= POT_MIN * 0.5 ? 'Bőven belefér a fazékidőbe.'
-    : tMin <= POT_MIN ? 'Szorosan belefér – gyorsan kell dolgozni.'
-    : 'Nem fér bele: a gyanta megköt, mielőtt végigér. Több meglövési pont vagy lassabb gyanta kell.';
+  $('#verdict').textContent = tMin <= POT_MIN * 0.5 ? T('calc.v1', 'Bőven belefér a fazékidőbe.')
+    : tMin <= POT_MIN ? T('calc.v2', 'Szorosan belefér – gyorsan kell dolgozni.')
+    : T('calc.v3', 'Nem fér bele: a gyanta megköt, mielőtt végigér. Több meglövési pont vagy lassabb gyanta kell.');
 }
 $('#len').addEventListener('input', calc);
 document.querySelectorAll('[data-mesh]').forEach(b => b.addEventListener('click', () => {
@@ -606,6 +629,8 @@ document.querySelectorAll('[data-mesh]').forEach(b => b.addEventListener('click'
   calc();
 }));
 calc();
+label();
+document.addEventListener('langchange', () => { renderParams(); calc(); label(); });
 
 /* napló: csak kinyitáskor töltjük be */
 let naploLoaded = false;

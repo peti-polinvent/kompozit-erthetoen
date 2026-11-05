@@ -8,7 +8,15 @@ const $ = (id) => document.getElementById(id);
 const root = $('epits');
 if (!root) throw new Error('#epits hiányzik');
 
-const nf = (v, d) => Number.isFinite(v) ? v.toLocaleString('hu-HU', { minimumFractionDigits: d, maximumFractionDigits: d }) : '–';
+// többnyelvűség (assets/i18n.js): t(kulcs, magyar forrásszöveg, {változók})
+const LOC = () => (window.I18N ? I18N.locale : 'hu-HU');
+const t = (k, hu, v) => (window.I18N ? I18N.t(k, hu, v) : String(hu).replace(/\{(\w+)\}/g, (m, x) => (v && x in v ? v[x] : m)));
+const mName = (m) => t('mat.' + m.id, m.name), mNote = (m) => t('matn.' + m.id, m.note);
+// a clt.js figyelmeztetései és tönkremeneteli módjai magyarul jönnek – itt fordítjuk őket
+const WARN = [[/Aszimmetrikus/, 'w.asym'], [/csatolás/, 'w.coupling'], [/lapvastagság fele/, 'w.large'], [/Maganyagos/, 'w.core']];
+const warnText = (w) => { const f = WARN.find(([re]) => re.test(w)); return f ? t(f[1], w) : w; };
+const modeText = (s) => t('mode:' + s, s);
+const nf = (v, d) => Number.isFinite(v) ? v.toLocaleString(LOC(), { minimumFractionDigits: d, maximumFractionDigits: d }) : '–';
 const sm = (v) => !Number.isFinite(v) ? '–' : nf(v, Math.abs(v) < 1 ? 2 : Math.abs(v) < 10 ? 1 : 0);
 const tx = (r) => nf(r, r < 10 ? 1 : 0) + '×';
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -16,11 +24,11 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 const mk = (m, ...angles) => angles.map((a) => ({ mat: m, angle: a }));
 const REF = mk('gl-woven', 0, 45, 45, 0);
 const PRESETS = [
-  ['A mi lapunk (4× üvegszövet)', REF],
-  ['Szénszálas, kvázi-izotróp', mk('cf-ud', 0, 45, -45, 90, 90, -45, 45, 0)],
-  ['Szendvics (üveg + PET hab)', [...mk('gl-woven', 0, 45), { mat: 'core-pet', angle: 0, t: 10 }, ...mk('gl-woven', 45, 0)]],
-  ['Aszimmetrikus (hibás) példa', mk('gl-ud', 0, 0, 90, 90)],
-  ['Kevlár', mk('ar-woven', 0, 45, 0, 0, 45, 0)],
+  ['A mi lapunk (4× üvegszövet)', REF, 'pre.ref'],
+  ['Szénszálas, kvázi-izotróp', mk('cf-ud', 0, 45, -45, 90, 90, -45, 45, 0), 'pre.cf'],
+  ['Szendvics (üveg + PET hab)', [...mk('gl-woven', 0, 45), { mat: 'core-pet', angle: 0, t: 10 }, ...mk('gl-woven', 45, 0)], 'pre.sand'],
+  ['Aszimmetrikus (hibás) példa', mk('gl-ud', 0, 0, 90, 90), 'pre.asym'],
+  ['Kevlár', mk('ar-woven', 0, 45, 0, 0, 45, 0), 'pre.kevlar'],
 ];
 
 let uid = 0;
@@ -37,12 +45,12 @@ function choices(m) {
 }
 function angleText(p) {
   const m = MATERIALS[p.mat];
-  if (m.kind === 'core') return `${p.t} mm vastag`;
-  if (m.kind === 'mat') return 'minden irányban egyforma';
+  if (m.kind === 'core') return t('b.thick', '{t} mm vastag', { t: nf(p.t, 0) });
+  if (m.kind === 'mat') return t('b.iso', 'minden irányban egyforma');
   const c = choices(m).find((c) => c[0] === p.angle);
   return c ? c[1] : p.angle + '°';
 }
-const plyName = (p) => `${MATERIALS[p.mat].name}, ${angleText(p)}`;
+const plyName = (p) => `${mName(MATERIALS[p.mat])}, ${angleText(p)}`;
 const same = (x, y) => x.length === y.length && x.every((p, i) => p.mat === y[i].mat && p.angle === y[i].angle && (p.t || 0) === (y[i].t || 0));
 // ±45°-os irányban álló szálak?
 const is45 = (p) => { const k = MATERIALS[p.mat].kind; return (k === 'biax' && p.angle === 0) || ((k === 'ud' || k === 'woven') && Math.abs(p.angle) === 45); };
@@ -50,9 +58,12 @@ const isFibre = (p) => !['core', 'mat'].includes(MATERIALS[p.mat].kind);
 
 /* ---------- vezérlők ---------- */
 const presetsEl = $('bPresets'), palEl = $('bPalette'), listEl = $('bPlies'), xsecEl = $('bXsec');
-presetsEl.innerHTML = PRESETS.map((p, i) => `<button type="button" data-p="${i}" aria-pressed="false">${esc(p[0])}</button>`).join('');
-palEl.innerHTML = Object.values(MATERIALS).map((m) =>
-  `<button type="button" data-m="${m.id}"><i class="chip" style="background:${m.color};box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)"></i><b>${esc(m.name)}</b><small>${esc(m.note)}</small></button>`).join('');
+function renderControls() {
+  presetsEl.innerHTML = PRESETS.map((p, i) => `<button type="button" data-p="${i}" aria-pressed="false">${esc(t(p[2], p[0]))}</button>`).join('');
+  palEl.innerHTML = Object.values(MATERIALS).map((m) =>
+    `<button type="button" data-m="${m.id}"><i class="chip" style="background:${m.color};box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)"></i><b>${esc(mName(m))}</b><small>${esc(mNote(m))}</small></button>`).join('');
+}
+renderControls();
 
 presetsEl.addEventListener('click', (e) => {
   const b = e.target.closest('button'); if (!b) return;
@@ -100,10 +111,10 @@ function loadLabel() {
   const l = $('bLoadLbl');
   if (S.mode === 'pressure') {
     const q = QV[S.qi];
-    l.textContent = `Nyomás: ${sm(q)} kPa (≈ ${sm(q * 1000 / G)} kg/m², a lapon összesen kb. ${sm(q * 1000 * A * B / 1e6 / G)} kg)`;
+    l.textContent = t('b.lblP', 'Nyomás: {q} kPa (≈ {m} kg/m², a lapon összesen kb. {tot} kg)', { q: sm(q), m: sm(q * 1000 / G), tot: sm(q * 1000 * A * B / 1e6 / G) });
     loadEl.setAttribute('aria-valuetext', `${sm(q)} kilopascal`);
   } else {
-    l.textContent = `Súly a lap közepén, 6 × 6 cm-en: ${S.kg} kg`;
+    l.textContent = t('b.lblW', 'Súly a lap közepén, 6 × 6 cm-en: {kg} kg', { kg: S.kg });
     loadEl.removeAttribute('aria-valuetext');
   }
 }
@@ -116,18 +127,18 @@ function renderStack() {
   const th = (p) => MATERIALS[p.mat].kind === 'core' ? p.t : MATERIALS[p.mat].t;
   const tot = S.plies.reduce((s, p) => s + th(p), 0) || 1, k = Math.min(30, 90 / tot);
   xsecEl.innerHTML = S.plies.map((p) => `<i style="height:${Math.max(4, th(p) * k).toFixed(1)}px;background:${MATERIALS[p.mat].color}"></i>`).join('');
-  if (!n) { listEl.innerHTML = '<li><span class="none">Még nincs réteg. Válassz egy anyagot fent, vagy egy kész rétegrendet.</span></li>'; return; }
+  if (!n) { listEl.innerHTML = `<li><span class="none">${esc(t('b.empty', 'Még nincs réteg. Válassz egy anyagot fent, vagy egy kész rétegrendet.'))}</span></li>`; return; }
   let html = '';
   for (let i = n - 1; i >= 0; i--) {
     const p = S.plies[i], m = MATERIALS[p.mat], no = i + 1;
-    const opts = m.kind === 'core' ? (m.thicknessOptions || [m.t]).map((t) => [t, t + ' mm']) : choices(m);
+    const opts = m.kind === 'core' ? (m.thicknessOptions || [m.t]).map((x) => [x, nf(x, 0) + ' mm']) : choices(m);
     const ctl = opts
-      ? `<select aria-label="${no}. réteg ${m.kind === 'core' ? 'vastagsága' : 'iránya'}">${opts.map(([v, l]) => `<option value="${v}"${v === (m.kind === 'core' ? p.t : p.angle) ? ' selected' : ''}>${l}</option>`).join('')}</select>`
-      : '<span class="pa">minden irányban</span>';
-    html += `<li data-i="${i}" data-id="${p.id}"><i style="background:${m.color}"></i><span class="pn">${esc(m.name)}<small>alulról ${no}.</small></span>${ctl}` +
-      `<button type="button" data-act="up" aria-label="${no}. réteg feljebb"${i === n - 1 ? ' disabled' : ''}>↑</button>` +
-      `<button type="button" data-act="down" aria-label="${no}. réteg lejjebb"${i === 0 ? ' disabled' : ''}>↓</button>` +
-      `<button type="button" data-act="del" aria-label="${no}. réteg törlése">×</button></li>`;
+      ? `<select aria-label="${esc(m.kind === 'core' ? t('b.aThick', '{n}. réteg vastagsága', { n: no }) : t('b.aDir', '{n}. réteg iránya', { n: no }))}">${opts.map(([v, l]) => `<option value="${v}"${v === (m.kind === 'core' ? p.t : p.angle) ? ' selected' : ''}>${l}</option>`).join('')}</select>`
+      : `<span class="pa">${esc(t('b.alldir', 'minden irányban'))}</span>`;
+    html += `<li data-i="${i}" data-id="${p.id}"><i style="background:${m.color}"></i><span class="pn">${esc(mName(m))}<small>${esc(t('b.fromBottom', 'alulról {n}.', { n: no }))}</small></span>${ctl}` +
+      `<button type="button" data-act="up" aria-label="${esc(t('b.aUp', '{n}. réteg feljebb', { n: no }))}"${i === n - 1 ? ' disabled' : ''}>↑</button>` +
+      `<button type="button" data-act="down" aria-label="${esc(t('b.aDown', '{n}. réteg lejjebb', { n: no }))}"${i === 0 ? ' disabled' : ''}>↓</button>` +
+      `<button type="button" data-act="del" aria-label="${esc(t('b.aDel', '{n}. réteg törlése', { n: no }))}">×</button></li>`;
   }
   listEl.innerHTML = html;
 }
@@ -157,7 +168,7 @@ function compute() {
     ids.forEach((id) => { $(id).textContent = '–'; });
     ['rWp', 'rFm', 'rMp', 'rEp', 'rTp', 'rFu', 'rTu'].forEach((id) => { $(id).textContent = ''; });
     $('rFbox').classList.remove('bad');
-    $('bExplain').innerHTML = `<li>${S.plies.length ? 'Ezt a rétegrendet nem sikerült kiszámolni.' : 'Adj hozzá legalább egy réteget, és máris számolunk.'}</li>`;
+    $('bExplain').innerHTML = `<li>${S.plies.length ? t('b.fail', 'Ezt a rétegrendet nem sikerült kiszámolni.') : t('b.addOne', 'Adj hozzá legalább egy réteget, és máris számolunk.')}</li>`;
     view.cracked = false; view.fpf = null; view.patch = false; view.exag = 1; view.wMax = 0;
     setTarget(new Float32Array((RX + 1) * (RY + 1)));
     return;
@@ -169,23 +180,26 @@ function compute() {
   const fp = S.plies[r.fpf.plyIndex];
 
   $('rW').textContent = sm(wMax);
-  $('rWp').textContent = pressure ? `${sm(load.q)} kPa egyenletes nyomásnál` : `${S.kg} kg-os súllyal középen`;
+  $('rWp').textContent = pressure ? t('b.atP', '{q} kPa egyenletes nyomásnál', { q: sm(load.q) }) : t('b.atW', '{kg} kg-os súllyal középen', { kg: S.kg });
   $('rF').textContent = pressure ? sm(fpfU) : (Number.isFinite(fpfU) ? nf(fpfU, fpfU < 10 ? 1 : 0) : '–');
   $('rFu').textContent = pressure ? 'kPa' : 'kg';
-  $('rFm').textContent = fp ? `${cap(r.fpf.mode)} az alulról ${r.fpf.plyIndex + 1}. rétegben (${plyName(fp)}).${pressure ? ` Ez kb. ${sm(fpfU * 1000 / G)} kg/m².` : ''}${cracked ? ' A mostani terhelés ezt már meghaladja: a lap ennél jóval kisebb terhelésnél megreped.' : ''}` : '';
+  $('rFm').textContent = fp ? t('b.fpfAt', '{mode} az alulról {n}. rétegben ({ply}).', { mode: cap(modeText(r.fpf.mode)), n: r.fpf.plyIndex + 1, ply: plyName(fp) }) +
+    (pressure ? t('b.fpfKg', ' Ez kb. {m} kg/m².', { m: sm(fpfU * 1000 / G) }) : '') +
+    (cracked ? t('b.over', ' A mostani terhelés ezt már meghaladja: a lap ennél jóval kisebb terhelésnél megreped.') : '') : '';
   $('rFbox').classList.toggle('bad', cracked);
   $('rH').textContent = nf(r.h, 2);
   $('rM').textContent = nf(r.massPerArea, 2);
-  $('rMp').textContent = `A 400 × 300 mm-es lap ${nf(r.panelMass * 1000, 0)} g.`;
+  $('rMp').textContent = t('b.panelMass', 'A 400 × 300 mm-es lap {g} g.', { g: nf(r.panelMass * 1000, 0) });
   const ex = r.inPlane.Ex / ref.inPlane.Ex, ey = r.inPlane.Ey / ref.inPlane.Ey;
   $('rE').textContent = `${sm(r.inPlane.Ex)} / ${sm(r.inPlane.Ey)}`;
-  $('rEp').textContent = same(S.plies, REF) ? 'Ez a mi lapunk: ehhez hasonlítjuk a többit.' : `A mi lapunkhoz képest ${ratio(ex)} x irányban, ${ratio(ey)} y irányban.`;
+  $('rEp').textContent = same(S.plies, REF) ? t('b.isRef', 'Ez a mi lapunk: ehhez hasonlítjuk a többit.') : t('b.vsRef', 'A mi lapunkhoz képest {x} x irányban, {y} y irányban.', { x: ratio(ex), y: ratio(ey) });
   let need = NaN;
   try { need = loadForDeflection(clean(S.plies), { ...DEFAULT_PANEL, load: load.type === 'patch' && !(load.P > 0) ? { ...load, P: G } : load, terms: 31, grid: 21 }, S.target); } catch (err) { console.error(err); }
   const needU = pressure ? need : need / G;
   $('rT').textContent = sm(needU);
   $('rTu').textContent = pressure ? 'kPa' : 'kg';
-  $('rTp').textContent = !Number.isFinite(needU) ? '' : pressure ? `≈ ${sm(needU * 1000 / G)} kg/m² egyenletesen elterítve.` + (needU > fpfU ? ' Ennyi lehajlás előtt már megreped.' : '') : `Súly a lap közepén.${needU > fpfU ? ' Ennyi lehajlás előtt már megreped.' : ''}`;
+  const early = needU > fpfU ? t('b.early', ' Ennyi lehajlás előtt már megreped.') : '';
+  $('rTp').textContent = !Number.isFinite(needU) ? '' : (pressure ? t('b.spread', '≈ {m} kg/m² egyenletesen elterítve.', { m: sm(needU * 1000 / G) }) : t('b.center', 'Súly a lap közepén.')) + early;
 
   $('bExplain').innerHTML = explain(r, ref, wMax, fpfU, pressure, load).join('');
 
@@ -199,35 +213,37 @@ function compute() {
     const a = v[j0 * nx + i0], b = v[j0 * nx + i0 + 1], c = v[(j0 + 1) * nx + i0], d = v[(j0 + 1) * nx + i0 + 1];
     T[j * (RX + 1) + i] = ((a * (1 - u) + b * u) * (1 - w) + (c * (1 - u) + d * u) * w) * k;
   }
-  $('bCap').textContent = (wMax > 0 ? (ex2 === 1 ? 'Valós léptékben' : ex2 > 1 ? `A lehajlás ${nf(ex2, 0)}× felnagyítva` : `A lehajlás ${nf(ex2, 2)}× kicsinyítve`) + ', ' : '') +
-    'a sötétebb szín nagyobb lehajlást jelent. ' + (cracked ? 'Pirossal: itt már megrepedt az első réteg.' : 'A karika jelöli, hol jelenne meg az első repedés.');
-  $('bCanvas').setAttribute('aria-label', `A lap lehajlása: legnagyobb ${sm(wMax)} mm.${cracked ? ' A lap megrepedt.' : ''}`);
+  $('bCap').textContent = (wMax > 0 ? (ex2 === 1 ? t('b.capReal', 'Valós léptékben, ') : ex2 > 1 ? t('b.capUp', 'A lehajlás {f}× felnagyítva, ', { f: nf(ex2, 0) }) : t('b.capDown', 'A lehajlás {f}× kicsinyítve, ', { f: nf(ex2, 2) })) : '') +
+    t('b.capCol', 'a sötétebb szín nagyobb lehajlást jelent. ') + (cracked ? t('b.capRed', 'Pirossal: itt már megrepedt az első réteg.') : t('b.capRing', 'A karika jelöli, hol jelenne meg az első repedés.'));
+  $('bCanvas').setAttribute('aria-label', t('b.aCanvas', 'A lap lehajlása: legnagyobb {w} mm.', { w: sm(wMax) }) + (cracked ? t('b.aCracked', ' A lap megrepedt.') : ''));
   setTarget(T);
 }
 const cap = (s) => s ? s[0].toUpperCase() + s.slice(1) : '';
-const ratio = (r) => Math.abs(r - 1) < 0.05 ? 'ugyanolyan merev' : r > 1 ? `${tx(r)} merevebb` : `${tx(1 / r)} hajlékonyabb`;
+const ratio = (r) => Math.abs(r - 1) < 0.05 ? t('b.rSame', 'ugyanolyan merev') : r > 1 ? t('b.rStiffer', '{f} merevebb', { f: tx(r) }) : t('b.rSofter', '{f} hajlékonyabb', { f: tx(1 / r) });
 
 /* ---------- magyarázat ---------- */
 function explain(r, ref, wMax, fpfU, pressure, load) {
   const out = [], li = (s) => out.push(`<li>${s}</li>`), pl = S.plies, isRef = same(pl, REF);
-  if (isRef) li('Ez a mi lapunk: négy réteg üvegszövet, kívül 0/90°-ban, belül ±45°-ban. A többi rétegrendet ehhez hasonlítjuk.');
+  const cmp = { ref: sm(ref.wMax), w: sm(wMax) };
+  if (isRef) li(t('e.ref', 'Ez a mi lapunk: négy réteg üvegszövet, kívül 0/90°-ban, belül ±45°-ban. A többi rétegrendet ehhez hasonlítjuk.'));
   else if (r.scale) {
     const q = r.wMax / ref.wMax;
-    if (q < 0.95) li(`Ugyanekkora terhelés alatt ${tx(1 / q)} kevesebbet hajlik, mint a mi négyrétegű üveglapunk (${sm(ref.wMax)} mm helyett ${sm(wMax)} mm).`);
-    else if (q > 1.05) li(`Ugyanekkora terhelés alatt ${tx(q)} többet hajlik, mint a mi négyrétegű üveglapunk (${sm(ref.wMax)} mm helyett ${sm(wMax)} mm).`);
-    else li('Hajlításban nagyjából olyan merev, mint a mi négyrétegű üveglapunk.');
+    if (q < 0.95) li(t('e.less', 'Ugyanekkora terhelés alatt {f} kevesebbet hajlik, mint a mi négyrétegű üveglapunk ({ref} mm helyett {w} mm).', { f: tx(1 / q), ...cmp }));
+    else if (q > 1.05) li(t('e.more', 'Ugyanekkora terhelés alatt {f} többet hajlik, mint a mi négyrétegű üveglapunk ({ref} mm helyett {w} mm).', { f: tx(q), ...cmp }));
+    else li(t('e.same', 'Hajlításban nagyjából olyan merev, mint a mi négyrétegű üveglapunk.'));
   }
   const d = r.flexural.Efx / r.flexural.Efy;
-  if (d > 1.4) li(`Hajlításban hosszában (a 400 mm-es oldal mentén) ${tx(d)} merevebb, mint keresztben: a szálak többsége erre fut, keresztben jórészt a gyanta dolgozik.`);
-  else if (d < 1 / 1.4) li(`Hajlításban keresztben (a 300 mm-es oldal mentén) ${tx(1 / d)} merevebb, mint hosszában: a szálak többsége erre fut.`);
+  if (d > 1.4) li(t('e.long', 'Hajlításban hosszában (a 400 mm-es oldal mentén) {f} merevebb, mint keresztben: a szálak többsége erre fut, keresztben jórészt a gyanta dolgozik.', { f: tx(d) }));
+  else if (d < 1 / 1.4) li(t('e.cross', 'Hajlításban keresztben (a 300 mm-es oldal mentén) {f} merevebb, mint hosszában: a szálak többsége erre fut.', { f: tx(1 / d) }));
   const fib = pl.filter(isFibre);
-  if (fib.length && fib.every(is45)) li('Minden szál ±45°-ban áll: a lap a nyírást és a csavarást jól viseli, de hajlításban hajlékonyabb, mintha a szálak egy része a lap éleivel párhuzamosan futna.');
-  else if (fib.some(is45)) li('A ±45°-os rétegek a nyírást és a csavarást viszik: a lap kevésbé csavarodik el, ha a terhelés nem pont középen éri.');
-  if (!r.symmetric) li('A rétegrend nem tükörszimmetrikus a középsíkra. Kikeményedéskor a rétegek másképp húzódnak össze, és a lap megvetemedik. Ugyanezek a rétegek tükrözve (pl. 0/90/90/0) síkok maradnának.');
-  else if (pl.length > 1) li('A rétegrend tükörszimmetrikus a középsíkra, ezért kikeményedés után is sík marad.');
+  if (fib.length && fib.every(is45)) li(t('e.all45', 'Minden szál ±45°-ban áll: a lap a nyírást és a csavarást jól viseli, de hajlításban hajlékonyabb, mintha a szálak egy része a lap éleivel párhuzamosan futna.'));
+  else if (fib.some(is45)) li(t('e.some45', 'A ±45°-os rétegek a nyírást és a csavarást viszik: a lap kevésbé csavarodik el, ha a terhelés nem pont középen éri.'));
+  if (!r.symmetric) li(t('e.asym', 'A rétegrend nem tükörszimmetrikus a középsíkra. Kikeményedéskor a rétegek másképp húzódnak össze, és a lap megvetemedik. Ugyanezek a rétegek tükrözve (pl. 0/90/90/0) síkok maradnának.'));
+  else if (pl.length > 1) li(t('e.sym', 'A rétegrend tükörszimmetrikus a középsíkra, ezért kikeményedés után is sík marad.'));
   if (pl.some((p) => p.mat === 'ar-woven')) {
     const m = MATERIALS['ar-woven'], fp = pl[r.fpf.plyIndex];
-    li(`Az aramid (kevlár) húzásra kiváló, nyomásra viszont gyenge: nyomva kb. ${tx(m.Xt / m.Xc)} kevesebbet bír, mint húzva. Hajlításkor a lap egyik oldala mindig nyomott${fp && fp.mat === 'ar-woven' ? ', és itt is egy aramidréteg reped meg elsőként' : ''}. Ezért a nyomott oldalra jobb üveget vagy szenet tenni.`);
+    li(t('e.aramid', 'Az aramid (kevlár) húzásra kiváló, nyomásra viszont gyenge: nyomva kb. {f} kevesebbet bír, mint húzva. Hajlításkor a lap egyik oldala mindig nyomott{also}. Ezért a nyomott oldalra jobb üveget vagy szenet tenni.',
+      { f: tx(m.Xt / m.Xc), also: fp && fp.mat === 'ar-woven' ? t('e.aramidAlso', ', és itt is egy aramidréteg reped meg elsőként') : '' }));
   }
   const cores = pl.filter((p) => MATERIALS[p.mat].kind === 'core');
   if (cores.length && cores.length < pl.length) {
@@ -235,25 +251,28 @@ function explain(r, ref, wMax, fpfU, pressure, load) {
       const skins = run(pl.filter((p) => MATERIALS[p.mat].kind !== 'core'), load);
       const st = skins.wMax / r.wMax, mp = (r.massPerArea / skins.massPerArea - 1) * 100;
       const skinPl = pl.filter((p) => MATERIALS[p.mat].kind !== 'core');
+      const cv = { c: cores.map((c) => nf(c.t, 0)).join(' + '), p: nf(mp, 0), f: tx(st) };
       li(same(skinPl, REF)
-        ? `Hab nélkül ez épp a mi lapunk lenne – a különbséget tehát csak a ${cores.map((c) => c.t).join(' + ')} mm-es hab adja, miközben a tömeg mindössze ${nf(mp, 0)}%-kal nő. A hab széthúzza egymástól a két héjat, és a hajlítómerevség nagyjából a két héj távolságának négyzetével nő (szendvicshatás).`
-        :`A ${cores.map((c) => c.t).join(' + ')} mm-es hab ${tx(st)} merevebbé teszi a lapot, mint ugyanezek a rétegek hab nélkül, a tömeg pedig csak ${nf(mp, 0)}%-kal nő. A hab széthúzza egymástól a két héjat, és a hajlítómerevség nagyjából a két héj távolságának négyzetével nő (szendvicshatás).`);
+        ? t('e.foamRef', 'Hab nélkül ez épp a mi lapunk lenne – a különbséget tehát csak a {c} mm-es hab adja, miközben a tömeg mindössze {p}%-kal nő. A hab széthúzza egymástól a két héjat, és a hajlítómerevség nagyjából a két héj távolságának négyzetével nő (szendvicshatás).', cv)
+        : t('e.foam', 'A {c} mm-es hab {f} merevebbé teszi a lapot, mint ugyanezek a rétegek hab nélkül, a tömeg pedig csak {p}%-kal nő. A hab széthúzza egymástól a két héjat, és a hajlítómerevség nagyjából a két héj távolságának négyzetével nő (szendvicshatás).', cv));
     } catch (err) { console.error(err); }
   }
-  if (pl.some((p) => p.mat === 'gl-csm')) li('A paplan minden irányban egyforma, de gyengébb a szövetnél; epoxi gyantához porkötésű változat kell, mert a szokásos (emulziós) kötőanyagot csak a poliésztergyanta sztirolja oldja fel.');
+  if (pl.some((p) => p.mat === 'gl-csm')) li(t('e.csm', 'A paplan minden irányban egyforma, de gyengébb a szövetnél; epoxi gyantához porkötésű változat kell, mert a szokásos (emulziós) kötőanyagot csak a poliésztergyanta sztirolja oldja fel.'));
   const mr = r.massPerArea / ref.massPerArea;
-  if (!isRef && Math.abs(mr - 1) > 0.05) li(`Négyzetméterenként ${nf(r.massPerArea, 2)} kg: ${mr > 1 ? tx(mr) + ' nehezebb' : tx(1 / mr) + ' könnyebb'}, mint a mi lapunk (${nf(ref.massPerArea, 2)} kg/m²).`);
+  if (!isRef && Math.abs(mr - 1) > 0.05) li(t(mr > 1 ? 'e.heavier' : 'e.lighter', mr > 1 ? 'Négyzetméterenként {m} kg: {f} nehezebb, mint a mi lapunk ({r} kg/m²).' : 'Négyzetméterenként {m} kg: {f} könnyebb, mint a mi lapunk ({r} kg/m²).',
+    { m: nf(r.massPerArea, 2), f: tx(mr > 1 ? mr : 1 / mr), r: nf(ref.massPerArea, 2) }));
   if (Number.isFinite(fpfU)) {
     li(pressure
-      ? `Kb. ${sm(fpfU)} kPa nyomásnál (ez ≈ ${sm(fpfU * 1000 / G)} kg/m², a lapon összesen kb. ${sm(fpfU * 1000 * A * B / 1e6 / G)} kg) jelenik meg az első repedés. A lap ennél általában többet bír, de ez már károsodás.`
-      : `Kb. ${sm(fpfU)} kg-os súly középen ráállva jelenik meg az első repedés. A lap ennél általában többet bír, de ez már károsodás.`);
+      ? t('e.fpfP', 'Kb. {q} kPa nyomásnál (ez ≈ {m} kg/m², a lapon összesen kb. {tot} kg) jelenik meg az első repedés. A lap ennél általában többet bír, de ez már károsodás.', { q: sm(fpfU), m: sm(fpfU * 1000 / G), tot: sm(fpfU * 1000 * A * B / 1e6 / G) })
+      : t('e.fpfW', 'Kb. {kg} kg-os súly középen ráállva jelenik meg az első repedés. A lap ennél általában többet bír, de ez már károsodás.', { kg: sm(fpfU) }));
     const kgC = pressure ? fpfU * 1000 * A * B / 1e6 / G : fpfU;
-    if (kgC < 40) li(`Egy ${nf(r.h, 1)} mm vékony lap tehát már ${pressure ? `kb. ${sm(kgC)} kg egyenletesen elterített terhet` : `egy kb. ${sm(kgC)} kg-os súlyt`} sem bír ki repedés nélkül${isRef ? ' – ezért kell egy valódi termékhez több réteg vagy maganyag. Próbáld ki a szendvics rétegrendet!' : '.'}`);
+    if (kgC < 40) li(t(pressure ? 'e.thinP' : 'e.thinW', pressure ? 'Egy {h} mm vékony lap tehát már kb. {kg} kg egyenletesen elterített terhet sem bír ki repedés nélkül{end}' : 'Egy {h} mm vékony lap tehát már egy kb. {kg} kg-os súlyt sem bír ki repedés nélkül{end}',
+      { h: nf(r.h, 1), kg: sm(kgC), end: isRef ? t('e.thinRef', ' – ezért kell egy valódi termékhez több réteg vagy maganyag. Próbáld ki a szendvics rétegrendet!') : t('e.dot', '.') }));
   }
   for (const w of r.warnings) {
     if (/Aszimmetrikus/.test(w)) continue; // fent már elmondtuk közérthetően
     if (/lapvastagság fele/.test(w) && (!r.scale || wMax <= 0.5 * r.h)) continue;
-    out.push(`<li class="warn"><b>Figyelem:</b> ${esc(w)}</li>`);
+    out.push(`<li class="warn"><b>${esc(t('e.warn', 'Figyelem:'))}</b> ${esc(warnText(w))}</li>`);
   }
   return out;
 }
@@ -360,6 +379,7 @@ function poly(pts) { ctx.beginPath(); ctx.moveTo(...pts[0]); for (const p of pts
 colors();
 dark.addEventListener('change', () => { colors(); draw(); });
 document.addEventListener('themechange', () => { colors(); draw(); });
+document.addEventListener('langchange', () => { renderControls(); syncLoad(); renderStack(); compute(); });
 new ResizeObserver(size).observe(cv);
 syncLoad();
 renderStack();
