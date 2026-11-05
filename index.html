@@ -291,7 +291,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
     <h2 id="h-what">Mi az a vákuuminfúzió?</h2>
     <div>
       <p class="big">A szövetet <strong>szárazon</strong> fektetjük a szerszámra, fóliával légmentesen lezárjuk, és kiszívjuk alóla a levegőt. Ezután megnyitjuk a gyanta útját – és <strong>a külső légnyomás tolja be</strong> a gyantát a rétegek közé, ahogy a szívószálban is a légnyomás hozza fel az üdítőt.</p>
-      <p class="muted">Miért jó ez? A gyanta pontosan annyi lesz, amennyi kell: a lap erős, egyenletes vastagságú és buborékmentes. A gyanta zárt rendszerben mozog, így a műhelybe alig jut belőle pára, és a minőség darabról darabra ismételhető.</p>
+      <p class="muted">Miért jó ez? A gyanta pontosan annyi lesz, amennyi kell: a lapban több a szál és kevesebb a felesleges gyanta, mint kézi laminálásnál, és alig marad benne légbuborék. A gyanta zárt rendszerben mozog, így a műhelybe alig jut belőle pára, és a minőség darabról darabra ismételhető.</p>
     </div>
   </div>
 </section>
@@ -407,7 +407,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
       <div class="track" aria-hidden="true"><div class="fill" id="fill"></div><div class="pot" id="pot"></div></div>
       <p class="muted" style="font-size:var(--s1);margin:8px 0 0">A fehér vonal: a gyanta fazékideje (példaként 60 perc).</p>
       <p class="verdict" id="verdict"></p>
-      <p class="formula muted">Becslés a Darcy-törvényből: t ≈ μ·φ·L² / (2·K·Δp). A hossz a <b>négyzetével</b> számít: kétszer olyan hosszú lap négyszer annyi ideig töltődik. Feltevések: gyanta viszkozitása 0,2 Pa·s, porozitás 0,5, nyomáskülönbség 0,9 bar, áteresztőképesség hálóval 10⁻⁹ m², háló nélkül 10⁻¹⁰ m². Tájékoztató érték, nem méretezés.</p>
+      <p class="formula muted">Becslés a Darcy-törvényből: t ≈ μ·φ·L² / (2·K·Δp). A hossz a <b>négyzetével</b> számít: kétszer olyan hosszú lap négyszer annyi ideig töltődik. Feltevések: gyanta viszkozitása 0,2 Pa·s, porozitás 0,5, nyomáskülönbség 0,9 bar, áteresztőképesség hálóval 10⁻⁹ m², háló nélkül 3·10⁻¹¹ m² (üvegszövet). Tájékoztató érték, nem méretezés.</p>
     </div>
   </div>
 </section>
@@ -477,6 +477,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
         <h2 id="h-making">Hogyan készült</h2>
         <p class="lead" style="margin-top:20px">Egy hét, egy kérdés: el lehet-e magyarázni a vákuuminfúziót úgy, hogy bárki megértse?</p>
         <p>A geometriát egyetlen paraméterfájl írja le (rétegek, méretek, berendezések). Ebből épül a <b>Fusion 360</b> CAD-modell és a <b>Blender</b>-animáció is; a videó képkockái a Blenderből, a hang és a zene szkriptből készült. A munkát <b>Claude</b> AI-jal végeztem: ő írta a kód első változatát, én futtattam, ellenőriztem, és a szakmai hibáit javítottam. A teljes folyamat, a promptokkal és az elakadásokkal együtt, lent a naplóban.</p>
+        <p><a href="szerszam.html"><b>Haladóknak: szerszámkészítés lépésről lépésre →</b></a> Hogyan készül a mintáról olyan kompozit szerszám, ami száz–ezer darabot is kibír.</p>
         <p class="muted">Következő lépés: ugyanebből a logikából egy kompozit dob rétegrendje és tekercselése – a dob a 3D modellben már ott van, az asztal alatt.</p>
       </div>
       <div class="files">
@@ -541,7 +542,7 @@ function buildLayup(p){
       stack.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
       info.innerHTML = `<div class="k"><i style="background:${l.color}"></i><h3>${l.name}</h3></div>
         <p>${WHY[l.type] || ''}</p>
-        <p class="t">Valós vastagság: ${String(l.thickness_mm).replace('.',',')} mm · ${KEEP[l.type] ? 'a kész lap része marad' : 'segédanyag, a bontáskor lekerül'}</p>`;
+        <p class="t">Valós vastagság: ${String(l.thickness_mm).replace('.',',')} mm · ${l.type === 'release' ? 'a szerszám felületén marad, nem a lap része' : KEEP[l.type] ? 'a kész lap része marad' : 'segédanyag, a bontáskor lekerül'}</p>`;
     });
     stack.appendChild(b);
     const s = document.createElement('i'); s.style.background = l.color; s.style.height = (l.display_thickness_mm * 1.5) + 'px';
@@ -585,7 +586,7 @@ setInterval(() => { if (!scrubbing && !mv.paused) scrub.value = mv.currentTime; 
 const MU = 0.2, PHI = 0.5, DP = 0.9e5, POT_MIN = 60;
 let mesh = true;
 function calc(){
-  const L = parseFloat($('#len').value), K = mesh ? 1e-9 : 1e-10;
+  const L = parseFloat($('#len').value), K = mesh ? 1e-9 : 3e-11;
   const tMin = MU * PHI * L * L / (2 * K * DP) / 60;
   $('#lenOut').textContent = fmt(L, 2).replace(/0$/,'') + ' m';
   if (tMin < 1) { $('#tOut').textContent = fmt(tMin * 60, 0); $('#tUnit').textContent = 'mp'; }

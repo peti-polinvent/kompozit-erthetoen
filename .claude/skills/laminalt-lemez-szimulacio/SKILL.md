@@ -45,8 +45,8 @@ csak a leírásaikat használjuk tudásanyagként.
 | id | név | fajta | E1 | E2 | G12 | ν12 | G13 | G23 | Xt | Xc | Yt | Yc | S | t/réteg | g/m² (szál) | ρ g/cm³ |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | gl-woven | Üvegszövet 300 (vászon/köper) | szövet | 21 | 21 | 3.8 | 0.13 | 3.0 | 3.0 | 350 | 300 | 350 | 300 | 55 | 0.23 | 300 | 1.90 |
-| gl-ud | UD üveg 300 | UD | 40 | 10 | 3.8 | 0.28 | 3.8 | 3.4 | 900 | 600 | 35 | 120 | 55 | 0.23 | 300 | 1.95 |
-| gl-biax | Üveg biax ±45° 600 (varrott) | biax → 2 UD altréteg (+45/−45 a lerakási szöghöz képest), mindkettő gl-ud, t = 0.23 | | | | | | | | | | | | 0.46 | 600 | 1.95 |
+| gl-ud | UD üveg 300 | UD | 40 | 10 | 3.8 | 0.28 | 3.8 | 3.4 | 900 | 600 | 35 | 120 | 55 | 0.23 | 300 | 1.90 |
+| gl-biax | Üveg biax ±45° 600 (varrott) | biax → 2 UD altréteg (+45/−45 a lerakási szöghöz képest), mindkettő gl-ud, t = 0.23 | | | | | | | | | | | | 0.46 | 600 | 1.90 |
 | gl-csm | Üvegpaplan (CSM) 450 | izotróp | 7.5 | 7.5 | 2.8 | 0.32 | 2.8 | 2.8 | 95 | 140 | 95 | 140 | 65 | 0.60 | 450 | 1.50 |
 | cf-woven | Szénszövet 200 (köper) | szövet | 55 | 55 | 4.0 | 0.05 | 3.5 | 3.5 | 600 | 500 | 600 | 500 | 80 | 0.22 | 200 | 1.50 |
 | cf-ud | UD szén 300 | UD | 120 | 8 | 4.2 | 0.30 | 4.2 | 3.0 | 1800 | 1100 | 45 | 180 | 70 | 0.30 | 300 | 1.55 |
@@ -54,9 +54,11 @@ csak a leírásaikat használjuk tudásanyagként.
 | core-pet | PET hab maganyag (5/10/20 mm) | izotróp mag | 0.08 | 0.08 | 0.025 | 0.30 | 0.025 | 0.025 | 1.8 | 1.3 | 1.8 | 1.3 | 0.9 | 5/10/20 | – | 0.10 |
 
 Megjegyzések a magyarázatokhoz: az aramid húzásra kiváló, **nyomásra gyenge** (Xc ≪ Xt);
-a paplan minden irányban egyforma, de gyengébb, és infúzióhoz speciális (porkötésű) változat kell;
-UD csak szálirányban erős; ±45° a nyírást és a csavarást viszi; a mag a hajlítómerevséget a
-vastagság **köbével** növeli (szendvicshatás) kis tömegnövekedéssel.
+a paplan minden irányban egyforma, de gyengébb, és epoxihoz porkötésű változat kell (az emulziós
+kötőanyagot csak a sztirol oldja); UD csak szálirányban erős; ±45° a nyírást és a csavarást viszi;
+a mag a hajlítómerevséget a két héj távolságának nagyjából **négyzetével** növeli (szendvicshatás,
+D ≈ E_f·t_f·d²/2) kis tömegnövekedéssel – a köbös szabály csak tömör laminátra igaz.
+Konzisztencia: t ≈ g/m² / (ρ_szál·V_f), pl. üveg 300 g/m² / (2,55 g/cm³ · 0,51) ≈ 0,23 mm.
 
 ## API – `assets/sim/clt.js` (ES-modul, DOM nélkül, böngészőben és Node-ban is fut)
 

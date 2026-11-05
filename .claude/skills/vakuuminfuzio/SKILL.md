@@ -47,7 +47,8 @@ szerint kombinált szövetek) → letépő szövet → gyantavezető háló → 
 ## Tipikus értékek (laikus szövegben kerekítve)
 
 - Infúziós gyanta viszkozitása: ~100–300 mPa·s (kb. olajszerű). Fazékidő ≥ kitöltési idő.
-- Száltartalom: ~50–60 térfogat%. Kézi laminálásnál jellemzően 30–40%.
+- Száltartalom: ~50–60 térfogat%. Kézi laminálásnál jellemzően ~25–35 térfogat%.
+- Áteresztőképesség (Darcy): üvegszövet-köteg ~2–4·10⁻¹¹ m², gyantavezető hálóval a hatásos érték ~10⁻⁹ m².
 - Kitöltési idő (Darcy-becslés): t ≈ μ·φ·L² / (2·K·Δp) – L a folyási hossz; a hossz
   **négyzetével** nő, ezért nagy darabnál több meglövési pont kell.
 - A vákuum a légköri nyomásnál jóval kisebb, és **végig tartani kell** (ezért a puffertartály).

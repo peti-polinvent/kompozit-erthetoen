@@ -236,11 +236,11 @@ function explain(r, ref, wMax, fpfU, pressure, load) {
       const st = skins.wMax / r.wMax, mp = (r.massPerArea / skins.massPerArea - 1) * 100;
       const skinPl = pl.filter((p) => MATERIALS[p.mat].kind !== 'core');
       li(same(skinPl, REF)
-        ? `Hab nélkül ez épp a mi lapunk lenne – a különbséget tehát csak a ${cores.map((c) => c.t).join(' + ')} mm-es hab adja, miközben a tömeg mindössze ${nf(mp, 0)}%-kal nő. A hab széthúzza egymástól a két héjat, és a hajlítómerevség a vastagság köbével nő (szendvicshatás).`
-        : `A ${cores.map((c) => c.t).join(' + ')} mm-es hab ${tx(st)} merevebbé teszi a lapot, mint ugyanezek a rétegek hab nélkül, a tömeg pedig csak ${nf(mp, 0)}%-kal nő. A hab széthúzza egymástól a két héjat, és a hajlítómerevség a vastagság köbével nő (szendvicshatás).`);
+        ? `Hab nélkül ez épp a mi lapunk lenne – a különbséget tehát csak a ${cores.map((c) => c.t).join(' + ')} mm-es hab adja, miközben a tömeg mindössze ${nf(mp, 0)}%-kal nő. A hab széthúzza egymástól a két héjat, és a hajlítómerevség nagyjából a két héj távolságának négyzetével nő (szendvicshatás).`
+        :`A ${cores.map((c) => c.t).join(' + ')} mm-es hab ${tx(st)} merevebbé teszi a lapot, mint ugyanezek a rétegek hab nélkül, a tömeg pedig csak ${nf(mp, 0)}%-kal nő. A hab széthúzza egymástól a két héjat, és a hajlítómerevség nagyjából a két héj távolságának négyzetével nő (szendvicshatás).`);
     } catch (err) { console.error(err); }
   }
-  if (pl.some((p) => p.mat === 'gl-csm')) li('A paplan minden irányban egyforma, de gyengébb a szövetnél; infúzióhoz speciális, porkötésű változat kell.');
+  if (pl.some((p) => p.mat === 'gl-csm')) li('A paplan minden irányban egyforma, de gyengébb a szövetnél; epoxi gyantához porkötésű változat kell, mert a szokásos (emulziós) kötőanyagot csak a poliésztergyanta sztirolja oldja fel.');
   const mr = r.massPerArea / ref.massPerArea;
   if (!isRef && Math.abs(mr - 1) > 0.05) li(`Négyzetméterenként ${nf(r.massPerArea, 2)} kg: ${mr > 1 ? tx(mr) + ' nehezebb' : tx(1 / mr) + ' könnyebb'}, mint a mi lapunk (${nf(ref.massPerArea, 2)} kg/m²).`);
   if (Number.isFinite(fpfU)) {
