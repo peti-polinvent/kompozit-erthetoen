@@ -382,7 +382,7 @@ def apply_word_timing(plan):
             L = s["length"]
             HIGHLIGHTS[idx] = [(e["keys"], "", (0, 0), max(0.0, (e["t0"] - 0.1) / L), min(1.0, (e["t1"] - 0.1) / L))
                                for e in EV[idx]]
-        if EV[2] and EV[2][-1]["label"] == "Vákuumfólia":
+        if EV[2] and EV[2][-1].get("layer") == "bag":
             TOUR_END = EV[2][-1]["t0"] / plan["scenes"][2]["length"] + 0.04
         print("[időzítés] light:", {k: [round(e["t0"], 2) for e in v] for k, v in EV.items()})
         return
@@ -507,6 +507,11 @@ def main(plan_path, out_dir, width=1280, height=720, start_at=0, only=None):
     cam = sc.camera
     sc.render.resolution_x, sc.render.resolution_y = width, height
     sc.render.resolution_percentage = 100
+    if width / height > 16 / 9 + 0.01:
+        # feliratsáv-változat: a 3D a sáv FÖLÖTTI, laposabb területre renderel. A függőleges
+        # látószög marad a 16:9-es (VERTICAL illesztés), vízszintesen tágul – semmi nem vágódik le.
+        cam.data.sensor_fit = "VERTICAL"
+        cam.data.sensor_height = cam.data.sensor_width * 9 / 16
     sc.render.image_settings.file_format = "PNG"
     sc.render.image_settings.compression = 50
     os.makedirs(out_dir, exist_ok=True)

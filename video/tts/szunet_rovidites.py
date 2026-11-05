@@ -13,6 +13,8 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 key, target = sys.argv[1], float(sys.argv[2])
+if len(sys.argv) > 3:            # nyelvi alkönyvtár: python szunet_rovidites.py 01 0.5 en
+    HERE = os.path.join(HERE, sys.argv[3])
 mp3, wj = os.path.join(HERE, f"{key}.mp3"), os.path.join(HERE, f"{key}_words.json")
 words = json.load(open(wj, encoding="utf-8"))
 

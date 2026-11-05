@@ -1,0 +1,157 @@
+[
+ {
+  "text": "You",
+  "start": 0.1,
+  "end": 0.295
+ },
+ {
+  "text": "need",
+  "start": 0.308,
+  "end": 0.491
+ },
+ {
+  "text": "a",
+  "start": 0.504,
+  "end": 0.543
+ },
+ {
+  "text": "mould",
+  "start": 0.556,
+  "end": 1.103
+ },
+ {
+  "text": "A",
+  "start": 2.003,
+  "end": 2.159
+ },
+ {
+  "text": "resin",
+  "start": 2.172,
+  "end": 2.55
+ },
+ {
+  "text": "pot",
+  "start": 2.563,
+  "end": 2.954
+ },
+ {
+  "text": "A",
+  "start": 3.852,
+  "end": 4.008
+ },
+ {
+  "text": "vacuum",
+  "start": 4.021,
+  "end": 4.516
+ },
+ {
+  "text": "pump",
+  "start": 4.529,
+  "end": 4.777
+ },
+ {
+  "text": "that",
+  "start": 4.79,
+  "end": 4.946
+ },
+ {
+  "text": "pulls",
+  "start": 4.959,
+  "end": 5.258
+ },
+ {
+  "text": "out",
+  "start": 5.271,
+  "end": 5.441
+ },
+ {
+  "text": "the",
+  "start": 5.454,
+  "end": 5.61
+ },
+ {
+  "text": "air",
+  "start": 5.623,
+  "end": 5.935
+ },
+ {
+  "text": "A",
+  "start": 6.834,
+  "end": 6.99
+ },
+ {
+  "text": "buffer",
+  "start": 7.003,
+  "end": 7.329
+ },
+ {
+  "text": "tank",
+  "start": 7.342,
+  "end": 7.602
+ },
+ {
+  "text": "that",
+  "start": 7.615,
+  "end": 7.758
+ },
+ {
+  "text": "keeps",
+  "start": 7.771,
+  "end": 8.071
+ },
+ {
+  "text": "the",
+  "start": 8.084,
+  "end": 8.175
+ },
+ {
+  "text": "vacuum",
+  "start": 8.188,
+  "end": 8.657
+ },
+ {
+  "text": "steady",
+  "start": 8.67,
+  "end": 9.073
+ },
+ {
+  "text": "And",
+  "start": 9.972,
+  "end": 10.167
+ },
+ {
+  "text": "a",
+  "start": 10.18,
+  "end": 10.245
+ },
+ {
+  "text": "resin",
+  "start": 10.258,
+  "end": 10.597
+ },
+ {
+  "text": "trap",
+  "start": 10.61,
+  "end": 10.896
+ },
+ {
+  "text": "that",
+  "start": 10.909,
+  "end": 11.066
+ },
+ {
+  "text": "protects",
+  "start": 11.079,
+  "end": 11.547
+ },
+ {
+  "text": "the",
+  "start": 11.56,
+  "end": 11.665
+ },
+ {
+  "text": "pump",
+  "start": 11.678,
+  "end": 12.107
+ }
+]

@@ -21,7 +21,10 @@ PUMP_KEYS = ["pump_base", "pump_motor", "pump_fan_cover", "pump_feet", "pump_hea
 GLASS_KEYS = ["L02_glass", "L03_glass", "L04_glass", "L05_glass"]
 TAPE_KEYS = ["tape_xm", "tape_xp", "tape_ym", "tape_yp"]
 
+LANG = os.environ.get("VLANG", "hu")      # hu | en | de | zh  (build_video.py állítja)
+
 TITLES = ["A recept", "Hozzávalók", "A rétegrend", "Infúzió", "Bontás", ""]
+TXT = dict(checklist="Hozzávalók", stack="Rétegrend", tool="szerszám", card="Kompozit érthetően")
 
 # jelenet-index → [(kulcsszó-eleje, címke, [szín(ek)], 3D-objektumkulcsok, rétegábra-elem)]
 ITEMS = {
@@ -46,10 +49,77 @@ ITEMS = {
 }
 EXTRA = {3: {"vakuum": "vákuum"}, 5: {"card": "kompozit"}}   # egyéb események (nincs címkéjük)
 
+# ---- fordítások: ugyanaz a tételsorrend; (kulcsszó, címke) jelenetenként, ITEMS sorrendjében ----
+# A kulcsszó több szóból is állhat (a szóhatárok összefűzött szövegében keresünk, szó elejére
+# illesztve); kínaiban nincs szóköz → karakter-részsztring.
+L10N = {
+    "en": dict(
+        titles=["The recipe", "Ingredients", "The layup", "Infusion", "Demoulding", ""],
+        txt=dict(checklist="Ingredients", stack="Layup", tool="mould", card="Composites, explained"),
+        items={1: [("mould", "Mould"), ("resin pot", "Resin pot"), ("vacuum pump", "Vacuum pump"),
+                   ("buffer tank", "Buffer tank"), ("resin trap", "Resin trap")],
+               2: [("release agent", "Release agent"), ("reinforcement", "Reinforcement fabrics"),
+                   ("peel ply", "Peel ply"), ("flow mesh", "Flow mesh"), ("resin enters", "Resin inlet"),
+                   ("pull out", "Vacuum outlet"), ("sealant tape", "Sealant tape"), ("vacuum bag", "Vacuum bag")],
+               3: [("tight", "Vacuum: the bag pulls tight"), ("opens", "Valve opens – in comes the resin"),
+                   ("cures", "The resin cures")],
+               4: [("one piece", "Bag + mesh + peel ply off"), ("releases", "The finished panel releases")]},
+        extra={3: {"vakuum": "vacuum"}, 5: {"card": "composites"}}),
+    "de": dict(
+        titles=["Das Rezept", "Zutaten", "Der Lagenaufbau", "Infusion", "Entformen", ""],
+        txt=dict(checklist="Zutaten", stack="Lagenaufbau", tool="Werkzeug", card="Komposit – verständlich"),
+        items={1: [("werkzeug", "Werkzeug"), ("harztopf", "Harztopf"), ("vakuumpumpe", "Vakuumpumpe"),
+                   ("puffertank", "Puffertank"), ("harzfalle", "Harzfalle")],
+               2: [("trennmittel", "Trennmittel"), ("verstärkung", "Verstärkungsgewebe"),
+                   ("abreißgewebe", "Abreißgewebe"), ("fließhilfe", "Fließhilfe"), ("strömt", "Harzanguss"),
+                   ("saugen", "Vakuumanschluss"), ("dichtband", "Dichtband"), ("vakuumfolie", "Vakuumfolie")],
+               3: [("spannt", "Vakuum: Die Folie spannt sich"), ("öffnet", "Ventil auf – das Harz kommt"),
+                   ("härtet", "Das Harz härtet aus")],
+               4: [("einem stück", "Folie + Fließhilfe + Abreißgewebe ab"),
+                   ("löst", "Die fertige Platte löst sich")]},
+        extra={3: {"vakuum": "vakuum"}, 5: {"card": "komposit"}}),
+    "zh": dict(
+        titles=["配方", "材料", "铺层", "灌注", "脱模", ""],
+        txt=dict(checklist="材料", stack="铺层", tool="模具", card="复合材料，一看就懂"),
+        items={1: [("模具", "模具"), ("树脂罐", "树脂罐"), ("真空泵", "真空泵"), ("缓冲罐", "缓冲罐"),
+                   ("树脂收集器", "树脂收集器")],
+               2: [("脱模剂", "脱模剂"), ("增强", "增强纤维布"), ("脱模布", "脱模布"), ("导流网", "导流网"),
+                   ("流入", "树脂进口"), ("抽出", "抽真空口"), ("密封胶条", "密封胶条"), ("真空袋膜", "真空袋膜")],
+               3: [("贴住", "抽真空：袋膜贴紧"), ("打开", "阀门打开，树脂流入"), ("固化", "树脂固化")],
+               4: [("一起", "揭下袋膜、导流网和脱模布"), ("脱开", "成品板从模具脱开")]},
+        extra={3: {"vakuum": "真空"}, 5: {"card": "复合材料"}}),
+}
+if LANG in L10N:
+    _t = L10N[LANG]
+    TITLES, TXT, EXTRA = _t["titles"], _t["txt"], _t["extra"]
+    ITEMS = {k: [(kw, lab) + tuple(it[2:]) for (kw, lab), it in zip(_t["items"][k], v)] for k, v in ITEMS.items()}
+
+_PUNCT = ".,;:!?–—\"„”“'’()。，、；：！？「」"
+
 
 def word_time(words, prefix, nth=0):
-    hits = [w for w in words if w["text"].lower().strip(".,;:!?–\"„”").startswith(prefix.lower())]
-    return hits[nth]["start"] if len(hits) > nth else None
+    """A kulcsszó (több szó is lehet) első szavának kezdete. Szóközös nyelveknél szó elejére illesztve,
+    kínaiban karakter-részsztringként – a szóhatár-szövegek összefűzésében keresünk."""
+    sep = "" if LANG == "zh" else " "
+    pos, buf = [], ""
+    for i, w in enumerate(words):
+        txt = w["text"].lower().strip(_PUNCT)
+        if not txt:
+            continue
+        buf += sep
+        pos.append((len(buf), i))
+        buf += txt
+    key = sep + prefix.lower()
+    k, n = -1, 0
+    while True:
+        k = buf.find(key, k + 1)
+        if k < 0:
+            return None
+        if n == nth:
+            at = k + len(sep)
+            i = max(j for p, j in pos if p <= at)
+            return words[i]["start"]
+        n += 1
 
 
 def resolve(scene):

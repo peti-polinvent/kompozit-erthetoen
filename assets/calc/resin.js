@@ -405,18 +405,20 @@ export function mount(el) {
   }
   function defsTable() {
     const L = DEF.vfRange, v = DEF.vf;
+    const q = (a, d = 2) => a.map(x => f(x, d)).join(' / ');
+    const rg = (a, b, d = 2) => `${f(a, d)}–${f(b, d)}`;
     const rows = [
-      ['dVf', `${f(v.infusion.fabric, 0)} / ${f(v.bag.fabric, 0)} / ${f(v.hand.fabric, 0)}`, `${L.infusion.fabric.join('–')} / ${L.bag.fabric.join('–')} / ${L.hand.fabric.join('–')}`, 'Easy Composites (60:40), Gurit Guide to Composites'],
-      ['dVfC', `${f(v.infusion.csm, 0)} / ${f(v.bag.csm, 0)} / ${f(v.hand.csm, 1)}`, `${L.infusion.csm.join('–')} / ${L.bag.csm.join('–')} / ${L.hand.csm.join('–')}`, 'Saertex SAERcore 2025 (17,5 / 33 %), Gurit'],
-      ['dRho', '2,56 / 1,76 / 1,44 / 2,65', '2,54–2,60 / 1,75–1,95 / 1,44–1,45 / 2,6–2,8', 'Gurit, Hexcel/Toray TDS'],
-      ['rhoR', '1,15', '1,10–1,20', 'Gurit, Sicomin/Easy Composites TDS'],
-      ['dSoric', '1,0 / 1,4 / 1,9 / 2,8', '≈ 0,47–0,67 / mm', 'Lantor Soric XF TDS v2.2; ACP, Composite Envisions'],
-      ['dFoam', f(DEF.foamSurf, 2), '0–0,15', 'Easy Composites EasyCell 75; Evonik Rohacell (0,18 / 2 old.)'],
-      ['dGroove', '1,2 × 2,5 @ 20', '—', 'Airex GP (Univ. Plymouth FPCM-10); Easy Composites 75G: 427 cm³/m²'],
-      ['dMesh', f(DEF.mesh, 2), '0,35–0,70', 'Diatex via R&G (0,36–0,49); Easy Composites FM100 (0,70)'],
-      ['dPeel', f(DEF.peel, 2), '0,05–0,15', 'Easy Composites (0,7 háló + peel); boatdesign.net'],
-      ['dPot', f(DEF.pot, 2), '0,1', 'Easy Composites; Univ. Texas Solar Vehicles wiki'],
-      ['dWaste', f(DEF.waste, 0), '5–20', '—']
+      ['dVf', q([v.infusion.fabric, v.bag.fabric, v.hand.fabric], 0), [L.infusion, L.bag, L.hand].map(x => rg(x.fabric[0], x.fabric[1], 0)).join(' / '), 'Easy Composites (60:40); Gurit Guide to Composites'],
+      ['dVfC', q([v.infusion.csm, v.bag.csm, v.hand.csm], 1), [L.infusion, L.bag, L.hand].map(x => rg(x.csm[0], x.csm[1], 0)).join(' / '), 'Saertex SAERcore 2025 (17.5 / 33 %); CSM 1:2–1:2.5'],
+      ['dRho', q([2.56, 1.76, 1.44, 2.65]), `${rg(2.54, 2.6)} / ${rg(1.75, 1.95)} / ${rg(1.44, 1.45)} / ${rg(2.6, 2.8, 1)}`, 'Gurit Guide; fibre-density tables'],
+      ['rhoR', f(DEF.rhoR), rg(1.1, 1.2), 'Gurit Guide; epoxy TDS'],
+      ['dSoric', q([1.0, 1.4, 1.9, 2.8], 1), `≈ ${rg(0.47, 0.67)} / mm`, 'Lantor Soric XF TDS v2.2; ACP Composites'],
+      ['dFoam', f(DEF.foamSurf), rg(0, 0.15), 'Easy Composites EasyCell 75; Evonik Rohacell patent'],
+      ['dGroove', `${f(1.2, 1)} × ${f(2.5, 1)} @ 20`, '—', 'Airex GP (Univ. Plymouth FPCM-10); Easy Composites 75G'],
+      ['dMesh', f(DEF.mesh), rg(0.35, 0.7), 'Diatex via R&G; Easy Composites FM100'],
+      ['dPeel', f(DEF.peel), rg(0.05, 0.15), 'Easy Composites; boatdesign.net'],
+      ['dPot', f(DEF.pot), f(0.1), 'Easy Composites; Univ. Texas wiki'],
+      ['dWaste', f(DEF.waste, 0), rg(5, 20, 0), '—']
     ];
     return `<div class="gk-tw"><table><thead><tr><th scope="col"></th><th scope="col">${esc(T('dVal'))}</th><th scope="col">${esc(T('dRange'))}</th><th scope="col">${esc(T('dSrc'))}</th></tr></thead><tbody>${
       rows.map(r => `<tr><th scope="row">${esc(T(r[0]))}</th><td>${r[1]}</td><td>${r[2]}</td><td>${esc(r[3])}</td></tr>`).join('')}</tbody></table></div>`;
@@ -427,7 +429,7 @@ export function mount(el) {
     if (!S[lang]) lang = 'hu';
     const g = state;
     el.innerHTML = `<div class="gk" lang="${lang}">
-      <h3>${esc(T('title'))}</h3><p>${esc(T('intro'))}</p>
+      <h2>${esc(T('title'))}</h2><p>${esc(T('intro'))}</p>
       <div class="gk-panel">
         <div><h4 id="gk-proc">${esc(T('process'))}</h4><div class="gk-seg" role="group" aria-labelledby="gk-proc">${
           ['infusion', 'bag', 'hand'].map(p => `<button type="button" data-proc="${p}" aria-pressed="${g.process === p}">${esc(T(p))}</button>`).join('')}</div></div>

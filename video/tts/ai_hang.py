@@ -32,6 +32,18 @@ PITCH = "-6Hz"
 # Csak a felolvasott szöveg változik – a szóidőzítésekben visszaírjuk a helyes alakot,
 # így a felirat és a kulcsszavas kiemelések (cues.py) változatlanok maradnak.
 SPOKEN = [("ákuum", "ákum")]
+# Idegen nyelvű változatok: python ai_hang.py --lang en|de|zh [NN …] → video/tts/{lang}/
+LANGS = {
+    "en": dict(voice="en-GB-RyanNeural", rate="-4%", pitch="-4Hz", spoken=[]),
+    "de": dict(voice="de-DE-ConradNeural", rate="-4%", pitch="-4Hz", spoken=[]),
+    "zh": dict(voice="zh-CN-YunjianNeural", rate="-6%", pitch="-2Hz", spoken=[]),
+}
+if "--lang" in sys.argv:
+    _i = sys.argv.index("--lang")
+    _l = sys.argv[_i + 1]
+    del sys.argv[_i:_i + 2]
+    HERE = os.path.join(HERE, _l)
+    VOICE, RATE, PITCH, SPOKEN = LANGS[_l]["voice"], LANGS[_l]["rate"], LANGS[_l]["pitch"], LANGS[_l]["spoken"]
 
 
 def spoken(text):

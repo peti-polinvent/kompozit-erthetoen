@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gyantakalkulátor – teszt</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#eceeed; --raised:#f7f8f7; --sunk:#dfe3e1; --ink:#15191d; --muted:#4d565e;
+  --steel:#9aa0a6; --resin:#e09a1f; --resin-deep:#9a5f00; --on-resin:#1d1300;
+  --peel:#c84b4b; --mesh:#3f9e6a; --bag:#e8dc5a; --vac:#5b7bd5;
+  --display:"Archivo",system-ui,sans-serif;
+  --s1:14px; --s2:17px; --s3:clamp(20px,2.2vw,24px); --s4:clamp(30px,4.6vw,48px); --s5:clamp(46px,9vw,112px);
+  --gut:clamp(16px,4vw,48px); --max:1240px;
+}
+:root{color-scheme:light}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ color-scheme:dark; --ground:#121517; --raised:#1a1e21; --sunk:#0c0e10; --ink:#e8ebec; --muted:#a2abb2; --resin-deep:#f0b54d; }
+}
+:root[data-theme="dark"]{ color-scheme:dark; --ground:#121517; --raised:#1a1e21; --sunk:#0c0e10; --ink:#e8ebec; --muted:#a2abb2; --resin-deep:#f0b54d; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font:400 var(--s2)/1.6 var(--display)}
+main{max-width:var(--max);margin:0 auto;padding:24px var(--gut)}
+.bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.bar button{font:600 14px var(--display);border:0;border-radius:2px;padding:8px 12px;background:var(--sunk);color:var(--ink);cursor:pointer}
+</style>
+</head>
+<body>
+<main>
+  <div class="bar">
+    <button data-l="hu">hu</button><button data-l="en">en</button><button data-l="de">de</button><button data-l="zh">zh</button>
+    <button data-t="light">light</button><button data-t="dark">dark</button>
+  </div>
+  <div id="gyanta-kalk"></div>
+</main>
+<script>
+document.querySelector('.bar').addEventListener('click', function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.l) { document.documentElement.lang = b.dataset.l; document.dispatchEvent(new CustomEvent('langchange', { detail: { lang: b.dataset.l } })); }
+  if (b.dataset.t) document.documentElement.setAttribute('data-theme', b.dataset.t);
+});
+</script>
+<script type="module" src="../../assets/calc/resin.js"></script>
+</body>
+</html>

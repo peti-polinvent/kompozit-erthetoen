@@ -287,9 +287,17 @@ ARCHIVO = os.path.join(HERE, "fonts", "Archivo-VF.ttf")
 _FONTS = {}
 
 
+BAND_COL = (0xF7, 0xF8, 0xF7)          # feliratsáv: az oldal „raised” tónusa
+CJK = os.environ.get("VLANG") == "zh"   # kínai: Microsoft YaHei (az Archivóban nincs CJK)
+
+
 def font(size, wght=700, wdth=100):
     key = (int(size), wght, wdth)
     if key not in _FONTS:
+        if CJK:
+            _FONTS[key] = ImageFont.truetype("C:/Windows/Fonts/msyhbd.ttc" if wght >= 600 else
+                                             "C:/Windows/Fonts/msyh.ttc", int(size))
+            return _FONTS[key]
         try:
             f = ImageFont.truetype(ARCHIVO, int(size))
             f.set_variation_by_axes([wght, wdth])          # tengelysorrend: Weight, Width
@@ -405,7 +413,8 @@ def draw_checklist(d, evs, t, a, b, W, H, sc, ticks):
     row = 56 * sc
     ph = 92 * sc + row * len(evs) + 14 * sc
     panel(d, [x0, y0, x0 + pw, y0 + ph], k)
-    d.text((x0 + 26 * sc, y0 + 22 * sc), "Hozzávalók", font=font(40 * sc, 800, 62), fill=INK + (int(255 * k),))
+    d.text((x0 + 26 * sc, y0 + 22 * sc), __import__("cues").TXT["checklist"], font=font(40 * sc, 800, 62),
+           fill=INK + (int(255 * k),))
     d.rectangle([x0 + 26 * sc, y0 + 74 * sc, x0 + 70 * sc, y0 + 78 * sc], fill=AMBER + (int(255 * k),))
     fi = font(30 * sc, 600, 92)
     for j, e in enumerate(evs):
@@ -431,14 +440,15 @@ def draw_layer_stack(d, evs, t, a, b, W, H, sc):
     y0 = 0.17 * H
     ph = 300 * sc
     panel(d, [x0, y0, x0 + pw, y0 + ph], k)
-    d.text((x0 + 26 * sc, y0 + 22 * sc), "Rétegrend", font=font(40 * sc, 800, 62), fill=INK + (int(255 * k),))
+    d.text((x0 + 26 * sc, y0 + 22 * sc), __import__("cues").TXT["stack"], font=font(40 * sc, 800, 62),
+           fill=INK + (int(255 * k),))
     d.rectangle([x0 + 26 * sc, y0 + 74 * sc, x0 + 70 * sc, y0 + 78 * sc], fill=AMBER + (int(255 * k),))
     cx = x0 + pw / 2
     base = y0 + ph - 54 * sc
     tw, lw = 330 * sc / 2, 250 * sc / 2
     # szerszám (mindig látszik)
     d.rectangle([cx - tw, base, cx + tw, base + 26 * sc], fill=(0x9A, 0xA0, 0xA6, int(255 * k)), outline=INK + (int(90 * k),))
-    d.text((cx - tw, base + 29 * sc), "szerszám", font=font(18 * sc, 600, 90), fill=MUTED + (int(220 * k),))
+    d.text((cx - tw, base + 29 * sc), __import__("cues").TXT["tool"], font=font(18 * sc, 600, 90), fill=MUTED + (int(220 * k),))
     when = {e["layer"]: e["abs0"] for e in evs if e.get("layer")}
     y = base
 
@@ -496,25 +506,51 @@ def draw_layer_stack(d, evs, t, a, b, W, H, sc):
         d.line(pts, fill=(0xC9, 0xB0, 0x10, int(255 * k * g)), width=max(2, int(3 * sc)), joint="curve")
 
 
-def draw_subtitle(d, text, t, a, b, W, H, sc):
+def wrap_px(d, text, f, maxw):
+    """Egy vagy két kiegyensúlyozott sor, pixelszélesség szerint (kínaiban karakterenként,
+    írásjel nem kerül sor elejére)."""
+    text = text.replace("\n", "" if CJK else " ").strip()
+    if d.textlength(text, font=f) <= maxw:
+        return [text]
+    units = list(text) if CJK else text.split(" ")
+    sep = "" if CJK else " "
+    best = None
+    for i in range(1, len(units)):
+        if CJK and units[i] in "，。、；：！？）」”":
+            continue
+        a, b = sep.join(units[:i]), sep.join(units[i:])
+        w = max(d.textlength(a, font=f), d.textlength(b, font=f))
+        if best is None or w < best[0]:
+            best = (w, [a, b])
+    return best[1] if best else [text]
+
+
+def band_h(H):
+    return int(round(0.13 * H / 2)) * 2
+
+
+def draw_caption_bar(d, text, t, a, b, W, H, sc):
+    """Rögzített feliratsáv a kép alján (a 3D-kép a sáv fölött van); max. 2 sor, középre zárva."""
+    bh = band_h(H)
     k = eo((t - a) / 0.15) * (1 - eo((t - b + 0.12) / 0.12))
-    if k <= 0.01:
+    if k <= 0.01 or not text:
         return
-    f = font(38 * sc, 600, 100)
-    lines = text.split("\n")[:2]
-    lh = 50 * sc
-    widths = [d.textbbox((0, 0), ln, font=f)[2] for ln in lines]
-    padx, pady = 24 * sc, 14 * sc
-    bw = max(widths) + 2 * padx
-    bh = lh * len(lines) + 2 * pady
-    x0 = (W - bw) / 2
-    y1 = H - 0.065 * H
-    y0 = y1 - bh
-    d.rectangle([x0, y0, x0 + bw, y1], fill=INK + (int(217 * k),))
-    cap = f.getbbox("Hg")
+    maxw = W - 2 * 0.06 * W
+    size = 41.5 * sc
+    while True:
+        f = font(size, 600, 100)
+        lines = wrap_px(d, text, f, maxw)
+        lh = size * 1.22
+        if (all(d.textlength(ln, font=f) <= maxw for ln in lines) and lh * len(lines) <= bh - 10 * sc) \
+                or size < 28 * sc:
+            break
+        size -= 1.5 * sc
+    cap = f.getbbox("Hg") if not CJK else f.getbbox("中")
+    y0 = H - bh + (bh - lh * len(lines)) / 2
     for j, ln in enumerate(lines):
-        d.text(((W - widths[j]) / 2, y0 + pady + j * lh + (lh - (cap[3] - cap[1])) / 2 - cap[1]), ln,
-               font=f, fill=(255, 255, 255, int(255 * k)))
+        w = d.textlength(ln, font=f)
+        d.text(((W - w) / 2, y0 + j * lh + (lh - (cap[3] - cap[1])) / 2 - cap[1]), ln,
+               font=f, fill=INK + (int(255 * k),))
 
 
 def draw_end_card(img, t, t0, W, H, sc):
@@ -525,9 +561,14 @@ def draw_end_card(img, t, t0, W, H, sc):
     d = ImageDraw.Draw(ov)
     kt = eo((t - t0 - 0.35) / 0.5)
     if kt > 0:
-        f = font(132 * sc, 800, 62)
-        txt = "Kompozit érthetően"
-        tw = d.textbbox((0, 0), txt, font=f)[2]
+        txt = __import__("cues").TXT["card"]
+        fs = 132 * sc
+        while True:
+            f = font(fs, 800, 62)
+            tw = d.textbbox((0, 0), txt, font=f)[2]
+            if tw <= 0.88 * W or fs < 60 * sc:
+                break
+            fs -= 4 * sc
         y = 0.40 * H + (1 - kt) * 30 * sc
         d.text(((W - tw) / 2, y), txt, font=f, fill=INK + (int(255 * kt),))
         bw = 120 * sc * eo((t - t0 - 0.6) / 0.4)
@@ -557,6 +598,14 @@ def _light_frame(idx):
     if os.path.exists(mask):
         draw_highlight_light(img, mask, sc)
         os.remove(mask)
+    cv = c.get("canvas")
+    if cv and (W, H) != tuple(cv):
+        # a 3D-kép a sáv fölé kerül; alul a rögzített feliratsáv (oldalszínű, „raised” tónus)
+        full = Image.new("RGBA", tuple(cv), BAND_COL + (255,))
+        full.paste(img, (0, 0))
+        img, (W, H) = full, tuple(cv)
+    elif cv:
+        ImageDraw.Draw(img).rectangle([0, H - band_h(H), W, H], fill=BAND_COL + (255,))
     if t < 0.45:                                        # nyitás: az oldal színéből
         img.alpha_composite(Image.new("RGBA", img.size, PAGE + (int(255 * (1 - eo(t / 0.45))),)))
     ov = Image.new("RGBA", img.size, (0, 0, 0, 0))
@@ -578,7 +627,7 @@ def _light_frame(idx):
     if card_t0 is None or t < card_t0 + 0.3:
         for (sa, sb, txt) in c["subs"]:
             if sa - 0.05 <= t <= sb + 0.05:
-                draw_subtitle(d, txt, t, sa, sb, W, H, sc)
+                draw_caption_bar(d, txt, t, sa, sb, W, H, sc)
     img.alpha_composite(ov)
     if card_t0 is not None:
         draw_end_card(img, t, card_t0, W, H, sc)
@@ -590,7 +639,7 @@ def _init_light(ctx):
     sys.path.insert(0, HERE)
 
 
-def main_light(frames_dir, plan_path, subs_path):
+def main_light(frames_dir, plan_path, subs_path, canvas=None):
     sys.path.insert(0, HERE)
     import cues
     with open(plan_path, encoding="utf-8") as f:
@@ -610,7 +659,7 @@ def main_light(frames_dir, plan_path, subs_path):
     last = plan["scenes"][-1]
     kc = cues.extra(last, "card")
     card_t0 = last["start"] + kc - 0.25 if kc is not None else None
-    ctx = dict(dir=frames_dir, fps=fps, scenes=scenes, subs=subs, card_t0=card_t0)
+    ctx = dict(dir=frames_dir, fps=fps, scenes=scenes, subs=subs, card_t0=card_t0, canvas=canvas)
     idxs = list(range(plan["total_frames"]))
     from multiprocessing import Pool
     with Pool(max(1, (os.cpu_count() or 2) - 1), initializer=_init_light, initargs=(ctx,)) as pool:
@@ -624,7 +673,8 @@ if __name__ == "__main__":
     argv = sys.argv[1:]
     if "--plan" in argv:     # LIGHT stílus
         frames = argv[argv.index("--frames") + 1] if "--frames" in argv else os.path.join(HERE, "frames")
-        main_light(frames, argv[argv.index("--plan") + 1], argv[argv.index("--subs") + 1])
+        cv = tuple(int(v) for v in argv[argv.index("--canvas") + 1].split("x")) if "--canvas" in argv else None
+        main_light(frames, argv[argv.index("--plan") + 1], argv[argv.index("--subs") + 1], cv)
         sys.exit(0)
     frames = argv[argv.index("--frames") + 1] if "--frames" in argv else os.path.join(HERE, "frames")
     labels = argv[argv.index("--labels") + 1] if "--labels" in argv else os.path.join(HERE, "labels.json")
