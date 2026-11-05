@@ -472,10 +472,13 @@ def draw_layer_stack(d, evs, t, a, b, W, H, sc):
     if slab("flowmesh", 15 * sc, lw - 8 * sc, L["flowmesh"], dx=-12 * sc, hatch="#2e7d50"):
         mesh_top = y
     C = __import__("cues").P["consumables"]
-    g = appear("spiral")
-    if g > 0:
+    for name, xx, col in (("spiral_in", cx - lw - 2 * sc, C["inlet_spiral"]["color"]),
+                          ("spiral_vac", cx + lw + 2 * sc, C["vacuum_spiral"]["color"])):
+        g = appear(name)
+        if g <= 0:
+            continue
         r = 12 * sc * eo(g)
-        for xx, col in ((cx - lw - 2 * sc, C["inlet_spiral"]["color"]), (cx + lw + 2 * sc, C["vacuum_spiral"]["color"])):
+        if True:
             d.ellipse([xx - r, mesh_top - 2 * r, xx + r, mesh_top], fill=hexrgb(col) + (int(255 * k * g),),
                       outline=INK + (int(90 * k * g),))
     g = appear("tape")

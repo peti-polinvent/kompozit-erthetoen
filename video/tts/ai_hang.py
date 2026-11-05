@@ -33,7 +33,10 @@ PITCH = "+0Hz"
 async def main():
     with open(os.path.join(HERE, "segments.json"), encoding="utf-8") as f:
         segs = json.load(f)
+    only = sys.argv[1:]          # pl. python ai_hang.py 03 → csak a megadott jelenet(ek)
     for key, text in segs.items():
+        if only and key not in only:
+            continue
         out = os.path.join(HERE, f"{key}.mp3")
         # a szóhatár-események (WordBoundary) a felirat és a kiemelések pontos időzítéséhez:
         # NN_words.json = [{"text", "start", "end"} …] másodpercben, az mp3 elejétől

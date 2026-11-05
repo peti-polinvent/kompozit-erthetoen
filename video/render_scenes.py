@@ -248,7 +248,7 @@ def light_2_equipment(t, s):
 def light_3_layup(t, s):
     ts = scene_time(t, s)
     L = s["length"]
-    t_peel, t_tape = ev_t(2, 2, 0.4 * L), ev_t(2, 5, 0.75 * L)
+    t_peel, t_tape = ev_t(2, 2, 0.4 * L), ev_t(2, 6, 0.75 * L)   # letépő szövet, tömítőszalag
     tour_end = TOUR_END * L
     if ts < tour_end:
         EXTRA_NOW[0] = EXTRA_GAP_SCENE[2]
@@ -382,8 +382,8 @@ def apply_word_timing(plan):
             L = s["length"]
             HIGHLIGHTS[idx] = [(e["keys"], "", (0, 0), max(0.0, (e["t0"] - 0.1) / L), min(1.0, (e["t1"] - 0.1) / L))
                                for e in EV[idx]]
-        if len(EV[2]) == 7:
-            TOUR_END = EV[2][6]["t0"] / plan["scenes"][2]["length"] + 0.04
+        if EV[2] and EV[2][-1]["label"] == "Vákuumfólia":
+            TOUR_END = EV[2][-1]["t0"] / plan["scenes"][2]["length"] + 0.04
         print("[időzítés] light:", {k: [round(e["t0"], 2) for e in v] for k, v in EV.items()})
         return
     for s in plan["scenes"]:

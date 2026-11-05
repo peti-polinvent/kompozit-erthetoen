@@ -67,76 +67,101 @@
  {
   "text": "Letépő",
   "start": 10.125,
-  "end": 10.787
+  "end": 10.825
  },
  {
   "text": "szövet",
-  "start": 10.787,
-  "end": 11.2
- },
- {
-  "text": "és",
-  "start": 11.2,
+  "start": 10.825,
   "end": 11.312
  },
  {
-  "text": "gyantavezető",
+  "text": "és",
   "start": 11.312,
-  "end": 12.05
+  "end": 11.45
+ },
+ {
+  "text": "gyantavezető",
+  "start": 11.45,
+  "end": 12.262
  },
  {
   "text": "háló",
-  "start": 12.05,
-  "end": 12.6
+  "start": 12.262,
+  "end": 12.812
  },
  {
-  "text": "a",
-  "start": 12.812,
-  "end": 12.925
+  "text": "Az",
+  "start": 13.65,
+  "end": 13.938
  },
  {
-  "text": "két",
-  "start": 12.925,
-  "end": 13.25
+  "text": "egyik",
+  "start": 13.938,
+  "end": 14.238
  },
  {
   "text": "szélén",
-  "start": 13.25,
-  "end": 13.688
+  "start": 14.238,
+  "end": 14.663
+ },
+ {
+  "text": "belép",
+  "start": 14.662,
+  "end": 14.987
  },
  {
   "text": "a",
-  "start": 13.688,
-  "end": 13.713
+  "start": 14.988,
+  "end": 15.025
  },
  {
   "text": "gyanta",
-  "start": 13.713,
-  "end": 14.113
+  "start": 15.025,
+  "end": 15.575
  },
  {
-  "text": "útja",
-  "start": 14.113,
-  "end": 14.638
+  "text": "a",
+  "start": 15.887,
+  "end": 16.0
+ },
+ {
+  "text": "másikon",
+  "start": 16.0,
+  "end": 16.625
+ },
+ {
+  "text": "elszívjuk",
+  "start": 16.625,
+  "end": 17.188
+ },
+ {
+  "text": "a",
+  "start": 17.188,
+  "end": 17.225
+ },
+ {
+  "text": "levegőt",
+  "start": 17.225,
+  "end": 17.9
  },
  {
   "text": "Végül",
-  "start": 15.475,
-  "end": 16.012
+  "start": 18.738,
+  "end": 19.275
  },
  {
   "text": "tömítőszalag",
-  "start": 16.012,
-  "end": 16.938
+  "start": 19.275,
+  "end": 20.2
  },
  {
   "text": "és",
-  "start": 16.938,
-  "end": 17.1
+  "start": 20.2,
+  "end": 20.363
  },
  {
   "text": "vákuumfólia",
-  "start": 17.1,
-  "end": 18.275
+  "start": 20.363,
+  "end": 21.538
  }
 ]
