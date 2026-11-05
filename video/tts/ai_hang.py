@@ -26,8 +26,8 @@ except ImportError:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 VOICE = "hu-HU-TamasNeural"
-RATE = "-10%"      # lassabb, nyomatékosabb
-PITCH = "-6Hz"     # kicsit mélyebb
+RATE = "40%"      # lassabb, nyomatékosabb
+PITCH = "-20Hz"     # kicsit mélyebb
 
 
 async def main():
