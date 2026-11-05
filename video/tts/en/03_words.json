@@ -17,186 +17,211 @@
  {
   "text": "Release",
   "start": 1.938,
-  "end": 2.42
+  "end": 2.394
  },
  {
   "text": "agent",
-  "start": 2.433,
+  "start": 2.407,
   "end": 2.849
  },
  {
   "text": "so",
-  "start": 3.071,
-  "end": 3.214
- },
- {
-  "text": "nothing",
-  "start": 3.227,
-  "end": 3.67
- },
- {
-  "text": "sticks",
-  "start": 3.683,
-  "end": 4.243
- },
- {
-  "text": "Reinforcement",
-  "start": 5.141,
-  "end": 6.092
- },
- {
-  "text": "fabrics",
-  "start": 6.105,
-  "end": 6.652
- },
- {
-  "text": "laid",
-  "start": 6.795,
-  "end": 7.081
- },
- {
-  "text": "in",
-  "start": 7.094,
-  "end": 7.172
+  "start": 3.058,
+  "end": 3.162
  },
  {
   "text": "the",
-  "start": 7.185,
-  "end": 7.264
+  "start": 3.175,
+  "end": 3.266
+ },
+ {
+  "text": "part",
+  "start": 3.279,
+  "end": 3.605
+ },
+ {
+  "text": "comes",
+  "start": 3.618,
+  "end": 3.93
+ },
+ {
+  "text": "off",
+  "start": 3.943,
+  "end": 4.073
+ },
+ {
+  "text": "the",
+  "start": 4.086,
+  "end": 4.165
+ },
+ {
+  "text": "mould",
+  "start": 4.178,
+  "end": 4.477
+ },
+ {
+  "text": "cleanly",
+  "start": 4.49,
+  "end": 5.037
+ },
+ {
+  "text": "Reinforcement",
+  "start": 5.935,
+  "end": 6.886
+ },
+ {
+  "text": "fabrics",
+  "start": 6.899,
+  "end": 7.446
+ },
+ {
+  "text": "laid",
+  "start": 7.589,
+  "end": 7.876
+ },
+ {
+  "text": "in",
+  "start": 7.889,
+  "end": 7.967
+ },
+ {
+  "text": "the",
+  "start": 7.98,
+  "end": 8.058
  },
  {
   "text": "right",
-  "start": 7.277,
-  "end": 7.537
+  "start": 8.071,
+  "end": 8.331
  },
  {
   "text": "directions",
-  "start": 7.55,
-  "end": 8.344
+  "start": 8.344,
+  "end": 9.139
  },
  {
   "text": "Peel",
-  "start": 9.243,
-  "end": 9.555
+  "start": 10.037,
+  "end": 10.35
  },
  {
   "text": "ply",
-  "start": 9.568,
-  "end": 9.829
+  "start": 10.363,
+  "end": 10.623
  },
  {
   "text": "and",
-  "start": 9.842,
-  "end": 9.959
- },
- {
-  "text": "flow",
-  "start": 9.972,
-  "end": 10.245
- },
- {
-  "text": "mesh",
-  "start": 10.258,
+  "start": 10.636,
   "end": 10.753
  },
  {
+  "text": "flow",
+  "start": 10.766,
+  "end": 11.04
+ },
+ {
+  "text": "mesh",
+  "start": 11.053,
+  "end": 11.547
+ },
+ {
   "text": "Resin",
-  "start": 11.652,
-  "end": 12.068
+  "start": 12.446,
+  "end": 12.862
  },
  {
   "text": "enters",
-  "start": 12.081,
-  "end": 12.446
- },
- {
-  "text": "at",
-  "start": 12.459,
-  "end": 12.589
- },
- {
-  "text": "one",
-  "start": 12.602,
-  "end": 12.915
- },
- {
-  "text": "edge",
-  "start": 12.928,
+  "start": 12.876,
   "end": 13.24
  },
  {
   "text": "at",
-  "start": 13.527,
-  "end": 13.605
+  "start": 13.253,
+  "end": 13.383
  },
  {
-  "text": "the",
-  "start": 13.618,
-  "end": 13.735
+  "text": "one",
+  "start": 13.396,
+  "end": 13.709
  },
  {
-  "text": "other",
-  "start": 13.748,
+  "text": "edge",
+  "start": 13.722,
   "end": 14.034
  },
  {
+  "text": "at",
+  "start": 14.321,
+  "end": 14.399
+ },
+ {
+  "text": "the",
+  "start": 14.412,
+  "end": 14.529
+ },
+ {
+  "text": "other",
+  "start": 14.542,
+  "end": 14.829
+ },
+ {
   "text": "we",
-  "start": 14.217,
-  "end": 14.36
+  "start": 15.011,
+  "end": 15.154
  },
  {
   "text": "pull",
-  "start": 14.373,
-  "end": 14.62
+  "start": 15.167,
+  "end": 15.415
  },
  {
   "text": "out",
-  "start": 14.633,
-  "end": 14.842
+  "start": 15.428,
+  "end": 15.636
  },
  {
   "text": "the",
-  "start": 14.855,
-  "end": 15.024
+  "start": 15.649,
+  "end": 15.818
  },
  {
   "text": "air",
-  "start": 15.037,
-  "end": 15.363
+  "start": 15.831,
+  "end": 16.157
  },
  {
   "text": "Finally",
-  "start": 16.261,
-  "end": 16.847
+  "start": 17.055,
+  "end": 17.641
  },
  {
   "text": "sealant",
-  "start": 17.042,
-  "end": 17.42
+  "start": 17.836,
+  "end": 18.214
  },
  {
   "text": "tape",
-  "start": 17.433,
-  "end": 17.732
+  "start": 18.227,
+  "end": 18.527
  },
  {
   "text": "and",
-  "start": 17.745,
-  "end": 17.823
+  "start": 18.54,
+  "end": 18.618
  },
  {
   "text": "the",
-  "start": 17.836,
-  "end": 17.902
+  "start": 18.631,
+  "end": 18.696
  },
  {
   "text": "vacuum",
-  "start": 17.915,
-  "end": 18.422
+  "start": 18.709,
+  "end": 19.217
  },
  {
   "text": "bag",
-  "start": 18.435,
-  "end": 18.917
+  "start": 19.23,
+  "end": 19.711
  }
 ]

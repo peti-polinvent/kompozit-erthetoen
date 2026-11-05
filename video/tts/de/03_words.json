@@ -17,161 +17,186 @@
  {
   "text": "Trennmittel",
   "start": 2.122,
-  "end": 2.799
+  "end": 2.813
  },
  {
   "text": "damit",
-  "start": 3.021,
-  "end": 3.307
- },
- {
-  "text": "nichts",
-  "start": 3.32,
-  "end": 3.555
- },
- {
-  "text": "klebt",
-  "start": 3.672,
-  "end": 3.984
- },
- {
-  "text": "Verstärkungsgewebe",
-  "start": 5.0,
-  "end": 6.211
- },
- {
-  "text": "in",
-  "start": 6.432,
-  "end": 6.51
- },
- {
-  "text": "den",
-  "start": 6.55,
-  "end": 6.693
- },
- {
-  "text": "richtigen",
-  "start": 6.732,
-  "end": 7.161
- },
- {
-  "text": "Richtungen",
-  "start": 7.201,
-  "end": 7.708
- },
- {
-  "text": "Abreißgewebe",
-  "start": 8.75,
-  "end": 9.596
- },
- {
-  "text": "und",
-  "start": 9.675,
-  "end": 9.805
- },
- {
-  "text": "Fließhilfe",
-  "start": 9.831,
-  "end": 10.495
- },
- {
-  "text": "An",
-  "start": 11.523,
-  "end": 11.693
- },
- {
-  "text": "einer",
-  "start": 11.745,
-  "end": 11.953
- },
- {
-  "text": "Kante",
-  "start": 12.018,
-  "end": 12.344
- },
- {
-  "text": "strömt",
-  "start": 12.357,
-  "end": 12.721
+  "start": 3.034,
+  "end": 3.268
  },
  {
   "text": "das",
-  "start": 12.734,
-  "end": 12.904
+  "start": 3.281,
+  "end": 3.464
  },
  {
-  "text": "Harz",
-  "start": 12.943,
-  "end": 13.216
+  "text": "Bauteil",
+  "start": 3.529,
+  "end": 3.984
  },
  {
-  "text": "ein",
-  "start": 13.281,
-  "end": 13.542
+  "text": "nicht",
+  "start": 4.023,
+  "end": 4.219
  },
  {
   "text": "an",
-  "start": 13.724,
-  "end": 13.854
+  "start": 4.284,
+  "end": 4.401
  },
  {
   "text": "der",
-  "start": 13.88,
-  "end": 13.971
+  "start": 4.427,
+  "end": 4.531
  },
  {
-  "text": "anderen",
-  "start": 14.05,
-  "end": 14.453
+  "text": "Form",
+  "start": 4.544,
+  "end": 4.779
  },
  {
-  "text": "saugen",
-  "start": 14.466,
-  "end": 14.818
+  "text": "haftet",
+  "start": 4.805,
+  "end": 5.221
  },
  {
-  "text": "wir",
-  "start": 14.857,
-  "end": 14.948
+  "text": "Verstärkungsgewebe",
+  "start": 6.237,
+  "end": 7.448
  },
  {
-  "text": "die",
-  "start": 14.987,
-  "end": 15.052
+  "text": "in",
+  "start": 7.669,
+  "end": 7.747
  },
  {
-  "text": "Luft",
-  "start": 15.078,
-  "end": 15.312
+  "text": "den",
+  "start": 7.786,
+  "end": 7.93
  },
  {
-  "text": "ab",
-  "start": 15.378,
-  "end": 15.521
+  "text": "richtigen",
+  "start": 7.969,
+  "end": 8.398
  },
  {
-  "text": "Zum",
-  "start": 16.536,
-  "end": 16.797
+  "text": "Richtungen",
+  "start": 8.438,
+  "end": 8.945
  },
  {
-  "text": "Schluss",
-  "start": 16.81,
-  "end": 17.135
- },
- {
-  "text": "Dichtband",
-  "start": 17.188,
-  "end": 17.76
+  "text": "Abreißgewebe",
+  "start": 9.987,
+  "end": 10.833
  },
  {
   "text": "und",
-  "start": 17.826,
-  "end": 17.982
+  "start": 10.911,
+  "end": 11.042
+ },
+ {
+  "text": "Fließhilfe",
+  "start": 11.068,
+  "end": 11.732
+ },
+ {
+  "text": "An",
+  "start": 12.76,
+  "end": 12.93
+ },
+ {
+  "text": "einer",
+  "start": 12.982,
+  "end": 13.19
+ },
+ {
+  "text": "Kante",
+  "start": 13.255,
+  "end": 13.581
+ },
+ {
+  "text": "strömt",
+  "start": 13.594,
+  "end": 13.958
+ },
+ {
+  "text": "das",
+  "start": 13.971,
+  "end": 14.141
+ },
+ {
+  "text": "Harz",
+  "start": 14.18,
+  "end": 14.453
+ },
+ {
+  "text": "ein",
+  "start": 14.518,
+  "end": 14.779
+ },
+ {
+  "text": "an",
+  "start": 14.961,
+  "end": 15.091
+ },
+ {
+  "text": "der",
+  "start": 15.117,
+  "end": 15.208
+ },
+ {
+  "text": "anderen",
+  "start": 15.286,
+  "end": 15.69
+ },
+ {
+  "text": "saugen",
+  "start": 15.703,
+  "end": 16.055
+ },
+ {
+  "text": "wir",
+  "start": 16.094,
+  "end": 16.185
+ },
+ {
+  "text": "die",
+  "start": 16.224,
+  "end": 16.289
+ },
+ {
+  "text": "Luft",
+  "start": 16.315,
+  "end": 16.549
+ },
+ {
+  "text": "ab",
+  "start": 16.615,
+  "end": 16.758
+ },
+ {
+  "text": "Zum",
+  "start": 17.773,
+  "end": 18.034
+ },
+ {
+  "text": "Schluss",
+  "start": 18.047,
+  "end": 18.372
+ },
+ {
+  "text": "Dichtband",
+  "start": 18.424,
+  "end": 18.997
+ },
+ {
+  "text": "und",
+  "start": 19.062,
+  "end": 19.219
  },
  {
   "text": "Vakuumfolie",
-  "start": 18.008,
-  "end": 18.867
+  "start": 19.245,
+  "end": 20.104
  }
 ]
