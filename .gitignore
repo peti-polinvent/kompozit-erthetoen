@@ -16,3 +16,9 @@ video/narracio_mix.m4a
 video/tts/*_espeak.wav
 models/compactdrum.obj
 models/*.mtl
+
+.claude/settings.local.json
+video/tts/trimmed/
+video/music/
+video/akcio_mix.m4a
+video/scene_plan.json
