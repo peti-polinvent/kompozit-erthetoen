@@ -12,7 +12,9 @@
     if (b) {
       var dark = effective() === 'dark';
       b.setAttribute('aria-pressed', String(dark));
-      b.querySelector('span').textContent = dark ? 'Világos téma' : 'Sötét téma';
+      var T = window.I18N ? I18N.t : function (k, hu) { return hu; };
+      b.querySelector('span').textContent = dark ? T('theme.light', 'Világos téma') : T('theme.dark', 'Sötét téma');
+      b.title = T('theme.title', 'Világos / sötét téma');
     }
     document.dispatchEvent(new CustomEvent('themechange', { detail: effective() }));
   }
@@ -27,5 +29,6 @@
     });
     apply(root.getAttribute('data-theme'));
   });
+  document.addEventListener('langchange', function () { apply(root.getAttribute('data-theme')); });
   if (mq.addEventListener) mq.addEventListener('change', function () { if (!stored()) apply(null); });
 })();
