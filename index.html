@@ -180,6 +180,66 @@ details.journal summary{cursor:pointer;padding:20px clamp(20px,3vw,32px);font-we
 #naplo hr{border:0;height:8px;background:var(--sunk);margin:28px 0}
 footer{padding:48px 0 64px;font-size:var(--s1);color:var(--muted)}
 footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-between}
+
+/* rétegrend-építő (assets/sim/builder.js) */
+.build{background:var(--sunk)}
+.build-head{display:grid;gap:16px;margin-bottom:clamp(28px,4vw,56px)}
+@media(min-width:900px){.build-head{grid-template-columns:1fr 1fr;align-items:end}}
+.build-grid{display:grid;gap:clamp(32px,4vw,64px);align-items:start}
+.build-grid>*{min-width:0}
+@media(min-width:1000px){.build-grid{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}.build-see{position:sticky;top:72px}}
+.build h3{font-size:var(--s2);font-stretch:100%;margin:0 0 12px}
+.build-make h3+*{margin-bottom:28px}
+.bseg{display:flex;flex-wrap:wrap;gap:8px}
+.bseg button{font:600 var(--s1)/1.2 var(--display);padding:11px 14px;border:0;border-radius:2px;background:var(--raised);color:var(--ink);cursor:pointer}
+.bseg button:hover{background:var(--resin);color:var(--on-resin)}
+.bseg button[aria-pressed="true"]{background:var(--ink);color:var(--ground)}
+.bpal{display:grid;gap:2px}
+@media(min-width:560px){.bpal{grid-template-columns:1fr 1fr}}
+.bpal button{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:18px 1fr;gap:2px 10px;padding:10px 12px;background:var(--raised)}
+.bpal button:hover{background:var(--ground)}
+.bpal button:focus-visible{outline:3px solid var(--resin);outline-offset:-3px}
+.bpal button:disabled{opacity:.45;cursor:not-allowed}
+.bpal .chip{margin-top:2px}
+.bpal b{font-size:var(--s1);line-height:1.3}
+.bpal small{grid-column:2;font-size:13px;line-height:1.35;color:var(--muted)}
+.bstack-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.bstack-head span{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bxsec{display:flex;flex-direction:column-reverse;gap:1px;margin:0 0 12px}
+.bxsec i{display:block}
+.bplies{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.bplies li{display:flex;align-items:center;gap:6px;padding:6px;background:var(--raised)}
+.bplies li>i{width:10px;align-self:stretch;flex:none}
+.bplies .pn{flex:1;min-width:0;font-size:var(--s1);font-weight:600;line-height:1.25;overflow-wrap:anywhere}
+.bplies .pn small{display:block;font-weight:400;color:var(--muted)}
+.bplies select{font:600 var(--s1) var(--display);padding:8px 4px;border:0;border-radius:2px;background:var(--sunk);color:var(--ink);flex:none}
+.bplies .pa{font-size:13px;color:var(--muted);flex:none;max-width:6em;text-align:right;line-height:1.2}
+.bplies button{font:700 var(--s2)/1 var(--display);padding:9px 0;width:36px;flex:none;border:0;border-radius:2px;background:var(--sunk);color:var(--ink);cursor:pointer}
+.bplies button:disabled{opacity:.3;cursor:default}
+.bplies button:not(:disabled):hover{background:var(--ink);color:var(--ground)}
+.bplies .none{padding:16px;color:var(--muted);display:block}
+.bnote{font-size:var(--s1);color:var(--muted);margin:10px 0 0}
+#bCanvas{display:block;width:100%;aspect-ratio:16/10;background:var(--raised)}
+.bcap{font-size:var(--s1);color:var(--muted);margin:10px 0 24px}
+.build label.bl{display:block;font-weight:700;margin:18px 0 8px}
+.build input[type=range]{width:100%;accent-color:var(--resin-deep)}
+.bread{display:grid;grid-template-columns:1fr 1fr;gap:22px 24px;margin:28px 0 0}
+.bread>div{min-width:0}
+.bread dt{font-size:var(--s1);font-weight:600;color:var(--muted);line-height:1.3}
+.bread dd{margin:6px 0 0;font:800 var(--s3)/1 var(--display);font-stretch:80%;font-variant-numeric:tabular-nums}
+.bread .big dd{font-size:var(--s4);font-stretch:70%}
+.bread small{font-size:.5em;margin-left:.2em;font-stretch:100%;font-weight:700}
+.bread p{font-size:var(--s1);color:var(--muted);margin:6px 0 0;line-height:1.4}
+.bread .wide{grid-column:1/-1}
+.bread .bad dd{color:var(--peel)}
+.bread input{font:700 var(--s1) var(--display);width:4.5em;padding:6px;border:0;border-radius:2px;background:var(--raised);color:var(--ink)}
+.bexplain{display:grid;gap:12px 48px;margin-top:clamp(40px,6vw,80px)}
+@media(min-width:900px){.bexplain{grid-template-columns:.85fr 1.15fr}}
+.bexplain ul{margin:0;padding:0 0 0 1.1em;display:grid;gap:10px}
+.bexplain li{max-width:64ch}
+.bexplain li.warn{list-style:none;margin-left:-1.1em;padding:10px 14px;background:var(--raised)}
+.bexplain li.warn b{color:var(--peel)}
+.bdisc{grid-column:1/-1;font-size:var(--s1);color:var(--muted);margin:8px 0 0}
 </style>
 </head>
 <body>
@@ -188,7 +248,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
   <div class="wrap">
     <a class="name" href="#top">Kompozit érthetően</a>
     <nav aria-label="Fő navigáció">
-      <a href="#hozzavalok">Hozzávalók</a><a href="#retegrend">Rétegrend</a><a href="#modell">3D modell</a><a href="#elkeszites">Elkészítés</a><a href="#ido">Kitöltési idő</a><a href="#keszites">Hogyan készült</a>
+      <a href="#hozzavalok">Hozzávalók</a><a href="#retegrend">Rétegrend</a><a href="#modell">3D modell</a><a href="#elkeszites">Elkészítés</a><a href="#ido">Kitöltési idő</a><a href="#epits">Rétegrend-építő</a><a href="#keszites">Hogyan készült</a>
     </nav>
   </div>
 </header>
@@ -340,6 +400,51 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
       <p class="muted" style="font-size:var(--s1);margin:8px 0 0">A fehér vonal: a gyanta fazékideje (példaként 60 perc).</p>
       <p class="verdict" id="verdict"></p>
       <p class="formula muted">Becslés a Darcy-törvényből: t ≈ μ·φ·L² / (2·K·Δp). A hossz a <b>négyzetével</b> számít: kétszer olyan hosszú lap négyszer annyi ideig töltődik. Feltevések: gyanta viszkozitása 0,2 Pa·s, porozitás 0,5, nyomáskülönbség 0,9 bar, áteresztőképesség hálóval 10⁻⁹ m², háló nélkül 10⁻¹⁰ m². Tájékoztató érték, nem méretezés.</p>
+    </div>
+  </div>
+</section>
+
+<section class="build" id="epits" aria-labelledby="h-build">
+  <div class="wrap">
+    <div class="build-head">
+      <h2 id="h-build">Építs saját rétegrendet</h2>
+      <p class="muted">Rakj össze legfeljebb húsz réteget, tegyél terhet a lapra, és nézd meg, mennyit hajlik, és hol jelenik meg rajta az első repedés. A lap 400 × 300 mm-es, és a négy szélén alátámasztva fekszik, mint egy polclap a keretén.</p>
+    </div>
+    <div class="build-grid">
+      <div class="build-make">
+        <h3 id="b-pre">Kezdd egy kész rétegrenddel</h3>
+        <div class="bseg" id="bPresets" role="group" aria-labelledby="b-pre"></div>
+        <h3 id="b-pal">Tegyél rá egy réteget</h3>
+        <div class="bpal" id="bPalette" role="group" aria-labelledby="b-pal"></div>
+        <div class="bstack-head"><h3 id="b-st">A rétegrended, felülről lefelé</h3><span id="bCount" aria-live="polite"></span></div>
+        <div class="bxsec" id="bXsec" aria-hidden="true"></div>
+        <ol class="bplies" id="bPlies" aria-labelledby="b-st"></ol>
+        <p class="bnote">Legalul a szerszám felőli oldal. Az új réteg mindig felülre kerül.</p>
+      </div>
+      <div class="build-see">
+        <canvas id="bCanvas" role="img" aria-label="A terhelt lap lehajlása"></canvas>
+        <p class="bcap" id="bCap"></p>
+        <h3 id="b-load">Terhelés</h3>
+        <div class="bseg" id="bMode" role="group" aria-labelledby="b-load">
+          <button type="button" data-mode="pressure" aria-pressed="true">Egyenletes nyomás</button>
+          <button type="button" data-mode="patch" aria-pressed="false">Ráálló súly középen</button>
+        </div>
+        <label class="bl" for="bLoad" id="bLoadLbl">Nyomás</label>
+        <input id="bLoad" type="range">
+        <dl class="bread">
+          <div class="big"><dt>Legnagyobb lehajlás</dt><dd><span id="rW">–</span><small>mm</small></dd><p id="rWp"></p></div>
+          <div class="big" id="rFbox"><dt>Első repedés ennél a terhelésnél</dt><dd><span id="rF">–</span><small id="rFu"></small></dd><p id="rFm"></p></div>
+          <div><dt>Vastagság</dt><dd><span id="rH">–</span><small>mm</small></dd></div>
+          <div><dt>Tömeg</dt><dd><span id="rM">–</span><small>kg/m²</small></dd><p id="rMp"></p></div>
+          <div class="wide"><dt>Merevség húzásra (x / y)</dt><dd><span id="rE">–</span><small>GPa</small></dd><p id="rEp"></p></div>
+          <div class="wide"><dt><label for="bTarget">Mekkora terhelés kell <input id="bTarget" type="number" min="0.1" max="200" step="0.5" value="5"> mm lehajláshoz?</label></dt><dd><span id="rT">–</span><small id="rTu"></small></dd><p id="rTp"></p></div>
+        </dl>
+      </div>
+    </div>
+    <div class="bexplain">
+      <h3>Mit jelentenek a számok?</h3>
+      <ul id="bExplain" aria-live="polite"></ul>
+      <p class="bdisc">Egyszerűsített mérnöki becslés (klasszikus rétegelmélet), nem méretezés.</p>
     </div>
   </div>
 </section>
@@ -501,5 +606,6 @@ $('#naploBox').addEventListener('toggle', e => {
     .catch(() => { $('#naplo').innerHTML = '<p>A napló a <a href="NAPLO.md">NAPLO.md</a> fájlban olvasható.</p>'; });
 });
 </script>
+<script type="module" src="assets/sim/builder.js"></script>
 </body>
 </html>
