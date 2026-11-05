@@ -251,6 +251,220 @@ def build_music(scenes, total, tail=2.5):
     return np.stack([left, right], axis=1)
 
 
+# =====================================================================================
+# LIGHT stílus: könnyed, meleg, 104 BPM, C-dúr (C–G–Am–F). Marimba/kalimba-szerű pengetett
+# arpeggio, lágy szubbasszus, puha lábdob + taps a 2-re és 4-re, shaker tizenhatodok, meleg pad.
+# Rövid nyitó „sting”, finom felépülés a 4. jelenetig, feloldó akkord a zárókártya alatt.
+# A zene a narráció alatt −10 dB-lel lehalkul (a TTS szóhatár-idők adják az „oldalláncot”).
+# =====================================================================================
+L_BPM = 104
+L_BEAT = 60.0 / L_BPM
+L_CHORDS = [  # (basszus MIDI, akkordhangok MIDI) – I–V–vi–IV
+    (36, [60, 64, 67, 72]), (43, [59, 62, 67, 71]), (45, [57, 60, 64, 69]), (41, [57, 60, 65, 69])]
+
+
+def mtof(m):
+    return 440.0 * 2 ** ((m - 69) / 12)
+
+
+def marimba(f, dur=0.6, bright=1.0):
+    n = int(dur * SR); t = np.arange(n) / SR
+    x = (np.sin(2 * math.pi * f * t) * np.exp(-t * 7)
+         + 0.22 * bright * np.sin(2 * math.pi * 3.98 * f * t) * np.exp(-t * 28)
+         + 0.06 * bright * np.sin(2 * math.pi * 9.9 * f * t) * np.exp(-t * 60))
+    x[:96] *= np.linspace(0, 1, 96)
+    return x
+
+
+def soft_kick():
+    n = int(0.32 * SR); t = np.arange(n) / SR
+    f = 48 + 75 * np.exp(-t * 32)
+    return np.sin(2 * math.pi * np.cumsum(f) / SR) * np.exp(-t * 11)
+
+
+def clap(rng):
+    n = int(0.25 * SR); t = np.arange(n) / SR
+    x = bandpass_fast(rng.standard_normal(n), 900, 3200)
+    e = np.zeros(n)
+    for k, d in enumerate((0.0, 0.011, 0.022)):
+        i = int(d * SR); e[i:] += np.exp(-(t[: n - i]) * (60 if k < 2 else 16))
+    return x * e * 0.5
+
+
+def shaker(rng):
+    n = int(0.06 * SR); t = np.arange(n) / SR
+    x = bandpass_fast(rng.standard_normal(n), 5000, 11000)
+    return x * np.minimum(t / 0.012, 1.0) * np.exp(-t * 45)
+
+
+def place(buf, x, t, gain=1.0):
+    i0 = int(t * SR)
+    if i0 < 0 or i0 >= len(buf):
+        return
+    m = min(len(x), len(buf) - i0)
+    buf[i0:i0 + m] += x[:m] * gain
+
+
+def smooth_steps(n, pts):
+    """Lépcsős intenzitás-görbe (idő, érték) pontokból, lágy átmenettel."""
+    y = np.zeros(n)
+    for (t0, v), nxt in zip(pts, pts[1:] + [(n / SR, None)]):
+        y[int(t0 * SR):int(nxt[0] * SR)] = v
+    return lowpass_fast(y, 0.6)
+
+
+def build_music_light(plan, card_t):
+    sc = plan["scenes"]
+    total = plan["total_frames"] / plan["fps"]
+    n = int((total + 0.2) * SR)
+    rng = np.random.default_rng(4)
+    starts = [s["start"] for s in sc]
+    starts[0] = 0.0
+    # rétegek be-/kikapcsolása jelenetenként: (arp, pad, bass, kick, clap, shaker, arp-oktáv)
+    lv = {0: (1, 1, 0, 0, 0, 0.5, 0), 1: (1, 1, 1, 1, 0, 0.8, 0), 2: (1, 1, 1, 1, 1, 1, 0),
+          3: (1, 1, 1, 1, 1, 1, 1), 4: (1, 1, 1, 1, 1, 0.9, 0), 5: (1, 1, 0.6, 0, 0, 0.4, 0)}
+    curves = [smooth_steps(n, [(starts[i], lv[i][k]) for i in range(len(sc))]) for k in range(7)]
+    end_t = card_t if card_t else total - 3.0
+    stop = np.ones(n); stop[int(end_t * SR):] = 0; stop = lowpass_fast(stop, 3.0)   # a ritmus a kártyánál elhal
+    arp, pad, bass, drums, shk = (np.zeros(n) for _ in range(5))
+    t0 = 1.15                     # a nyitó „sting” után indul a groove
+    bar = 4 * L_BEAT
+    b = 0
+    while t0 + b * bar < end_t + bar:
+        tb = t0 + b * bar
+        root, ch = L_CHORDS[b % 4]
+        i = int(min(tb, total) * SR) % n
+        up = 12 if curves[6][i] > 0.5 else 0
+        for e, k in enumerate([0, 1, 2, 3, 2, 1, 0, 2]):
+            te = tb + e * L_BEAT / 2
+            if te < end_t:
+                place(arp, marimba(mtof(ch[k] + up), 0.55, 0.8 + 0.4 * (e % 2 == 0)), te, 0.9 - 0.25 * (e % 2))
+        # pad: az akkord egy oktávval lejjebb, lassú felfutással
+        ln = int((bar + 0.6) * SR)
+        tt = np.arange(ln) / SR
+        seg = sum(saw(mtof(m - 12), ln, 0.006) for m in ch[:3])
+        place(pad, seg * np.minimum(tt / 0.5, 1) * np.minimum((bar + 0.6 - tt) / 0.6, 1), tb)
+        for q in range(4):        # szubbasszus negyedekre, lágy
+            tq = tb + q * L_BEAT
+            if tq < end_t:
+                ln2 = int(L_BEAT * 0.9 * SR); t2 = np.arange(ln2) / SR
+                place(bass, np.sin(2 * math.pi * mtof(root - 12 + 12) * t2) * np.minimum(t2 / 0.01, 1) * np.exp(-t2 * 3),
+                      tq, 0.9 if q % 2 == 0 else 0.6)
+                place(drums, soft_kick() * (q % 2 == 0), tq, 1.0)
+                if q % 2 == 1:
+                    place(drums, clap(rng), tq, 0.0)          # helyfoglaló (a taps külön sávon)
+            for s16 in range(4):
+                ts = tq + s16 * L_BEAT / 4
+                if ts < end_t:
+                    place(shk, shaker(rng), ts, (1.0 if s16 == 2 else 0.55))
+        b += 1
+    claps = np.zeros(n)
+    b = 0
+    while t0 + b * bar < end_t:
+        for q in (1, 3):
+            place(claps, clap(rng), t0 + b * bar + q * L_BEAT)
+        b += 1
+    pad = lowpass_fast(pad, 1400)
+    arp = reverb_tail(arp, 0.9, 4.0)
+    mix = (arp * 0.30 * curves[0] + pad * 0.05 * curves[1] + bass * 0.30 * curves[2] * stop
+           + drums * 0.42 * curves[3] * stop + claps * 0.20 * curves[4] * stop + shk * 0.10 * curves[5] * stop)
+    # nyitó sting: felfutó C-dúr arpeggio + csengő
+    for k, m in enumerate([60, 64, 67, 72, 76, 79]):
+        place(mix, marimba(mtof(m), 1.2), 0.08 + k * 0.07, 0.30)
+    place(mix, marimba(mtof(84), 1.6, 1.4), 0.5, 0.18)
+    # feloldó akkord a zárókártya alatt (Cadd9), hosszan lecsengő
+    if card_t:
+        ln = int(max(total - card_t, 1.0) * SR + 0.2 * SR)
+        tt = np.arange(ln) / SR
+        ch = sum(saw(mtof(m), ln, 0.005) for m in (48, 55, 62, 64, 67))
+        ch = lowpass_fast(ch, 1600) * np.minimum(tt / 0.3, 1) * np.exp(-tt * 0.5)
+        place(mix, ch, card_t, 0.10)
+        for k, m in enumerate([72, 76, 79, 86]):
+            place(mix, marimba(mtof(m), 2.0), card_t + k * 0.09, 0.22)
+        place(mix, soft_kick(), card_t, 0.4)
+    fo = int(1.2 * SR)
+    mix[-fo:] *= np.linspace(1, 0, fo)
+    return mix
+
+
+def voice_duck(plan, n, depth_db=-10.0):
+    """Oldallánc-lehalkítás a szóhatárokból: beszéd alatt depth_db, 0,12 s támadás, 0,45 s elengedés."""
+    g = np.zeros(n)
+    for s in plan["scenes"]:
+        for w in s.get("words") or []:
+            a = int((s["start"] + w["start"] - 0.12) * SR); b = int((s["start"] + w["end"] + 0.25) * SR)
+            g[max(a, 0):max(min(b, n), 0)] = 1.0
+    g = lowpass_fast(g, 2.0)
+    g = np.clip(g / max(g.max(), 1e-6), 0, 1)
+    return 10 ** (depth_db * g / 20)
+
+
+def sfx_light(plan, cue_events, n, card_t):
+    """Finom hangeffektek: pipa/pop (checklista, címke), légies whoosh (jelenetváltás), sziszegés (vákuum be)."""
+    rng = np.random.default_rng(9)
+    out = np.zeros(n)
+    def tick():
+        m = int(0.07 * SR); t = np.arange(m) / SR
+        f = 1500 * np.exp(-t * 8)
+        return np.sin(2 * math.pi * np.cumsum(f) / SR) * np.exp(-t * 70) * 0.5
+    def pop():
+        m = int(0.08 * SR); t = np.arange(m) / SR
+        f = 380 + 520 * np.exp(-t * 60)
+        return np.sin(2 * math.pi * np.cumsum(f) / SR) * np.exp(-t * 45) * 0.45
+    def whoosh(d=0.75):
+        m = int(d * SR); u = np.linspace(0, 1, m)
+        x = bandpass_fast(rng.standard_normal(m), 700, 7000)
+        return x * np.sin(math.pi * u) ** 3 * 0.22
+    def hiss(d=1.4):
+        m = int(d * SR); t = np.arange(m) / SR
+        x = bandpass_fast(rng.standard_normal(m), 2500, 10000)
+        return x * np.minimum(t / 0.06, 1) * np.exp(-t * 2.2) * 0.16
+    for kind, t in cue_events:
+        if kind == "tick":
+            place(out, tick(), t)
+        elif kind == "pop":
+            place(out, pop(), t)
+        elif kind == "whoosh":
+            place(out, whoosh(), t - 0.45)
+        elif kind == "hiss":
+            place(out, hiss(), t)
+    return out
+
+
+def main_light(plan_path, out_dir):
+    import sys
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import cues
+    with open(plan_path, encoding="utf-8") as f:
+        plan = json.load(f)
+    total = plan["total_frames"] / plan["fps"]
+    n = int((total + 0.2) * SR)
+    last = plan["scenes"][-1]
+    kc = cues.extra(last, "card")
+    card_t = last["start"] + kc - 0.25 if kc is not None else None
+    ev = []
+    for s in plan["scenes"]:
+        if s["index"] > 0:
+            ev.append(("whoosh", s["start"]))
+        for e in (cues.resolve(s) if s.get("words") else []):
+            ev.append(("tick" if s["index"] == 1 else "pop", s["start"] + e["t0"] - 0.08))
+        vt = cues.extra(s, "vakuum")
+        if vt is not None:
+            ev.append(("hiss", s["start"] + vt + 0.25))
+    if card_t:
+        ev.append(("whoosh", card_t + 0.1))
+    music = build_music_light(plan, card_t)[:n]
+    music = music / (np.sqrt(np.mean(music ** 2)) + 1e-9) * 10 ** (-21 / 20)   # ~ −21 dBFS RMS a duck előtt
+    music *= voice_duck(plan, len(music))
+    sfx = sfx_light(plan, ev, len(music), card_t)
+    d = int(0.006 * SR)
+    st = np.stack([music, np.concatenate([np.zeros(d), music[:-d]])], axis=1)
+    os.makedirs(out_dir, exist_ok=True)
+    write_wav(os.path.join(out_dir, "music.wav"), np.tanh(st * 1.2) / 1.2)
+    write_wav(os.path.join(out_dir, "sfx.wav"), np.stack([sfx, sfx], axis=1))
+    print(f"[zene] light: {total:.1f} s, {len(ev)} effekt → {out_dir}/music.wav, sfx.wav")
+
+
 def write_wav(path, x):
     import wave
     x = np.clip(x, -1, 1)
@@ -279,5 +493,6 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--plan", default=os.path.join(os.path.dirname(__file__), "scene_plan.json"))
     ap.add_argument("--out", default=os.path.join(os.path.dirname(__file__), "music"))
+    ap.add_argument("--style", default="light")
     a = ap.parse_args()
-    main(a.plan, a.out)
+    (main_light if a.style == "light" else main)(a.plan, a.out)

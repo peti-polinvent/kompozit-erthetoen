@@ -30,6 +30,9 @@ FRAMES = os.path.join(HERE, "frames")
 ASSETS = os.path.join(ROOT, "assets")
 PREVIEW = os.environ.get("PREVIEW") == "1"   # PREVIEW=1 → 640×360, 12 fps (gyors ellenőrzés)
 ACTION = os.environ.get("ACTION") == "1"     # ACTION=1 → akciófilmes változat: trailer-hang, zene, effektek, szélesvászon
+LIGHT = not ACTION                           # alapértelmezett: világos, barátságos változat (mozgógrafika, light zene)
+if LIGHT:
+    os.environ["VOICE"] = "ai"               # AI-narráció (ai_hang.py: NN.mp3 + NN_words.json)
 BAR = 48                                      # px (720p): fekete sáv fent/lent az akció-változatban
 MUSIC = os.path.join(HERE, "music")
 FPS = 12 if PREVIEW else 24
@@ -37,6 +40,10 @@ RES = (640, 360) if PREVIEW else (1280, 720)
 GAP = 0.8            # s szünet a jelenetek között
 LEAD = 1.0           # s csend az elején
 TAIL = 1.5           # s a végén
+if LIGHT:            # feszesebb ütem; a zárókártya a „Kompozit – érthetően” szónál indul, utána ~1,6 s
+    _r = os.environ.get("RES", "1920x1080")
+    RES = (960, 540) if PREVIEW else tuple(int(v) for v in _r.split("x"))
+    GAP, LEAD, TAIL = 0.4, 0.4, 1.6
 _VENV_BPY = os.path.expanduser("~/venv-bpy/bin/python")
 BPY_PY = os.environ.get("BPY_PYTHON", _VENV_BPY if os.path.exists(_VENV_BPY) else sys.executable)
 PY = sys.executable                                  # Mac: /usr/local/bin/python3, Windows: python
@@ -84,7 +91,8 @@ def trim_silence(src, i, keep_lead=False):
     lead = "" if keep_lead else "silenceremove=start_periods=1:start_threshold=-35dB:start_silence=0.15,"
     af = (lead +
           "areverse,silenceremove=start_periods=1:start_threshold=-35dB:start_silence=0.25,areverse,"
-          "highpass=f=80,aformat=sample_rates=48000:channel_layouts=mono")
+          "highpass=f=80,aformat=sample_rates=48000:channel_layouts=mono" +
+          (",acompressor=threshold=-20dB:ratio=2.5:attack=10:release=160:makeup=2" if LIGHT else ""))
     subprocess.check_call(["ffmpeg", "-y", "-v", "error", "-i", src, "-af", af, dst])
     if ACTION:
         return trailer_voice(dst, i)
@@ -176,7 +184,7 @@ def main(render=True):
     scenes[0]["frames"] += int(round(LEAD * FPS))
     scenes[0]["length"] += LEAD
     total_frames = sum(s["frames"] for s in scenes)
-    plan = dict(fps=FPS, total_frames=total_frames, total_seconds=total_frames / FPS, scenes=scenes,
+    plan = dict(fps=FPS, lead=LEAD, total_frames=total_frames, total_seconds=total_frames / FPS, scenes=scenes,
                 audio_source=sorted(source))
     with open(os.path.join(HERE, "scene_plan.json"), "w", encoding="utf-8") as f:
         json.dump(plan, f, ensure_ascii=False, indent=2)
@@ -216,7 +224,11 @@ def main(render=True):
     with open(srt, "w", encoding="utf-8") as f:
         for n, (a, b, txt) in enumerate(cues, 1):
             f.write(f"{n}\n{fmt_ts(a).replace('.', ',')} --> {fmt_ts(b).replace('.', ',')}\n{txt}\n\n")
+    with open(os.path.join(HERE, "subs.json"), "w", encoding="utf-8") as f:
+        json.dump(cues, f, ensure_ascii=False)          # a LIGHT felirat Pillow-val rajzolva (annotate_frames)
     print(f"[felirat] {len(cues)} cue")
+    if LIGHT:
+        return light_finish(scenes, total_frames, render)
 
     # ---- 3. render -------------------------------------------------------------
     if render:
@@ -327,6 +339,70 @@ def main(render=True):
                            "-q:v", "3", poster])
     mb = os.path.getsize(out_mp4) / 1e6
     print(f"[kész] {out_mp4}  {mb:.1f} MB, {total_frames/FPS:.1f} s")
+
+
+def loudnorm2(inp, out, extra_args, I=-16, TP=-1.5, LRA=11):
+    """Kétmenetes loudnorm (lineáris): pontos −16 LUFS / −1,5 dBTP."""
+    r = subprocess.run(["ffmpeg", "-hide_banner", "-i", inp, "-af", f"loudnorm=I={I}:TP={TP}:LRA={LRA}:print_format=json",
+                        "-f", "null", "-"], capture_output=True, text=True, encoding="utf-8", errors="replace")
+    m = json.loads(r.stderr[r.stderr.rindex("{"):r.stderr.rindex("}") + 1])
+    af = (f"loudnorm=I={I}:TP={TP}:LRA={LRA}:measured_I={m['input_i']}:measured_TP={m['input_tp']}:"
+          f"measured_LRA={m['input_lra']}:measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true")
+    subprocess.check_call(["ffmpeg", "-y", "-v", "error", "-i", inp, "-af", af, "-ar", "48000", *extra_args, out])
+
+
+def light_finish(scenes, total_frames, render):
+    """LIGHT: render → mozgógrafika (Pillow) → zene+effektek → keverés → H.264."""
+    import time
+    T0 = time.time()
+    plan_p = os.path.join(HERE, "scene_plan.json")
+    if render:
+        if os.path.isdir(FRAMES):
+            shutil.rmtree(FRAMES)
+        env = dict(os.environ, RENDER_AA="8" if PREVIEW else os.environ.get("RENDER_AA", "16"), STYLE="light")
+        subprocess.check_call([BPY_PY, os.path.join(HERE, "render_scenes.py"), "--plan", plan_p, "--out", FRAMES,
+                               "--size", f"{RES[0]}x{RES[1]}"], env=env)
+        print(f"[idő] render {time.time() - T0:.0f} s", flush=True)
+    # poszter: tiszta (grafika nélküli) képkocka az infúzió közepéről
+    s4 = scenes[3]
+    pf = int(round(s4["start"] * FPS + s4["frames"] * 0.5))
+    raw_poster = os.path.join(HERE, "poster_raw.png")
+    if render:
+        shutil.copy(os.path.join(FRAMES, f"{pf:05d}.png"), raw_poster)
+    if "--no-annotate" not in sys.argv:
+        subprocess.check_call([PY, os.path.join(HERE, "annotate_frames.py"), "--frames", FRAMES,
+                               "--plan", plan_p, "--subs", os.path.join(HERE, "subs.json")])
+    # hang: narráció (−16 LUFS-re hozva) + zene (a szóhatárokból lehalkítva) + effektek
+    inputs, fc = [], []
+    for n, s in enumerate(scenes):
+        inputs += ["-i", s["audio"]]
+        d = int(round(s["start"] * 1000))
+        fc.append(f"[{n}:a]aformat=sample_rates=48000:channel_layouts=mono,adelay={d}|{d}[a{n}]")
+    dur_s = total_frames / FPS
+    fc.append("".join(f"[a{n}]" for n in range(len(scenes))) + f"amix=inputs={len(scenes)}:normalize=0,"
+              f"apad=whole_dur={dur_s:.3f}[aout]")
+    voice_raw = os.path.join(HERE, "narracio_raw.wav")
+    subprocess.check_call(["ffmpeg", "-y", "-v", "error", *inputs, "-filter_complex", ";".join(fc),
+                           "-map", "[aout]", voice_raw])
+    voice = os.path.join(HERE, "narracio_light.wav")
+    loudnorm2(voice_raw, voice, ["-ac", "2"])
+    subprocess.check_call([PY, os.path.join(HERE, "make_music.py"), "--plan", plan_p, "--out", MUSIC, "--style", "light"])
+    mix_raw = os.path.join(HERE, "light_mix_raw.wav")
+    subprocess.check_call(["ffmpeg", "-y", "-v", "error", "-i", voice, "-i", os.path.join(MUSIC, "music.wav"),
+                           "-i", os.path.join(MUSIC, "sfx.wav"), "-filter_complex",
+                           f"[0:a][1:a][2:a]amix=inputs=3:normalize=0,atrim=0:{dur_s:.3f}[m]", "-map", "[m]", mix_raw])
+    audio_mix = os.path.join(HERE, "light_mix.m4a")
+    loudnorm2(mix_raw, audio_mix, ["-c:a", "aac", "-b:a", "160k"])
+    out_mp4 = os.path.join(HERE, "elonezet.mp4") if PREVIEW else os.path.join(ASSETS, "kompozit_erthetoen.mp4")
+    subprocess.check_call(["ffmpeg", "-y", "-v", "error", "-framerate", str(FPS),
+                           "-i", os.path.join(FRAMES, "%05d.png"), "-i", audio_mix,
+                           "-c:v", "libx264", "-preset", "slow", "-crf", os.environ.get("CRF", "20"),
+                           "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-c:a", "copy", "-shortest", out_mp4])
+    poster = os.path.join(HERE, "elonezet_poster.jpg") if PREVIEW else os.path.join(ASSETS, "poster.jpg")
+    if os.path.exists(raw_poster):
+        subprocess.check_call(["ffmpeg", "-y", "-v", "error", "-i", raw_poster, "-q:v", "3", poster])
+    mb = os.path.getsize(out_mp4) / 1e6
+    print(f"[kész] {out_mp4}  {mb:.1f} MB, {dur_s:.1f} s, {RES[0]}x{RES[1]}, össz. idő {time.time() - T0:.0f} s")
 
 
 if __name__ == "__main__":

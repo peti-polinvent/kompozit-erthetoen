@@ -348,4 +348,21 @@ Tanulság a saját lapunkról: a 0,9 mm-es négyrétegű üveglap középen már
 megreped – valódi termékhez több réteg vagy maganyag kell; 10 mm-es PET habbal ugyanaz a
 lap kb. 350× kevésbé hajlik, és csak 57 %-kal nehezebb (szendvicshatás).
 
+**Csütörtök éjjel – új videó: világos, barátságos stílus.** Az „akció-előzetes” változat
+(sötét kép, fekete sávok, kékes színezés, szemcse, rázkódó kamera, mély trailer-hang, „braam”
+zene) nem illett a weboldalhoz. **Miért:** a videó az oldal része, ezért ugyanazt a nyelvet
+kell beszélnie – világos szürke háttér (`#eceeed`), sötét tinta, gyanta-borostyán kiemelés,
+Archivo betű –, és egy laikus nézőnek barátságosabb, nyugodtabb tempó kell. **Mit:** a 3D
+render háttere az oldal színe (a kép „beleolvad” az oldalba), stúdiófény, élkiemelés, vékony
+körvonal; lágy, gyorsuló-lassuló kameramozgás és tiszta vágások. Képkockánként rajzolt
+mozgógrafika: jelenetcím borostyán sávval, alsó harmadban a megnevezett tétel a saját
+színével, a „Hozzávalók” checklista pipája pontosan a kimondott szóra kerül, a rétegrendnél
+élő rétegábra épül alulról felfelé (mint az oldal rajza), felirat, zárókártya az oldal
+címével. Új narráció (Noémi, természetes tempó), új szintetikus zene: könnyed marimba-
+arpeggio, lágy dob, a beszéd alatt lehalkul; finom pipa-, suhanás- és sziszegés-hangok.
+A sewerbot Compact dob a nyitó és a záró nagytotálon is látszik az asztal alatt. **Remotion**
+(React-alapú videókészítés) szóba került, de az idő- és tokenkeret miatt nem váltottunk
+eszközt – az elveit (időzítés a hangból, rugós/ease-out animációk, komponensként felépített
+grafika) a meglévő Blender + Pillow + ffmpeg láncban alkalmaztuk.
+
 _(folytatás)_
