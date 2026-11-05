@@ -50,7 +50,7 @@ function angleText(p) {
   const c = choices(m).find((c) => c[0] === p.angle);
   return c ? c[1] : p.angle + '°';
 }
-const plyName = (p) => `${mName(MATERIALS[p.mat])}, ${angleText(p)}`;
+const plyName = (p) => mName(MATERIALS[p.mat]) + t('b.sep', ', ') + angleText(p);
 const same = (x, y) => x.length === y.length && x.every((p, i) => p.mat === y[i].mat && p.angle === y[i].angle && (p.t || 0) === (y[i].t || 0));
 // ±45°-os irányban álló szálak?
 const is45 = (p) => { const k = MATERIALS[p.mat].kind; return (k === 'biax' && p.angle === 0) || ((k === 'ud' || k === 'woven') && Math.abs(p.angle) === 45); };

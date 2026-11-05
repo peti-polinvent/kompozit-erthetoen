@@ -53,10 +53,10 @@ section{padding:clamp(64px,10vw,140px) 0}
 
 /* navigáció: sima sáv */
 .bar{position:sticky;top:0;z-index:20;background:var(--ground)}
-.bar .wrap{display:flex;align-items:center;gap:24px;height:56px;overflow-x:auto;scrollbar-width:none}
-.bar .wrap::-webkit-scrollbar{display:none}
+.bar .wrap{display:flex;align-items:center;gap:16px;height:56px}
+.bar nav::-webkit-scrollbar{display:none}
 .bar .name{font-weight:800;font-stretch:80%;white-space:nowrap;text-decoration:none;font-size:var(--s2)}
-.bar nav{display:flex;gap:20px;margin-left:auto}
+.bar nav{display:flex;gap:20px;margin-left:auto;min-width:0;overflow-x:auto;scrollbar-width:none;flex:0 1 auto}
 .bar nav a{text-decoration:none;font-size:var(--s1);font-weight:600;white-space:nowrap;color:var(--muted)}
 .bar nav a:hover{color:var(--ink)}
 
