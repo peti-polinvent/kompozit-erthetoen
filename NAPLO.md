@@ -328,4 +328,24 @@ betűtípus (Archivo), a tárgy saját színei (alumínium, gyanta-borostyán). 
 asztali és telefonos nézetben. **Elakadás #13:** a javított 3D-modell helyett a
 böngésző a régit mutatta (gyorsítótár) – a fájlnevek verzió-paramétert kaptak.
 
+**Csütörtök este – asztalszín és rétegrend-építő szimulátor.** A 3D-nézőben az asztal
+túl világos volt a világos háttér előtt: sötét diófa-barna lett (`#4e342e`).
+Új funkció a weboldalon: **„Építs saját rétegrendet”** – max. 20 réteg 8 anyagból (üveg-,
+szén-, aramidszövet, UD üveg/szén, üveg biax, üvegpaplan, PET hab maganyag), irányokkal;
+terhelés egyenletes nyomással vagy középen ráálló súllyal; a lap animáltan meghajlik,
+és kiírja a lehajlást, az első rétegtörés terhelését és módját, a megadott lehajláshoz
+tartozó terhelést, valamint közérthető magyarázatot. **Skillek:** szimulációs skilleket
+kerestem; az `aero-agent-skills` gyűjteményből (Apache 2.0) öt kompozit-skillt (ABD-mátrix,
+első rétegtörés, tönkremeneteli kritériumok, szendvicspanel, mikromechanika) letöltés után
+átvizsgáltam – csak `math`/`unittest` modulok, se hálózat, se programindítás. A gép
+biztonsági szabálya a letöltött kód futtatását nem engedte, ezért tudásanyagként kerültek
+be. **Modell:** klasszikus rétegelmélet + Mindlin-lemez (Navier-sor, négy élén
+alátámasztott 400×300 mm-es lap), Tsai-Wu tönkremeneteli kritérium. **Ellenőrzés:** két
+agent dolgozott párhuzamosan (számítómotor, ill. felület); a motort független Python-
+számítás ellenőrzi 12 esetben (eltérés < 0,001 %), és két ismert megoldás: izotróp lap
+zárt képlete (0,1 %) és Reddy rétegelt lemez példája (0,1–0,3 %).
+Tanulság a saját lapunkról: a 0,9 mm-es négyrétegű üveglap középen már kb. 17 kg-tól
+megreped – valódi termékhez több réteg vagy maganyag kell; 10 mm-es PET habbal ugyanaz a
+lap kb. 350× kevésbé hajlik, és csak 57 %-kal nehezebb (szendvicshatás).
+
 _(folytatás)_
