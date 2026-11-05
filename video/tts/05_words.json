@@ -1,92 +1,92 @@
 [
  {
   "text": "Bontás",
-  "start": 0.1,
-  "end": 1.05
+  "start": 0.102,
+  "end": 0.675
  },
  {
   "text": "A",
-  "start": 1.887,
-  "end": 2.062
+  "start": 1.641,
+  "end": 1.758
  },
  {
   "text": "fólia",
-  "start": 2.062,
-  "end": 2.8
+  "start": 1.758,
+  "end": 2.279
  },
  {
   "text": "a",
-  "start": 3.1,
-  "end": 3.212
+  "start": 2.474,
+  "end": 2.565
  },
  {
   "text": "háló",
-  "start": 3.212,
-  "end": 3.663
+  "start": 2.578,
+  "end": 2.891
  },
  {
   "text": "és",
-  "start": 3.663,
-  "end": 3.85
+  "start": 2.943,
+  "end": 3.099
  },
  {
   "text": "a",
-  "start": 3.85,
-  "end": 3.888
+  "start": 3.099,
+  "end": 3.203
  },
  {
   "text": "letépő",
-  "start": 3.888,
-  "end": 4.388
+  "start": 3.203,
+  "end": 3.607
  },
  {
   "text": "szövet",
-  "start": 4.388,
-  "end": 4.763
+  "start": 3.672,
+  "end": 3.971
  },
  {
   "text": "egyben",
-  "start": 4.763,
-  "end": 5.1
+  "start": 3.984,
+  "end": 4.271
  },
  {
   "text": "lejön",
-  "start": 5.1,
-  "end": 5.562
+  "start": 4.271,
+  "end": 4.583
  },
  {
   "text": "a",
-  "start": 5.8,
-  "end": 5.925
+  "start": 4.779,
+  "end": 4.844
  },
  {
   "text": "kész",
-  "start": 5.925,
-  "end": 6.275
+  "start": 4.896,
+  "end": 5.13
  },
  {
   "text": "lap",
-  "start": 6.275,
-  "end": 6.425
+  "start": 5.169,
+  "end": 5.326
  },
  {
   "text": "pedig",
-  "start": 6.425,
-  "end": 6.7
+  "start": 5.339,
+  "end": 5.599
  },
  {
   "text": "leválik",
-  "start": 6.7,
-  "end": 7.125
+  "start": 5.599,
+  "end": 6.016
  },
  {
   "text": "a",
-  "start": 7.125,
-  "end": 7.162
+  "start": 6.016,
+  "end": 6.107
  },
  {
   "text": "szerszámról",
-  "start": 7.162,
-  "end": 8.075
+  "start": 6.107,
+  "end": 6.875
  }
 ]

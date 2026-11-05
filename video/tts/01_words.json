@@ -1,82 +1,92 @@
 [
  {
   "text": "Száraz",
-  "start": 0.1,
-  "end": 0.637
+  "start": 0.102,
+  "end": 0.506
  },
  {
   "text": "szövet",
-  "start": 0.637,
-  "end": 1.112
+  "start": 0.506,
+  "end": 0.922
+ },
+ {
+  "text": "És",
+  "start": 1.422,
+  "end": 1.591
  },
  {
   "text": "egy",
-  "start": 1.413,
-  "end": 1.588
+  "start": 1.591,
+  "end": 1.709
  },
  {
   "text": "kis",
-  "start": 1.587,
-  "end": 1.8
+  "start": 1.748,
+  "end": 1.917
  },
  {
   "text": "gyanta",
-  "start": 1.8,
-  "end": 2.2
+  "start": 1.917,
+  "end": 2.321
  },
  {
-  "text": "hogyan",
-  "start": 2.2,
-  "end": 2.538
+  "text": "Hogyan",
+  "start": 2.821,
+  "end": 3.147
  },
  {
   "text": "lesz",
-  "start": 2.538,
-  "end": 2.725
+  "start": 3.147,
+  "end": 3.355
  },
  {
-  "text": "belőle",
-  "start": 2.725,
-  "end": 3.125
- },
- {
-  "text": "erős",
-  "start": 3.125,
-  "end": 3.638
+  "text": "ezekből",
+  "start": 3.355,
+  "end": 3.824
  },
  {
   "text": "könnyű",
-  "start": 3.925,
-  "end": 4.263
- },
- {
-  "text": "kompozit",
-  "start": 4.263,
-  "end": 4.838
- },
- {
-  "text": "lap",
-  "start": 4.838,
-  "end": 5.175
- },
- {
-  "text": "Egy",
-  "start": 6.013,
-  "end": 6.288
- },
- {
-  "text": "perc",
-  "start": 6.287,
-  "end": 6.862
+  "start": 3.889,
+  "end": 4.253
  },
  {
   "text": "és",
-  "start": 7.2,
-  "end": 7.425
+  "start": 4.279,
+  "end": 4.462
+ },
+ {
+  "text": "erős",
+  "start": 4.488,
+  "end": 4.761
+ },
+ {
+  "text": "kompozit",
+  "start": 4.787,
+  "end": 5.269
+ },
+ {
+  "text": "lap",
+  "start": 5.269,
+  "end": 5.503
+ },
+ {
+  "text": "Egy",
+  "start": 6.003,
+  "end": 6.159
+ },
+ {
+  "text": "perc",
+  "start": 6.185,
+  "end": 6.524
+ },
+ {
+  "text": "és",
+  "start": 6.719,
+  "end": 6.888
  },
  {
   "text": "megmutatjuk",
-  "start": 7.425,
-  "end": 8.325
+  "start": 6.927,
+  "end": 7.644
  }
 ]

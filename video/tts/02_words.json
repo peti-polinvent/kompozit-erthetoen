@@ -1,127 +1,127 @@
 [
  {
   "text": "Kell",
-  "start": 0.1,
-  "end": 0.425
+  "start": 0.102,
+  "end": 0.323
  },
  {
   "text": "egy",
-  "start": 0.425,
-  "end": 0.562
+  "start": 0.323,
+  "end": 0.441
  },
  {
   "text": "szerszám",
-  "start": 0.562,
-  "end": 1.337
+  "start": 0.441,
+  "end": 1.027
  },
  {
   "text": "Egy",
-  "start": 2.175,
-  "end": 2.4
+  "start": 1.94,
+  "end": 2.083
  },
  {
   "text": "gyantatartály",
-  "start": 2.4,
-  "end": 3.45
+  "start": 2.096,
+  "end": 2.93
  },
  {
   "text": "Egy",
-  "start": 4.287,
-  "end": 4.525
+  "start": 3.867,
+  "end": 4.01
  },
  {
   "text": "vákuumszivattyú",
-  "start": 4.525,
-  "end": 5.788
+  "start": 4.05,
+  "end": 4.987
  },
  {
   "text": "ami",
-  "start": 6.075,
-  "end": 6.3
+  "start": 5.156,
+  "end": 5.339
  },
  {
   "text": "kiszívja",
-  "start": 6.3,
-  "end": 6.85
+  "start": 5.391,
+  "end": 5.807
  },
  {
   "text": "a",
-  "start": 6.85,
-  "end": 6.9
+  "start": 5.82,
+  "end": 5.964
  },
  {
   "text": "levegőt",
-  "start": 6.9,
-  "end": 7.6
+  "start": 5.964,
+  "end": 6.445
  },
  {
   "text": "Egy",
-  "start": 8.438,
-  "end": 8.688
+  "start": 7.422,
+  "end": 7.565
  },
  {
   "text": "puffertartály",
-  "start": 8.688,
-  "end": 9.762
+  "start": 7.578,
+  "end": 8.464
  },
  {
   "text": "ami",
-  "start": 10.012,
-  "end": 10.287
+  "start": 8.646,
+  "end": 8.841
  },
  {
   "text": "egyenletesen",
-  "start": 10.287,
-  "end": 11.037
+  "start": 8.906,
+  "end": 9.596
  },
  {
   "text": "tartja",
-  "start": 11.037,
-  "end": 11.387
+  "start": 9.635,
+  "end": 9.909
  },
  {
   "text": "a",
-  "start": 11.387,
-  "end": 11.45
+  "start": 9.909,
+  "end": 10.026
  },
  {
   "text": "vákuumot",
-  "start": 11.45,
-  "end": 12.225
+  "start": 10.039,
+  "end": 10.586
  },
  {
   "text": "És",
-  "start": 13.062,
-  "end": 13.4
+  "start": 11.576,
+  "end": 11.758
  },
  {
   "text": "egy",
-  "start": 13.4,
-  "end": 13.525
+  "start": 11.758,
+  "end": 11.875
  },
  {
   "text": "gyantacsapda",
-  "start": 13.525,
-  "end": 14.375
+  "start": 11.901,
+  "end": 12.578
  },
  {
   "text": "ami",
-  "start": 14.637,
-  "end": 14.887
+  "start": 12.773,
+  "end": 12.943
  },
  {
   "text": "megvédi",
-  "start": 14.887,
-  "end": 15.4
+  "start": 12.982,
+  "end": 13.372
  },
  {
   "text": "a",
-  "start": 15.4,
-  "end": 15.45
+  "start": 13.411,
+  "end": 13.503
  },
  {
   "text": "szivattyút",
-  "start": 15.45,
-  "end": 16.262
+  "start": 13.516,
+  "end": 14.18
  }
 ]

@@ -25,9 +25,25 @@ except ImportError:
     sys.exit("Hiányzik az edge-tts: pip install edge-tts")
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-VOICE = "hu-HU-NoemiNeural"   # természetes, barátságos női hang (a „light” változathoz)
-RATE = "+0%"
-PITCH = "+0Hz"
+VOICE = "hu-HU-TamasNeural"   # mély, határozott férfihang (a felhasználó kérése)
+RATE = "-4%"
+PITCH = "-6Hz"
+# Kiejtési javítások: a TTS a „vákuum” szót rosszul ejti; a magyar kiejtés „vákum”.
+# Csak a felolvasott szöveg változik – a szóidőzítésekben visszaírjuk a helyes alakot,
+# így a felirat és a kulcsszavas kiemelések (cues.py) változatlanok maradnak.
+SPOKEN = [("ákuum", "ákum")]
+
+
+def spoken(text):
+    for a, b in SPOKEN:
+        text = text.replace(a, b)
+    return text
+
+
+def written(word):
+    for a, b in SPOKEN:
+        word = word.replace(b, a)
+    return word
 
 
 async def main():
@@ -40,7 +56,7 @@ async def main():
         out = os.path.join(HERE, f"{key}.mp3")
         # a szóhatár-események (WordBoundary) a felirat és a kiemelések pontos időzítéséhez:
         # NN_words.json = [{"text", "start", "end"} …] másodpercben, az mp3 elejétől
-        tts = edge_tts.Communicate(text, VOICE, rate=RATE, pitch=PITCH, boundary="WordBoundary")
+        tts = edge_tts.Communicate(spoken(text), VOICE, rate=RATE, pitch=PITCH, boundary="WordBoundary")
         words = []
         with open(out, "wb") as f:
             async for chunk in tts.stream():
@@ -48,7 +64,7 @@ async def main():
                     f.write(chunk["data"])
                 elif chunk["type"] in ("WordBoundary", "SentenceBoundary"):
                     s = chunk["offset"] / 1e7
-                    words.append(dict(text=chunk["text"], start=round(s, 3),
+                    words.append(dict(text=written(chunk["text"]), start=round(s, 3),
                                       end=round(s + chunk["duration"] / 1e7, 3)))
         with open(os.path.join(HERE, f"{key}_words.json"), "w", encoding="utf-8") as f:
             json.dump(words, f, ensure_ascii=False, indent=1)
