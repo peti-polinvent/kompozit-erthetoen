@@ -454,14 +454,14 @@ def main_light(plan_path, out_dir):
     if card_t:
         ev.append(("whoosh", card_t + 0.1))
     music = build_music_light(plan, card_t)[:n]
-    music = music / (np.sqrt(np.mean(music ** 2)) + 1e-9) * 10 ** (-21 / 20)   # ~ −21 dBFS RMS a duck előtt
+    music = music / (np.sqrt(np.mean(music ** 2)) + 1e-9) * 10 ** (-18 / 20)   # ~ −18 dBFS RMS a duck előtt
     music *= voice_duck(plan, len(music))
     sfx = sfx_light(plan, ev, len(music), card_t)
     d = int(0.006 * SR)
     st = np.stack([music, np.concatenate([np.zeros(d), music[:-d]])], axis=1)
     os.makedirs(out_dir, exist_ok=True)
     write_wav(os.path.join(out_dir, "music.wav"), np.tanh(st * 1.2) / 1.2)
-    write_wav(os.path.join(out_dir, "sfx.wav"), np.stack([sfx, sfx], axis=1))
+    write_wav(os.path.join(out_dir, "sfx.wav"), np.stack([sfx, sfx], axis=1) * 0.6)
     print(f"[zene] light: {total:.1f} s, {len(ev)} effekt → {out_dir}/music.wav, sfx.wav")
 
 

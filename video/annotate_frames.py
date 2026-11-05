@@ -429,16 +429,16 @@ def draw_layer_stack(d, evs, t, a, b, W, H, sc):
     pw, x1 = 0.215 * W, 0.945 * W
     x0 = x1 - pw + (1 - k) * 50 * sc
     y0 = 0.17 * H
-    ph = 380 * sc
+    ph = 300 * sc
     panel(d, [x0, y0, x0 + pw, y0 + ph], k)
     d.text((x0 + 26 * sc, y0 + 22 * sc), "Rétegrend", font=font(40 * sc, 800, 62), fill=INK + (int(255 * k),))
     d.rectangle([x0 + 26 * sc, y0 + 74 * sc, x0 + 70 * sc, y0 + 78 * sc], fill=AMBER + (int(255 * k),))
     cx = x0 + pw / 2
-    base = y0 + ph - 46 * sc
+    base = y0 + ph - 54 * sc
     tw, lw = 330 * sc / 2, 250 * sc / 2
     # szerszám (mindig látszik)
-    d.rectangle([cx - tw, base, cx + tw, base + 20 * sc], fill=(0x9A, 0xA0, 0xA6, int(255 * k)), outline=INK + (int(90 * k),))
-    d.text((cx - tw, base + 24 * sc), "szerszám", font=font(18 * sc, 600, 90), fill=MUTED + (int(220 * k),))
+    d.rectangle([cx - tw, base, cx + tw, base + 26 * sc], fill=(0x9A, 0xA0, 0xA6, int(255 * k)), outline=INK + (int(90 * k),))
+    d.text((cx - tw, base + 29 * sc), "szerszám", font=font(18 * sc, 600, 90), fill=MUTED + (int(220 * k),))
     when = {e["layer"]: e["abs0"] for e in evs if e.get("layer")}
     y = base
 
@@ -464,30 +464,30 @@ def draw_layer_stack(d, evs, t, a, b, W, H, sc):
 
     L = {l["type"]: l["color"] for l in __import__("cues").P["layup"]}
     gl = [l["color"] for l in __import__("cues").P["layup"] if l["type"] == "glass"]
-    slab("release", 6 * sc, lw + 14 * sc, L["release"])
+    slab("release", 9 * sc, lw + 14 * sc, L["release"])
     for c in gl:
-        slab("glass", 9 * sc, lw, c)
-    slab("peelply", 7 * sc, lw + 8 * sc, L["peelply"])
+        slab("glass", 14 * sc, lw, c)
+    slab("peelply", 11 * sc, lw + 8 * sc, L["peelply"])
     mesh_top = y
-    if slab("flowmesh", 10 * sc, lw - 8 * sc, L["flowmesh"], dx=-12 * sc, hatch="#2e7d50"):
+    if slab("flowmesh", 15 * sc, lw - 8 * sc, L["flowmesh"], dx=-12 * sc, hatch="#2e7d50"):
         mesh_top = y
     C = __import__("cues").P["consumables"]
     g = appear("spiral")
     if g > 0:
-        r = 9 * sc * eo(g)
+        r = 12 * sc * eo(g)
         for xx, col in ((cx - lw - 2 * sc, C["inlet_spiral"]["color"]), (cx + lw + 2 * sc, C["vacuum_spiral"]["color"])):
             d.ellipse([xx - r, mesh_top - 2 * r, xx + r, mesh_top], fill=hexrgb(col) + (int(255 * k * g),),
                       outline=INK + (int(90 * k * g),))
     g = appear("tape")
     if g > 0:
-        th = 10 * sc
+        th = 14 * sc
         for xx in (cx - tw + 6 * sc, cx + tw - 22 * sc):
             d.rectangle([xx, base - th * eo(g), xx + 16 * sc, base], fill=hexrgb(C["sealant_tape"]["color"]) + (int(255 * k * g),),
                         outline=INK + (int(90 * k * g),))
     g = appear("bag")
     if g > 0:
         lift = (1 - eo(g)) * 30 * sc
-        top = mesh_top - 22 * sc - lift
+        top = mesh_top - 30 * sc - lift
         pts = [(cx - tw + 14 * sc, base - 10 * sc), (cx - lw - 20 * sc, top + 8 * sc), (cx - lw, top),
                (cx + lw, top), (cx + lw + 20 * sc, top + 8 * sc), (cx + tw - 14 * sc, base - 10 * sc)]
         d.line(pts, fill=(0xC9, 0xB0, 0x10, int(255 * k * g)), width=max(2, int(3 * sc)), joint="curve")
