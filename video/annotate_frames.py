@@ -25,7 +25,10 @@ import sys
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageChops
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-FONT_B = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+FONT_B = next((p for p in ("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                            "C:/Windows/Fonts/segoeuib.ttf", "C:/Windows/Fonts/arialbd.ttf",
+                            "/System/Library/Fonts/Supplemental/Arial Bold.ttf")
+               if os.path.exists(p)), "DejaVuSans-Bold.ttf")
 SUB_BAND = 72          # px (720p) alul, ahol a felirat van – ide nem kerül buborék
 BAR = 48 if os.environ.get("ACTION") == "1" else 0   # akció-változat: fekete szélesvásznú sávok fent/lent
 PAD = 9

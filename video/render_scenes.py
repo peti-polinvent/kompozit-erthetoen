@@ -122,9 +122,24 @@ def scene_5_demold(t):
     c = (0.0, 0.05, Z0 + 0.12)
     cam = orbit(c, lerp(1.25, 1.1, ease(t)), lerp(0.85, 0.7, ease(t)), lerp(-105, -75, ease(t)))
     shake = 0.003
+    D = F_DM1 - F_DM0
+    if DEMOLD_SEC:
+        # a narrációhoz kötve: „A letépő szövettel…” → a rétegek indulnak (bontás 4%-a),
+        # „…a termék lekerül” → a termék emelése indul (66%), utána ~0,22 jelenetnyi idő alatt felemelkedik
+        a, b = DEMOLD_SEC
+        if t < a:
+            p = lerp(0.0, 0.04, t / a)
+        elif t < b:
+            p = lerp(0.04, 0.66, (t - a) / (b - a))
+        else:
+            p = min(1.0, 0.66 + 0.34 * (t - b) / 0.22)
+        aframe = F_DM0 + D * p
+    else:
+        p = t * 1.15 * (F_END - F_DM0) / D
+        aframe = lerp(F_DM0, F_END, min(t * 1.15, 1.0))
     for st in (0.04, 0.24, 0.44, 0.66):          # a rétegek indulása és a termék emelése
-        shake += burst(t * 1.15, st, 0.01, decay=20.0)
-    return cam, c, lerp(F_DM0, F_END, min(t * 1.15, 1.0)), 44, lerp(-4.0, 0.0, t), shake
+        shake += burst(p, st, 0.01, decay=20.0)
+    return cam, c, aframe, 44, lerp(-4.0, 0.0, t), shake
 
 
 def scene_6_outro(t):
@@ -172,6 +187,64 @@ HIGHLIGHTS = {
     1: [(keys, "", (0, 0), t0, t1) for keys, t0, t1 in EQUIP_WINDOWS],
     2: [(keys, "", (0, 0), t0, t1) for keys, t0, t1 in LAYUP_WINDOWS],
 }
+DEMOLD_SEC = None   # (letépő szövet indul, termék emelése indul) s – a narrációból, ha ismert
+
+
+def apply_word_timing(plan):
+    """A kiemelések kezdete a kimondott szóhoz (TTS szóhatár-események a scene_plan.json-ban):
+    minden tétel a kulcsszava előtt 0,15 s-mal kezd fénylani, és a következő tételig tart."""
+    global EQUIP_WINDOWS, LAYUP_WINDOWS, TOUR_END, DEMOLD_SEC
+
+    def at(s, word, nth=0):
+        hits = [w for w in s["words"] if w["text"].lower().startswith(word.lower())]
+        return hits[nth]["start"] if len(hits) > nth else None
+
+    def windows(s, items, end_t):
+        L = s["length"]
+        ts = [at(s, w) for _, w in items]
+        if any(v is None for v in ts):
+            print("[időzítés] hiányzó kulcsszó, marad a régi ütemezés:", s["key"]); return None
+        out = []
+        for j, (keys, _) in enumerate(items):
+            t0 = max(0.0, (ts[j] - 0.15) / L)
+            t1 = (ts[j + 1] - 0.15) / L if j + 1 < len(items) else end_t
+            out.append((keys, t0, t1))
+        return out
+
+    for s in plan["scenes"]:
+        if not s.get("words"):
+            continue
+        L = s["length"]
+        if s["index"] == 1:
+            w = windows(s, [(["tool"], "szerszám"), (["resin_pot", "resin_pot_lid"], "gyantatartály"),
+                            (PUMP_KEYS, "vákuumszivattyú"), (["buffer_tank"], "puffertartály"),
+                            (["resin_trap", "resin_trap_lid"], "gyantacsapda")], None)
+            if w:
+                last = w[-1]
+                ha = at(s, "Ha")
+                w[-1] = (last[0], last[1], min(1.0, ((ha or s["audio_len"]) + 0.3) / L))
+                EQUIP_WINDOWS = w
+        elif s["index"] == 2:
+            w = windows(s, [(["L01_release"], "Formaleválasztó"),
+                            (["L02_glass", "L03_glass", "L04_glass", "L05_glass"], "erősítő"),
+                            (["L06_peelply"], "Letépő"), (["L07_flowmesh"], "Gyantavezető"),
+                            (["spiral_inlet", "spiral_vacuum"], "Meglövési"),
+                            (["tape_xm", "tape_xp", "tape_ym", "tape_yp"], "Tömítőszalag"),
+                            (["L08_bag_film"], "vákuumfólia")], 1.0)
+            if w:
+                # a robbantott túra a „vákuumfólia” szóig tart; a fólia az összeállás alatt is fénylik
+                TOUR_END = w[-1][1] + 0.15 / L
+                LAYUP_WINDOWS = w
+        elif s["index"] == 4:
+            a, b = at(s, "letépő"), at(s, "termék")
+            if a is not None and b is not None:
+                DEMOLD_SEC = (a / L, b / L)    # jelenet-arányban
+    HIGHLIGHTS[1] = [(keys, "", (0, 0), t0, t1) for keys, t0, t1 in EQUIP_WINDOWS]
+    HIGHLIGHTS[2] = [(keys, "", (0, 0), t0, t1) for keys, t0, t1 in LAYUP_WINDOWS]
+    print("[időzítés] eszközök:", [(round(a, 2), round(b, 2)) for _, a, b in EQUIP_WINDOWS])
+    print("[időzítés] rétegrend:", [(round(a, 2), round(b, 2)) for _, a, b in LAYUP_WINDOWS], "túra vége", round(TOUR_END, 2))
+
+
 LABELS = {}     # buborékos címkék: nincsenek (a felhasználó kérése)
 BRACES = {}     # kapcsos jelmagyarázat: nincs
 
@@ -253,6 +326,7 @@ def handheld(time_s, amp):
 def main(plan_path, out_dir, width=1280, height=720, start_at=0, only=None):
     with open(plan_path, encoding="utf-8") as f:
         plan = json.load(f)
+    apply_word_timing(plan)
     bpy.ops.wm.open_mainfile(filepath=os.path.join(ROOT, "build", "infusion.blend"))
     sc = bpy.context.scene
     cam = sc.camera

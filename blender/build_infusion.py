@@ -455,7 +455,8 @@ def animate_and_export(layout, objs, cols, out_dir):
         D = f_dm1 - f_dm0
         strip_order = ["bag", "flowmesh", "peelply"]
         fly = Vector((0.0, 0.55, 0.32))              # hátra-felfelé (a kamera a -Y oldalon áll)
-        lift = Vector((0.0, 0.0, 0.14))
+        lift = Vector((0.0, 0.0, 0.07))
+        panel_mm = 5.0                               # a kész termék látszó vastagsága (mm): vékony lap, nem tégla
         strip = {}
         product = []
         for obj in objs.values():
@@ -481,12 +482,15 @@ def animate_and_export(layout, objs, cols, out_dir):
             half = max(o.dimensions.z for o in glass) / 2
             lam_z0, lam_z1 = min(zs) - half, max(zs) + half
             lam_len, lam_wid = glass[0].dimensions.x, glass[0].dimensions.y
+            # a robbantott nézethez felnagyított rétegek a bontáskor vékony lappá préselődnek
+            comp = min(1.0, panel_mm * MM / (lam_z1 - lam_z0))
+            lam_z1 = lam_z0 + (lam_z1 - lam_z0) * comp
         rf_len, rf_wid, rf_h = resin_front.dimensions.x, resin_front.dimensions.y, resin_front.dimensions.z
         for obj in product:
             rest = home if obj is resin_front else Vector(obj.location)
             if obj is resin_front and glass:
                 # kicsit szélesebb a lapoknál (sárga gyantaperem látszik), de alacsonyabb (nincs z-fighting a lapokkal)
-                sx, sy, sz = lam_len / rf_len * 1.012, lam_wid / rf_wid * 1.012, (lam_z1 - lam_z0 - 0.0012) / rf_h
+                sx, sy, sz = lam_len / rf_len * 1.008, lam_wid / rf_wid * 1.008, (lam_z1 - lam_z0 - 0.0006) / rf_h
                 key_scale(obj, t0, (1, 1, 1))
                 key_scale(obj, f_dm1, (sx, sy, sz))
                 key_scale(obj, f_end, (sx, sy, sz))
@@ -496,9 +500,16 @@ def animate_and_export(layout, objs, cols, out_dir):
                 key_loc(obj, f_dm1, rest + lift + shift)
                 key_loc(obj, f_end, rest + lift + shift)
                 continue
+            squash = Vector((0.0, 0.0, 0.0))
+            if glass and obj in glass:
+                squash.z = (lam_z0 + (rest.z - lam_z0) * comp) - rest.z
+                sc0 = tuple(obj.scale)
+                key_scale(obj, t0, sc0)
+                key_scale(obj, f_dm1, (sc0[0], sc0[1], sc0[2] * comp))
+                key_scale(obj, f_end, (sc0[0], sc0[1], sc0[2] * comp))
             key_loc(obj, t0, rest)
-            key_loc(obj, f_dm1, rest + lift)
-            key_loc(obj, f_end, rest + lift)
+            key_loc(obj, f_dm1, rest + lift + squash)
+            key_loc(obj, f_end, rest + lift + squash)
         for obj in list(strip.get("bag", [])) + list(strip.get("flowmesh", [])) + list(strip.get("peelply", [])) + product:
             if obj is resin_front:
                 for fc in obj.animation_data.action.fcurves:        # a bontás kulcsai már simák

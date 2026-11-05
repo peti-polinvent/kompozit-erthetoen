@@ -37,9 +37,23 @@ RES = (640, 360) if PREVIEW else (1280, 720)
 GAP = 0.8            # s szünet a jelenetek között
 LEAD = 1.0           # s csend az elején
 TAIL = 1.5           # s a végén
-BPY_PY = os.environ.get("BPY_PYTHON", os.path.expanduser("~/venv-bpy/bin/python"))
-FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-FONT_B = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+_VENV_BPY = os.path.expanduser("~/venv-bpy/bin/python")
+BPY_PY = os.environ.get("BPY_PYTHON", _VENV_BPY if os.path.exists(_VENV_BPY) else sys.executable)
+PY = sys.executable                                  # Mac: /usr/local/bin/python3, Windows: python
+
+
+def _font(*cands):
+    return next((p for p in cands if os.path.exists(p)), cands[0])
+
+
+FONT_B = _font("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", "C:/Windows/Fonts/segoeuib.ttf",
+               "C:/Windows/Fonts/arialbd.ttf", "/System/Library/Fonts/Supplemental/Arial Bold.ttf")
+SUB_FONT = "Segoe UI" if os.name == "nt" else "DejaVu Sans"   # a libass rendszerbetű-neve
+
+
+def ff_path(p):
+    """Elérési út ffmpeg-szűrő paraméterének: / elválasztó, a meghajtó-kettőspont escape-elve (C\\:/…)."""
+    return p.replace("\\", "/").replace(":", "\\:")
 
 TITLES = [  # (jelenet-index, cím) – a jelenet első 3,5 másodpercében jelenik meg
     (0, "Kompozit érthetően – vákuuminfúzió 3D-ben"),
@@ -60,12 +74,15 @@ def dur(path):
     return float(out.strip())
 
 
-def trim_silence(src, i):
-    """Saját felvételnél: az eleji/végi csend levágása (−35 dB alatt), mono 48 kHz WAV."""
+def trim_silence(src, i, keep_lead=False):
+    """Saját felvételnél: az eleji/végi csend levágása (−35 dB alatt), mono 48 kHz WAV.
+    keep_lead: az AI-hangnál az elejét NEM vágjuk – a szóhatár-időpontok (NN_words.json) az mp3
+    elejétől számítanak, így a felirat és a kiemelések pontosan a kimondott szóhoz igazodnak."""
     out_dir = os.path.join(TTS, "trimmed")
     os.makedirs(out_dir, exist_ok=True)
     dst = os.path.join(out_dir, f"{i:02d}.wav")
-    af = ("silenceremove=start_periods=1:start_threshold=-35dB:start_silence=0.15,"
+    lead = "" if keep_lead else "silenceremove=start_periods=1:start_threshold=-35dB:start_silence=0.15,"
+    af = (lead +
           "areverse,silenceremove=start_periods=1:start_threshold=-35dB:start_silence=0.25,areverse,"
           "highpass=f=80,aformat=sample_rates=48000:channel_layouts=mono")
     subprocess.check_call(["ffmpeg", "-y", "-v", "error", "-i", src, "-af", af, dst])
@@ -95,7 +112,8 @@ def pick_audio(i):
     for ext in exts:
         p = os.path.join(TTS, f"{i:02d}{ext}")
         if os.path.exists(p):
-            return trim_silence(p, i), "felvetel"
+            ai = os.environ.get("VOICE") == "ai" and ext == ".mp3"
+            return trim_silence(p, i, keep_lead=ai), "felvetel"
     p = os.path.join(TTS, f"{i:02d}_espeak.wav")
     if os.path.exists(p):
         return p, "espeak"
@@ -143,7 +161,12 @@ def main(render=True):
         path, src = pick_audio(i)
         source.add(src)
         d = dur(path)
-        scenes.append(dict(index=i - 1, key=k, start=t, audio_len=d, length=d + GAP, audio=path))
+        words = None
+        wpath = os.path.join(TTS, f"{k}_words.json")
+        if os.environ.get("VOICE") == "ai" and path.endswith(".wav") and os.path.exists(wpath):
+            with open(wpath, encoding="utf-8") as f:
+                words = json.load(f)      # [{text, start, end}] s, a jelenet hangjának elejétől
+        scenes.append(dict(index=i - 1, key=k, start=t, audio_len=d, length=d + GAP, audio=path, words=words))
         t += d + GAP
     total = t + TAIL - GAP
     for s in scenes:
@@ -160,6 +183,20 @@ def main(render=True):
     cues = []
     for s in scenes:
         sents = split_sentences(segs[s["key"]])
+        wl = s.get("words")
+        counts = [len(re.findall(r"\w+", x)) for x in sents]
+        if wl and sum(counts) == len(wl):
+            # pontos időzítés a TTS szóhatár-eseményeiből: a mondat az első szavánál indul,
+            # és a következő mondat előtt (legfeljebb 0,8 s-mal az utolsó szava után) tűnik el
+            starts, ends, n = [], [], 0
+            for c in counts:
+                starts.append(wl[n]["start"]); ends.append(wl[n + c - 1]["end"]); n += c
+            for j, sent in enumerate(sents):
+                nxt = starts[j + 1] - 0.09 if j + 1 < len(sents) else s["audio_len"] + 0.3
+                cues.append((s["start"] + starts[j] - 0.05, s["start"] + min(nxt, ends[j] + 0.8), wrap2(sent)))
+            continue
+        if wl:
+            print(f"[felirat] {s['key']}: a szóhatárok száma nem egyezik ({len(wl)} ≠ {sum(counts)}), arányos időzítés")
         weights = [len(x) for x in sents]
         W = sum(weights)
         t0 = s["start"]
@@ -187,7 +224,7 @@ def main(render=True):
                                "--size", f"{RES[0]}x{RES[1]}"])
     # címkék (buborék + nyíl) a képkockákra (--no-annotate: már címkézett frames/ esetén kihagyjuk)
     if "--no-annotate" not in sys.argv:
-        subprocess.check_call(["/usr/local/bin/python3", os.path.join(HERE, "annotate_frames.py"),
+        subprocess.check_call([PY, os.path.join(HERE, "annotate_frames.py"),
                                "--frames", FRAMES, "--labels", os.path.join(HERE, "labels.json")])
 
     # ---- 4. hangsáv ------------------------------------------------------------
@@ -207,7 +244,7 @@ def main(render=True):
     if ACTION:
         # zene (make_music.py, a jelenetek kezdőidejéhez igazítva) + whoosh a címek előtt;
         # a zene a narráció alatt automatikusan lehalkul (sidechain-kompresszor)
-        subprocess.check_call(["/usr/local/bin/python3", os.path.join(HERE, "make_music.py"), "--plan",
+        subprocess.check_call([PY, os.path.join(HERE, "make_music.py"), "--plan",
                                os.path.join(HERE, "scene_plan.json"), "--out", MUSIC])
         whoosh = os.path.join(MUSIC, "whoosh.wav")
         w_in, w_fc, w_lbl = [], [], []
@@ -240,9 +277,11 @@ def main(render=True):
     if ACTION:
         # színezés (teal–orange), kontraszt, vignetta, filmszemcse – a címek és a sávok elé
         # hideg, acélos look: a mélyekben kékes, a fények semlegesek (az erős teal–orange sárgított)
-        vf += ["colorbalance=rs=-0.05:gs=-0.01:bs=0.07:rm=-0.02:bm=0.02:rh=-0.03:gh=0.0:bh=0.03",
-               "eq=contrast=1.16:saturation=1.08:brightness=-0.03",
-               "vignette=PI/4.2", "noise=alls=6:allf=t+u"]
+        # (csütörtök: világosabb, tisztább – enyhe kontraszt, felemelt középtónusok, gyenge vignetta)
+        vf += ["colorbalance=rs=-0.03:gs=-0.005:bs=0.045:rm=-0.01:bm=0.01:rh=-0.01:gh=0.0:bh=0.015",
+               "eq=contrast=1.06:saturation=1.06:brightness=0.035:gamma=1.12",
+               "vignette=PI/7", "noise=alls=3:allf=t+u"]
+    grade = list(vf)
     for idx, title in TITLES:
         s = scenes[idx]
         a, b = s["start"] - 0.6, s["start"] + 3.4
@@ -251,36 +290,38 @@ def main(render=True):
             fs = int(54 * sc_px)
             a, b = s["start"] - 0.35, s["start"] + 1.9     # rövid, ütős cím – a címkék előtt eltűnik
             vf.append(f"drawbox=c=white@0.55:t=fill:enable='between(t,{a:.2f},{a + 0.09:.2f})'")
-            vf.append(f"drawtext=fontfile={FONT_B}:text='{esc(title.upper())}':fontsize={fs}:fontcolor=white:"
+            vf.append(f"drawtext=fontfile='{ff_path(FONT_B)}':text='{esc(title.upper())}':fontsize={fs}:fontcolor=white:"
                       f"shadowcolor=black@0.7:shadowx=3:shadowy=3:x=(w-text_w)/2:y=h*0.42-text_h/2:"
                       f"alpha='if(lt(t,{a + 0.12:.2f}),1,if(lt(t,{b - 0.4:.2f}),1,({b:.2f}-t)/0.4))':"
                       f"enable='between(t,{a:.2f},{b:.2f})'")
             continue
         fs, bw, m = (19, 7, 20) if PREVIEW else (38, 14, 40)
-        vf.append(f"drawtext=fontfile={FONT_B}:text='{esc(title)}':fontsize={fs}:fontcolor=white:"
+        vf.append(f"drawtext=fontfile='{ff_path(FONT_B)}':text='{esc(title)}':fontsize={fs}:fontcolor=white:"
                   f"box=1:boxcolor=black@0.45:boxborderw={bw}:x={m}:y={m}:enable='between(t,{a:.2f},{b:.2f})'")
     if ACTION:
         bar = int(BAR * sc_px)
         vf.append(f"drawbox=x=0:y=0:w=iw:h={bar}:c=black:t=fill")
         vf.append(f"drawbox=x=0:y=ih-{bar}:w=iw:h={bar}:c=black:t=fill")
-    srt_esc = srt.replace("\\", "/").replace(":", "\\:")
+        grade += vf[-2:]
+    srt_esc = ff_path(srt)
     # felirat: nagyobb, félkövér, sötét áttetsző sávval (BorderStyle=4), csak alul
     # (libass a méreteket 384×288-as virtuális vászonhoz skálázza: FontSize=11 ≈ 27 px 720p-n)
-    vf.append(f"subtitles='{srt_esc}':force_style='FontName=DejaVu Sans,Bold=1,FontSize=11,"
+    vf.append(f"subtitles='{srt_esc}':force_style='FontName={SUB_FONT},Bold=1,FontSize=11,"
               f"BorderStyle=4,Outline=0,Shadow=0,MarginV={9 + (19 if ACTION else 0)},MarginL=14,MarginR=14,"
               f"PrimaryColour=&H00FFFFFF,BackColour=&H73000000'")
     out_mp4 = os.path.join(HERE, "elonezet.mp4") if PREVIEW else os.path.join(ASSETS, "kompozit_erthetoen.mp4")
-    if ACTION and not PREVIEW:
-        out_mp4 = os.path.join(ASSETS, "kompozit_erthetoen_akcio.mp4")
+    # (az akció-változat lett a végleges: ugyanarra a névre íródik, amit a weboldal használ)
     subprocess.check_call(["ffmpeg", "-y", "-v", "error", "-framerate", str(FPS),
                            "-i", os.path.join(FRAMES, "%05d.png"), "-i", audio_mix,
                            "-vf", ",".join(vf), "-c:v", "libx264", "-preset", "slow", "-crf", "23",
                            "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-c:a", "copy", "-shortest", out_mp4])
-    # poszter: a 4. jelenet közepe
+    # poszter: a 4. jelenet (injektálás) közepe, a videóval azonos színezéssel, felirat nélkül
     s4 = scenes[3]
     pf = int(s4["start"] * FPS + s4["frames"] * 0.45)
+    poster = os.path.join(HERE, "elonezet_poster.jpg") if PREVIEW else os.path.join(ASSETS, "poster.jpg")
     subprocess.check_call(["ffmpeg", "-y", "-v", "error", "-i", os.path.join(FRAMES, f"{pf:05d}.png"),
-                           "-q:v", "3", os.path.join(ASSETS, "poster.jpg")])
+                           *(["-vf", ",".join(g for g in grade if not g.startswith("noise"))] if grade else []),
+                           "-q:v", "3", poster])
     mb = os.path.getsize(out_mp4) / 1e6
     print(f"[kész] {out_mp4}  {mb:.1f} MB, {total_frames/FPS:.1f} s")
 
