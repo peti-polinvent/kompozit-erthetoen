@@ -359,6 +359,7 @@ function poly(pts) { ctx.beginPath(); ctx.moveTo(...pts[0]); for (const p of pts
 
 colors();
 dark.addEventListener('change', () => { colors(); draw(); });
+document.addEventListener('themechange', () => { colors(); draw(); });
 new ResizeObserver(size).observe(cv);
 syncLoad();
 renderStack();

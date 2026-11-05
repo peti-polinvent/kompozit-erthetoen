@@ -8,6 +8,7 @@
 <meta property="og:title" content="Kompozit érthetően">
 <meta property="og:description" content="Egy kompozit lap receptje: vákuuminfúzió a hozzávalóktól a bontásig.">
 <meta property="og:image" content="assets/poster.jpg">
+<script src="assets/theme.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
@@ -22,9 +23,15 @@
   --s1:14px; --s2:17px; --s3:clamp(20px,2.2vw,24px); --s4:clamp(30px,4.6vw,48px); --s5:clamp(46px,9vw,112px);
   --gut:clamp(16px,4vw,48px); --max:1240px;
 }
+:root{color-scheme:light}
 @media (prefers-color-scheme: dark){
-  :root{ --ground:#121517; --raised:#1a1e21; --sunk:#0c0e10; --ink:#e8ebec; --muted:#a2abb2; --resin-deep:#f0b54d; }
+  :root:not([data-theme="light"]){ color-scheme:dark; --ground:#121517; --raised:#1a1e21; --sunk:#0c0e10; --ink:#e8ebec; --muted:#a2abb2; --resin-deep:#f0b54d; }
 }
+:root[data-theme="dark"]{ color-scheme:dark; --ground:#121517; --raised:#1a1e21; --sunk:#0c0e10; --ink:#e8ebec; --muted:#a2abb2; --resin-deep:#f0b54d; }
+.theme-btn{display:inline-flex;align-items:center;gap:8px;flex:none;font:600 var(--s1)/1 var(--display);padding:9px 12px;border:0;border-radius:2px;background:var(--sunk);color:var(--ink);cursor:pointer;white-space:nowrap}
+.theme-btn:hover{background:var(--ink);color:var(--ground)}
+.theme-btn svg{width:16px;height:16px}
+@media(max-width:560px){.theme-btn span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
@@ -248,8 +255,9 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
   <div class="wrap">
     <a class="name" href="#top">Kompozit érthetően</a>
     <nav aria-label="Fő navigáció">
-      <a href="#hozzavalok">Hozzávalók</a><a href="#retegrend">Rétegrend</a><a href="#modell">3D modell</a><a href="#elkeszites">Elkészítés</a><a href="#ido">Kitöltési idő</a><a href="#epits">Rétegrend-építő</a><a href="#keszites">Hogyan készült</a>
+      <a href="#hozzavalok">Hozzávalók</a><a href="#retegrend">Rétegrend</a><a href="#modell">3D modell</a><a href="#elkeszites">Elkészítés</a><a href="#ido">Kitöltési idő</a><a href="#epits">Rétegrend-építő</a><a href="szerszam.html">Szerszámkészítés</a><a href="#keszites">Hogyan készült</a>
     </nav>
+    <button class="theme-btn" id="themeToggle" type="button" aria-pressed="false" title="Világos / sötét téma"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg><span>Sötét téma</span></button>
   </div>
 </header>
 
