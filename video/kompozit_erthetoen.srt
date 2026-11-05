@@ -35,7 +35,7 @@ Ez határozza meg a termék tulajdonságait.
 Formaleválasztó a szerszámra.
 
 10
-00:00:24,920 --> 00:00:26,833
+00:00:24,920 --> 00:00:26,783
 Rá az erősítő rétegek:
 
 11

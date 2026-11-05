@@ -172,6 +172,9 @@ def main(render=True):
     for s in scenes:
         s["frames"] = int(round(s["length"] * FPS))
     scenes[-1]["frames"] += int(round((TAIL - GAP) * FPS))
+    # az eleji LEAD csend képkockái az 1. jelenethez tartoznak – enélkül a kép LEAD-del a hang előtt jár
+    scenes[0]["frames"] += int(round(LEAD * FPS))
+    scenes[0]["length"] += LEAD
     total_frames = sum(s["frames"] for s in scenes)
     plan = dict(fps=FPS, total_frames=total_frames, total_seconds=total_frames / FPS, scenes=scenes,
                 audio_source=sorted(source))

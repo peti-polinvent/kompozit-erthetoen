@@ -272,4 +272,20 @@ anyagokból kikerült. **Elakadás #10:** a Fusion-export rétegrendje elavult (
 ezért az importáló a rétegeket mostantól mindig a layoutból (params.json) építi –
 a Fusion-modell a CAD-leszállítandó, az animációé a paraméterfájl.
 
+**Csütörtök – a recept-videó véglegesítése (Windows).** Az előnézetben a fénylő
+kiemelés és a felirat elcsúszott a beszédtől (pl. „Formaleválasztó a szerszámra”
+alatt az üvegrétegek, „Egy vákuumszivattyú” alatt a gyantatartály fénylett). Két ok:
+a mondatok idejét a karakterszám arányában becsültük, és a képsor 1 másodperccel
+(az eleji csenddel) a hang előtt járt. Javítás: az AI-hang (`ai_hang.py`) most a
+TTS szóhatár-eseményeit is elmenti (`NN_words.json`); ebből jön a felirat minden
+mondatának kezdete és a kiemelések indulása (a kulcsszó előtt 0,15 s-mal), és a
+bontás lépései is a narrációhoz igazodnak („letépő szövettel…”, „…a termék lekerül”).
+Az AI-hangfájlok elejéről már nem vágunk csendet, hogy az időpontok stimmeljenek.
+A kész termék a bontásnál és a zárásban vastag sárga-fehér tégla volt – most
+bontáskor vékony (≈5 mm-es, kissé túlzott) lappá préselődik, és csak kicsit emelkedik
+el a szerszámról; a lebontott technológiai rétegek a záróképen már nem lebegnek.
+A kép világosabb, tisztább lett (enyhébb kontraszt és vignetta, felemelt
+középtónusok, kevesebb szemcse). A vágószkriptek Windows-on is futnak (Python és
+betűtípus-útvonalak, ffmpeg-escape); a végleges videó a `kompozit_erthetoen.mp4`.
+
 _(folytatás)_

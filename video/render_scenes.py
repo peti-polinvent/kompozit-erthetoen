@@ -338,6 +338,7 @@ def main(plan_path, out_dir, width=1280, height=720, start_at=0, only=None):
 
     by_key = {o["key"]: o for o in bpy.data.objects if o.get("key") is not None}
     by_key.setdefault("resin_front", bpy.data.objects.get("Gyantafront"))
+    strip_objs = [o for o in bpy.data.objects if o.get("layer_type") in ("bag", "flowmesh", "peelply")]
     labels_out = {}
     scale = width / 1280.0
     idx = 0
@@ -356,6 +357,9 @@ def main(plan_path, out_dir, width=1280, height=720, start_at=0, only=None):
                 look_at(cam, target, roll)
                 cam.data.lens = lens
                 sc.frame_set(int(round(aframe)))
+                # a lebontott technológiai rétegek a záróképen ne lebegjenek a levegőben
+                for o in strip_objs:
+                    o.hide_render = s["index"] == 5
                 extra = EXTRA_GAP_SCENE.get(s["index"], 0.0)
                 for o in by_key.values():      # delta_location: nem animált, a render is tiszteletben tartja
                     if o is not None and o.get("layer_index") is not None:
