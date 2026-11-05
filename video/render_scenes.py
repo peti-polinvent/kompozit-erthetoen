@@ -125,19 +125,19 @@ def scene_5_demold(t):
     D = F_DM1 - F_DM0
     if DEMOLD_SEC:
         # a narrációhoz kötve: „A letépő szövettel…” → a rétegek indulnak (bontás 4%-a),
-        # „…a termék lekerül” → a termék emelése indul (66%), utána ~0,22 jelenetnyi idő alatt felemelkedik
+        # „…a termék lekerül” → a termék emelése indul (60%), utána ~0,22 jelenetnyi idő alatt felemelkedik
         a, b = DEMOLD_SEC
         if t < a:
             p = lerp(0.0, 0.04, t / a)
         elif t < b:
-            p = lerp(0.04, 0.66, (t - a) / (b - a))
+            p = lerp(0.04, 0.6, (t - a) / (b - a))
         else:
-            p = min(1.0, 0.66 + 0.34 * (t - b) / 0.22)
+            p = min(1.0, 0.6 + 0.4 * (t - b) / 0.24)
         aframe = F_DM0 + D * p
     else:
         p = t * 1.15 * (F_END - F_DM0) / D
         aframe = lerp(F_DM0, F_END, min(t * 1.15, 1.0))
-    for st in (0.04, 0.24, 0.44, 0.66):          # a rétegek indulása és a termék emelése
+    for st in (0.04, 0.6):          # a csomag (fólia+háló+letépő) indulása és a termék emelése
         shake += burst(p, st, 0.01, decay=20.0)
     return cam, c, aframe, 44, lerp(-4.0, 0.0, t), shake
 

@@ -206,9 +206,9 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
     </div>
     <div>
       <div class="film">
-        <video id="vid" controls playsinline preload="metadata" poster="assets/poster.jpg">
-          <source src="assets/kompozit_erthetoen.mp4" type="video/mp4">
-          <track kind="subtitles" src="assets/kompozit_erthetoen.vtt" srclang="hu" label="magyar" default>
+        <video id="vid" controls playsinline preload="metadata" poster="assets/poster.jpg?v=20261105b">
+          <source src="assets/kompozit_erthetoen.mp4?v=20261105b" type="video/mp4">
+          <track kind="subtitles" src="assets/kompozit_erthetoen.vtt?v=20261105b" srclang="hu" label="magyar" default>
           A böngésződ nem tudja lejátszani a videót – <a href="assets/kompozit_erthetoen.mp4">töltsd le itt</a>.
         </video>
       </div>
@@ -283,7 +283,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
   <div class="wrap">
     <h2 id="h-model">Nézd meg közelről</h2>
     <p class="muted" style="margin-top:14px">Húzd a forgatáshoz, csípd vagy görgesd a nagyításhoz. A gombokkal a folyamat egy-egy pillanatára ugorhatsz.</p>
-    <model-viewer id="mv" src="assets/infusion.glb"
+    <model-viewer id="mv" src="assets/infusion.glb?v=20261105b"
       alt="Vákuuminfúziós összeállítás 3D modellje: asztal, szerszám, rétegek, vákuumfólia, gyantatartály, gyantacsapda, puffertartály és szivattyú"
       camera-controls touch-action="pan-y" autoplay shadow-intensity="1" exposure="1.05" environment-image="neutral" tone-mapping="neutral"
       camera-orbit="-30deg 62deg 2.6m" camera-target="0.1m 0.78m 0m" min-camera-orbit="auto auto 0.6m" max-camera-orbit="auto auto 5m"
@@ -292,8 +292,9 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-bet
       <button type="button" id="btnPlay">Szünet</button>
       <button type="button" data-t="0.5">Szétszedve</button>
       <button type="button" data-t="5.0">Összerakva</button>
-      <button type="button" data-t="8.0">Infúzió közben</button>
-      <button type="button" data-t="11.5">Kész</button>
+      <button type="button" data-t="8.5">Infúzió közben</button>
+      <button type="button" data-t="12.4">Bontás</button>
+      <button type="button" data-t="15.4">Kész</button>
       <input id="scrub" type="range" min="0" max="12" step="0.02" value="0" aria-label="Animáció időpontja">
     </div>
     <div class="legend" id="legend"></div>
@@ -457,7 +458,7 @@ fetch('blender/params.json').then(r => r.json()).then(p => { buildLayup(p); buil
 const mv = $('#mv'), scrub = $('#scrub'), btnPlay = $('#btnPlay');
 let scrubbing = false;
 const label = () => btnPlay.textContent = mv.paused ? 'Lejátszás' : 'Szünet';
-mv.addEventListener('load', () => { scrub.max = (mv.duration || 12).toFixed(2); mv.play(); label(); });
+mv.addEventListener('load', () => { scrub.max = (mv.duration || 15.5).toFixed(2); mv.play(); label(); });
 btnPlay.addEventListener('click', () => { mv.paused ? mv.play() : mv.pause(); label(); });
 document.querySelectorAll('.scrub button[data-t]').forEach(b => b.addEventListener('click', () => {
   mv.pause(); mv.currentTime = parseFloat(b.dataset.t); scrub.value = mv.currentTime; label();

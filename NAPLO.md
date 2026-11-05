@@ -281,11 +281,51 @@ TTS szóhatár-eseményeit is elmenti (`NN_words.json`); ebből jön a felirat m
 mondatának kezdete és a kiemelések indulása (a kulcsszó előtt 0,15 s-mal), és a
 bontás lépései is a narrációhoz igazodnak („letépő szövettel…”, „…a termék lekerül”).
 Az AI-hangfájlok elejéről már nem vágunk csendet, hogy az időpontok stimmeljenek.
-A kész termék a bontásnál és a zárásban vastag sárga-fehér tégla volt – most
-bontáskor vékony (≈5 mm-es, kissé túlzott) lappá préselődik, és csak kicsit emelkedik
-el a szerszámról; a lebontott technológiai rétegek a záróképen már nem lebegnek.
+**Szakmai javítás #11 (visszatért hiba):** az infúzió alatt a laminátum „vastagodott”,
+a fólia, a letépő szövet, a háló és az erősítő rétegek szétnyíltak; bontáskor a
+rétegek egymástól váltak el. Helyesen: az infúzió alatt a rétegrend végig az
+összeállt, tömörített állapotban marad (csak a gyanta színe/frontja változik);
+bontáskor (a) a vákuumfólia + gyantavezető háló + letépő szövet EGY csomagként,
+egyszerre jön le, majd (b) a kész termék (erősítő rétegek + kikeményedett gyanta)
+EGY merev lapként emelkedik le a szerszámról (a formaleválasztó a szerszámon marad),
+vastagsága sosem változik. Ok: a bontás kulcsait a szkript az objektumok aktuális
+(a robbantott nézetre visszaállt) helyzetéből vette fel, ezért a rétegek már az
+infúzió közben elindultak felfelé – ettől lett a termék „tégla”. Most a nyugalmi
+helyzet az infúzió végi állapotból jön. Ellenőrizve a Blender-jelenetben és a
+GLB-ben is (összeállt, infúzió közepe/vége, csomag lekerült, termék felemelve):
+a lap végig 10,0 mm. A látszó vastagság csökkent: az erősítő rétegek megjelenített
+vastagsága 4 → 2,5 mm (params.json), így a termék vékony, kissé túlzott lap.
+A lebontott technológiai rétegek a záróképen már nem lebegnek. A web-modell
+(`assets/infusion.glb`) is újra exportálva.
 A kép világosabb, tisztább lett (enyhébb kontraszt és vignetta, felemelt
 középtónusok, kevesebb szemcse). A vágószkriptek Windows-on is futnak (Python és
 betűtípus-útvonalak, ffmpeg-escape); a végleges videó a `kompozit_erthetoen.mp4`.
+
+**Csütörtök – átköltözés Claude Code-ba, skillek, új weboldal.** A chates munka
+sok kreditet evett, ezért a projekt a Claude Code-ba (asztali alkalmazás, Windows)
+költözött: itt az AI közvetlenül a repóban dolgozik, futtatja a Blendert (`bpy`
+Python-csomagként) és az ffmpeg-et, és a böngészőben maga ellenőrzi a weboldalt.
+**Skillek:** a letöltött `design-taste-frontend` dizájn-skillt telepítés előtt
+átvizsgáltattam (nem indít programot, nem olvas jelszót/kulcsot, nem küld ki adatot,
+nincs benne rejtett utasítás) – így került a `.claude/skills/` mappába. Vákuuminfúzióra
+nem volt megbízható kész skill, ezért saját készült (`.claude/skills/vakuuminfuzio`):
+terminológia, folyamat, tipikus értékek, gyakori hibák, laikus magyarázat szabályai –
+benne a korábbi szakmai javításaim, hogy az AI ne kövesse el újra őket.
+**Szinkron két gép között:** a munkamenet elején automatikus `git pull`, minden kör
+végén commit + push (`.claude/hooks/autosync.py`). Elakadás #11: a parancssori git
+nem tudott pusholni (a GitHub Desktop a saját belépését nem adja oda) – megoldás a
+Desktopba épített Git Credential Manager, egyszeri böngészős bejelentkezéssel.
+**Elakadás #12 – a régi dizájn visszaíródott:** a „videó2” commit a régi
+`polinvent-ai` mappából felülírta az új weboldalt. Tanulság: egyetlen hiteles mappa
+legyen (a repó), és a szinkron automatikus.
+**Új weboldal – „recept” koncepció.** Az előző sötét változat tipikus AI-dizájnjeleket
+hordozott (színátmenetes kiemelt szó, „01 · ÁTTEKINTÉS” címkék, pirula-jelvény,
+egyforma kártyák). Az új oldal maga a recept: Hozzávalók (eszközök és anyagok, mindegyik
+mellett, mire való) → kattintható rétegrend-rajz → 3D modell → Elkészítés (kilenc lépés,
+„Miért?” magyarázattal) → kitöltésiidő-kalkulátor (Darcy-becslés: a lap hosszának
+négyzetével nő az idő, háló nélkül tízszer lassabb) → gyakori hibák. Ipari, keskeny
+betűtípus (Archivo), a tárgy saját színei (alumínium, gyanta-borostyán). Ellenőrizve
+asztali és telefonos nézetben. **Elakadás #13:** a javított 3D-modell helyett a
+böngésző a régit mutatta (gyorsítótár) – a fájlnevek verzió-paramétert kaptak.
 
 _(folytatás)_
