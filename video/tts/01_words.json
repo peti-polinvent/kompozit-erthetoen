@@ -1,22 +1,82 @@
 [
  {
-  "text": "Íme",
-  "start": 0.106,
-  "end": 0.342
+  "text": "Száraz",
+  "start": 0.1,
+  "end": 0.637
  },
  {
-  "text": "a",
-  "start": 0.369,
-  "end": 0.453
+  "text": "szövet",
+  "start": 0.637,
+  "end": 1.112
+ },
+ {
+  "text": "egy",
+  "start": 1.413,
+  "end": 1.588
+ },
+ {
+  "text": "kis",
+  "start": 1.587,
+  "end": 1.8
+ },
+ {
+  "text": "gyanta",
+  "start": 1.8,
+  "end": 2.2
+ },
+ {
+  "text": "hogyan",
+  "start": 2.2,
+  "end": 2.538
+ },
+ {
+  "text": "lesz",
+  "start": 2.538,
+  "end": 2.725
+ },
+ {
+  "text": "belőle",
+  "start": 2.725,
+  "end": 3.125
+ },
+ {
+  "text": "erős",
+  "start": 3.125,
+  "end": 3.638
+ },
+ {
+  "text": "könnyű",
+  "start": 3.925,
+  "end": 4.263
  },
  {
   "text": "kompozit",
-  "start": 0.494,
-  "end": 1.008
+  "start": 4.263,
+  "end": 4.838
  },
  {
-  "text": "receptje",
-  "start": 1.036,
-  "end": 1.619
+  "text": "lap",
+  "start": 4.838,
+  "end": 5.175
+ },
+ {
+  "text": "Egy",
+  "start": 6.013,
+  "end": 6.288
+ },
+ {
+  "text": "perc",
+  "start": 6.287,
+  "end": 6.862
+ },
+ {
+  "text": "és",
+  "start": 7.2,
+  "end": 7.425
+ },
+ {
+  "text": "megmutatjuk",
+  "start": 7.425,
+  "end": 8.325
  }
 ]

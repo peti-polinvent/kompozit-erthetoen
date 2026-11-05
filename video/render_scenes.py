@@ -152,6 +152,164 @@ def scene_6_outro(t):
 
 SCENES = [scene_1_intro, scene_2_equipment, scene_3_layup, scene_4_infusion, scene_5_demold, scene_6_outro]
 
+# =====================================================================================
+# LIGHT stílus (alapértelmezett; ACTION=1 → a fenti akció-jelenetek): világos, barátságos,
+# a weboldallal harmonizáló kép. Nincs döntés, rázkódás, crash-zoom: lágyan gyorsuló-lassuló
+# kameramozgás, 2–4 s-os beállítások, tiszta vágások a tételek / jelenetek határán.
+# A jelenet-függvények (t, s) → (kamera, célpont, animációs képkocka, fókusz mm).
+# =====================================================================================
+STYLE = "action" if os.environ.get("ACTION") == "1" else os.environ.get("STYLE", "light")
+LEAD_S = 0.0          # a build_video.py LEAD-je (az 1. jelenet képkockái ennyivel a hang előtt indulnak)
+POS = {}              # objektumkulcs-csoport → (középpont, méret) – a main() tölti
+EV = {}               # jelenet-index → cues.resolve() (másodperc a jelenet hangjától)
+EXTRA_NOW = [0.0]     # a robbantott nézet plusz hézaga az aktuális képkockán
+
+
+def eio(u):
+    """ease-in-out (köbös), [0,1] → [0,1]."""
+    u = min(max(u, 0.0), 1.0)
+    return 4 * u ** 3 if u < 0.5 else 1 - (-2 * u + 2) ** 3 / 2
+
+
+def vlerp(a, b, u):
+    return tuple(x + (y - x) * u for x, y in zip(a, b))
+
+
+def run_shots(ts, shots):
+    """shots: [(kezdet s, vég s, cam0, cam1, tgt0, tgt1, lens0, lens1)] – az aktuális beállítás
+    lágy mozgása (smoothstep); a beállítások között vágás."""
+    cur = shots[0]
+    for sh in shots:
+        if ts >= sh[0]:
+            cur = sh
+    a, b, c0, c1, g0, g1, l0, l1 = cur
+    u = ease((ts - a) / max(b - a, 1e-3)) if b > a else 0.0
+    u = min(max(u, 0.0), 1.0)
+    return vlerp(c0, c1, u), vlerp(g0, g1, u), l0 + (l1 - l0) * u
+
+
+def scene_time(t, s):
+    return t * s["length"] - (LEAD_S if s["index"] == 0 else 0.0)
+
+
+def ev_t(idx, j, default):
+    e = EV.get(idx, [])
+    return e[j]["t0"] if len(e) > j else default
+
+
+WIDE_A = ((-1.25, -2.65, 1.42), (-0.95, -2.35, 1.34), (0.06, 0.0, 0.46), (0.06, 0.0, 0.5), 30.0, 32.0)
+
+
+def light_1_intro(t, s):
+    # nyitó nagytotál (az asztal alatt a sewerbot Compact dob is látszik), majd lassú körbejárás
+    ts, L = scene_time(t, s), s["length"] - LEAD_S
+    cut = 0.48 * L
+    if ts < cut:
+        c0, c1, g0, g1, l0, l1 = WIDE_A
+        cam, tgt, lens = run_shots(ts, [(-LEAD_S, cut, c0, c1, g0, g1, l0, l1)])
+    else:
+        u = (ts - cut) / max(L - cut, 1e-3)
+        c = (0.0, 0.0, Z0 + 0.03)
+        cam, tgt, lens = orbit(c, 0.98, 0.42, lerp(-128, -72, ease(u))), c, 40.0
+    return cam, tgt, lerp(F_INF0 + 40, F_INF0 + 64, min(max(t, 0), 1)), lens
+
+
+EQUIP_VIEW = [  # (nézési irány a tárgytól a kamera felé, távolság m)
+    ((0.0, -1.0, 0.85), 1.25),     # szerszám (a kötegével)
+    ((-0.6, -1.0, 0.55), 0.78),    # gyantatartály
+    ((0.35, 1.0, 0.65), 0.9),      # vákuumszivattyú – hátulról, a csapda nem takarja
+    ((0.75, -1.0, 0.6), 1.0),      # puffertartály
+    ((-0.25, -1.0, 0.55), 0.82),   # gyantacsapda
+]
+
+
+def light_2_equipment(t, s):
+    ts = scene_time(t, s)
+    ev = EV.get(1, [])
+    shots = []
+    for j, (d, dist) in enumerate(EQUIP_VIEW):
+        if j >= len(ev):
+            break
+        a = -1.0 if j == 0 else ev[j]["t0"] - 0.12
+        b = ev[j + 1]["t0"] - 0.12 if j + 1 < len(ev) else s["length"]
+        cen = POS.get(tuple(ev[j]["keys"]), (Vector((0, 0, Z0)), 0.3))[0]
+        dv = Vector(d).normalized()
+        fwd = -dv
+        right = fwd.cross(Vector((0, 0, 1))).normalized()
+        tgt = cen + right * (0.12 * dist)          # a tárgy kissé balra: jobbra a checklista
+        c0, c1 = tgt + dv * dist * 1.06, tgt + dv * dist * 0.93
+        shots.append((a, b, tuple(c0), tuple(c1), tuple(tgt), tuple(tgt), 35.0, 36.0))
+    if not shots:
+        return light_1_intro(1.0, s)
+    cam, tgt, lens = run_shots(ts, shots)
+    return cam, tgt, F_INF0 - 5, lens
+
+
+def light_3_layup(t, s):
+    ts = scene_time(t, s)
+    L = s["length"]
+    t_peel, t_tape = ev_t(2, 2, 0.4 * L), ev_t(2, 5, 0.75 * L)
+    tour_end = TOUR_END * L
+    if ts < tour_end:
+        EXTRA_NOW[0] = EXTRA_GAP_SCENE[2]
+        cam, tgt, lens = run_shots(ts, [
+            (0.0, t_peel, (-0.12, -1.58, Z0 + 0.5), (0.0, -1.5, Z0 + 0.5), (0.1, 0, Z0 + 0.2), (0.1, 0, Z0 + 0.2), 50, 52),
+            (t_peel, t_tape, (0.5, -1.38, Z0 + 0.62), (0.42, -1.34, Z0 + 0.6), (0.12, 0, Z0 + 0.21), (0.12, 0, Z0 + 0.21), 50, 51),
+            (t_tape, tour_end, (-0.32, -1.45, Z0 + 0.46), (-0.26, -1.4, Z0 + 0.46), (0.1, 0, Z0 + 0.19), (0.1, 0, Z0 + 0.19), 50, 52)])
+        return cam, tgt, F_EXPLODED, lens
+    u = (ts - tour_end) / max(L - tour_end, 1e-3)
+    EXTRA_NOW[0] = EXTRA_GAP_SCENE[2] * (1 - eio(min(u * 1.4, 1.0)))
+    cam, tgt, lens = run_shots(ts, [(tour_end, L, (-0.6, -1.05, Z0 + 0.72), (-0.5, -0.95, Z0 + 0.66),
+                                     (0.06, 0, Z0 + 0.06), (0.06, 0, Z0 + 0.03), 40, 42)])
+    return cam, tgt, lerp(F_ASM0 - 8, F_ASM1 + 1, eio(u)), lens
+
+
+F_SUCK0, F_SUCK1 = F_ASM1 + 3, F_INF0 - 3     # a fólia ráfeszülése (build_infusion.py: f_suck0/1)
+
+
+def light_4_infusion(t, s):
+    ts = scene_time(t, s)
+    L = s["length"]
+    t_suck, t_open, t_cure = ev_t(3, 0, 1.0), ev_t(3, 1, 0.35 * L), ev_t(3, 2, 0.8 * L)
+    if ts < t_open - 0.15:
+        f = lerp(F_SUCK0 - 1, F_SUCK1 + 1, eio((ts - t_suck + 0.1) / 1.1))
+        cam, tgt, lens = run_shots(ts, [(0.0, t_open, (0.55, -0.95, Z0 + 0.5), (0.45, -0.85, Z0 + 0.44),
+                                         (0.0, 0.0, Z0 + 0.01), (0.0, 0.0, Z0 + 0.01), 42, 46)])
+        return cam, tgt, f, lens
+    if ts < t_cure - 0.1:
+        u = (ts - t_open) / max(t_cure - t_open, 1e-3)
+        cam, tgt, lens = run_shots(ts, [(t_open - 0.15, t_cure, (-1.0, -0.72, Z0 + 0.45), (-0.62, -0.95, Z0 + 0.6),
+                                         (0.04, -0.02, Z0 + 0.03), (0.06, -0.02, Z0 + 0.03), 40, 44)])
+        return cam, tgt, lerp(F_INF0, F_INF1, min(max(u, 0), 1)), lens
+    u = (ts - t_cure) / max(L - t_cure, 1e-3)
+    c = (0.0, 0.0, Z0 + 0.02)
+    return orbit(c, lerp(0.9, 0.8, ease(u)), 0.5, lerp(-60, -40, ease(u))), c, lerp(F_INF1, F_DM0 - 1, min(u, 1)), 44
+
+
+def light_5_demold(t, s):
+    ts = scene_time(t, s)
+    c = (0.0, 0.05, Z0 + 0.12)
+    cam = orbit(c, lerp(1.25, 1.08, ease(t)), lerp(0.85, 0.72, ease(t)), lerp(-105, -80, ease(t)))
+    D = F_DM1 - F_DM0
+    a, b = ev_t(4, 0, 0.3 * s["length"]), ev_t(4, 1, 0.6 * s["length"])
+    if ts < a - 0.2:
+        p = 0.0
+    elif ts < b:
+        p = 0.6 * eio((ts - a + 0.2) / max(b - a + 0.2, 1e-3))
+    else:
+        p = 0.6 + 0.4 * eio((ts - b) / 1.6)
+    return cam, c, F_DM0 + D * p, 44
+
+
+def light_6_outro(t, s):
+    # záró nagytotál (a dob újra látszik), lassú hátrálás; a végén a zárókártya (annotate) takarja
+    c0, c1, g0, g1, l0, l1 = WIDE_A
+    u = eio(t)
+    return vlerp(c1, c0, u), vlerp(g1, g0, u), F_END, l1 + (l0 - l1) * u
+
+
+SCENES_LIGHT = [light_1_intro, light_2_equipment, light_3_layup, light_4_infusion, light_5_demold, light_6_outro]
+
 # ---- Címkék (buborék + nyíl): jelenet → [(objektum-kulcs, szöveg, (dx,dy) px eltolás, t0, t1)] ---
 # A kulcs a layout 'key' mezője (obj["key"]). dx,dy: a buborék helye a célponthoz képest
 # (720p-s képre; kisebb felbontásnál arányosan skálázódik).
@@ -211,6 +369,23 @@ def apply_word_timing(plan):
             out.append((keys, t0, t1))
         return out
 
+    if STYLE == "light":
+        # a kulcsszavak a cues.py-ból (egy forrás a 3D-nek, a grafikának és a hangeffekteknek)
+        global LEAD_S
+        sys.path.insert(0, HERE)
+        import cues
+        LEAD_S = plan.get("lead", 0.0)
+        for s in plan["scenes"]:
+            EV[s["index"]] = cues.resolve(s) if s.get("words") else []
+        for idx in (1, 2):
+            s = plan["scenes"][idx]
+            L = s["length"]
+            HIGHLIGHTS[idx] = [(e["keys"], "", (0, 0), max(0.0, (e["t0"] - 0.1) / L), min(1.0, (e["t1"] - 0.1) / L))
+                               for e in EV[idx]]
+        if len(EV[2]) == 7:
+            TOUR_END = EV[2][6]["t0"] / plan["scenes"][2]["length"] + 0.04
+        print("[időzítés] light:", {k: [round(e["t0"], 2) for e in v] for k, v in EV.items()})
+        return
     for s in plan["scenes"]:
         if not s.get("words"):
             continue
@@ -338,17 +513,38 @@ def main(plan_path, out_dir, width=1280, height=720, start_at=0, only=None):
 
     by_key = {o["key"]: o for o in bpy.data.objects if o.get("key") is not None}
     by_key.setdefault("resin_front", bpy.data.objects.get("Gyantafront"))
+    if STYLE == "light":
+        # Workbench: stúdiófény, árnyék, cavity (élek), vékony sötét körvonal, anyagszínek;
+        # háttér = a weboldal alapszíne (#eceeed), Standard színkezelés → a képkocka beleolvad az oldalba
+        sh = sc.display.shading
+        sh.light, sh.color_type = "STUDIO", "TEXTURE"      # anyagszín; a dobon a saját textúrája
+        sh.show_shadows, sh.shadow_intensity = True, 0.35
+        sh.show_cavity, sh.cavity_type = True, "BOTH"
+        sh.cavity_ridge_factor, sh.cavity_valley_factor = 1.0, 1.0
+        sh.show_object_outline = True
+        sh.object_outline_color = (0.008, 0.010, 0.012)       # ~#15191d (lineáris)
+        sc.view_settings.view_transform, sc.view_settings.look = "Standard", "None"
+        srgb2lin = lambda c: (c / 255) / 12.92 if c / 255 <= 0.04045 else ((c / 255 + 0.055) / 1.055) ** 2.4
+        sc.world.color = tuple(srgb2lin(c) for c in (0xEC, 0xEE, 0xED))
+        sc.display.render_aa = os.environ.get("RENDER_AA", "16")
+        for keys in [tuple(e["keys"]) for v in EV.values() for e in v if e["keys"]]:
+            bb = [by_key[k].matrix_world @ Vector(c) for k in keys if by_key.get(k) for c in by_key[k].bound_box]
+            if bb:
+                lo = Vector((min(v.x for v in bb), min(v.y for v in bb), min(v.z for v in bb)))
+                hi = Vector((max(v.x for v in bb), max(v.y for v in bb), max(v.z for v in bb)))
+                POS[keys] = ((lo + hi) / 2, (hi - lo).length)
     strip_objs = [o for o in bpy.data.objects if o.get("layer_type") in ("bag", "flowmesh", "peelply")]
     labels_out = {}
     scale = width / 1280.0
     idx = 0
     for s in plan["scenes"]:
-        fn = SCENES[s["index"]]
+        fn = SCENES_LIGHT[s["index"]] if STYLE == "light" else SCENES[s["index"]]
         n = s["frames"]
         for k in range(n):
             if idx >= start_at and (only is None or idx in only):
                 t = k / max(n - 1, 1)
-                res = fn(t)
+                EXTRA_NOW[0] = EXTRA_GAP_SCENE.get(s["index"], 0.0)
+                res = fn(t, s) if STYLE == "light" else fn(t)
                 loc, target, aframe, lens = res[:4]
                 roll = res[4] if len(res) > 4 else 0.0
                 amp = res[5] if len(res) > 5 else 0.0
@@ -360,7 +556,7 @@ def main(plan_path, out_dir, width=1280, height=720, start_at=0, only=None):
                 # a lebontott technológiai rétegek a záróképen ne lebegjenek a levegőben
                 for o in strip_objs:
                     o.hide_render = s["index"] == 5
-                extra = EXTRA_GAP_SCENE.get(s["index"], 0.0)
+                extra = EXTRA_NOW[0]
                 for o in by_key.values():      # delta_location: nem animált, a render is tiszteletben tartja
                     if o is not None and o.get("layer_index") is not None:
                         o.delta_location.z = extra * (int(o["layer_index"]) + 1)

@@ -1,72 +1,92 @@
 [
  {
   "text": "Bontás",
-  "start": 0.106,
-  "end": 0.717
+  "start": 0.1,
+  "end": 1.05
  },
  {
   "text": "A",
-  "start": 1.75,
-  "end": 1.875
+  "start": 1.887,
+  "end": 2.062
  },
  {
-  "text": "letépő",
-  "start": 1.875,
-  "end": 2.306
- },
- {
-  "text": "szövettel",
-  "start": 2.361,
-  "end": 2.889
- },
- {
-  "text": "lejönnek",
-  "start": 2.889,
-  "end": 3.375
+  "text": "fólia",
+  "start": 2.062,
+  "end": 2.8
  },
  {
   "text": "a",
-  "start": 3.375,
-  "end": 3.458
+  "start": 3.1,
+  "end": 3.212
  },
  {
-  "text": "technológiai",
-  "start": 3.458,
-  "end": 4.264
- },
- {
-  "text": "rétegek",
-  "start": 4.319,
-  "end": 4.792
+  "text": "háló",
+  "start": 3.212,
+  "end": 3.663
  },
  {
   "text": "és",
-  "start": 4.944,
-  "end": 5.111
+  "start": 3.663,
+  "end": 3.85
  },
  {
   "text": "a",
-  "start": 5.111,
-  "end": 5.181
+  "start": 3.85,
+  "end": 3.888
  },
  {
-  "text": "termék",
-  "start": 5.208,
-  "end": 5.583
+  "text": "letépő",
+  "start": 3.888,
+  "end": 4.388
  },
  {
-  "text": "lekerül",
-  "start": 5.597,
-  "end": 6.0
+  "text": "szövet",
+  "start": 4.388,
+  "end": 4.763
+ },
+ {
+  "text": "egyben",
+  "start": 4.763,
+  "end": 5.1
+ },
+ {
+  "text": "lejön",
+  "start": 5.1,
+  "end": 5.562
  },
  {
   "text": "a",
-  "start": 6.0,
-  "end": 6.083
+  "start": 5.8,
+  "end": 5.925
+ },
+ {
+  "text": "kész",
+  "start": 5.925,
+  "end": 6.275
+ },
+ {
+  "text": "lap",
+  "start": 6.275,
+  "end": 6.425
+ },
+ {
+  "text": "pedig",
+  "start": 6.425,
+  "end": 6.7
+ },
+ {
+  "text": "leválik",
+  "start": 6.7,
+  "end": 7.125
+ },
+ {
+  "text": "a",
+  "start": 7.125,
+  "end": 7.162
  },
  {
   "text": "szerszámról",
-  "start": 6.097,
-  "end": 6.875
+  "start": 7.162,
+  "end": 8.075
  }
 ]

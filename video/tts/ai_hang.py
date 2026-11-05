@@ -1,4 +1,4 @@
-﻿"""
+"""
 ai_hang.py – AI-narráció generálása a hat jelenethez (Microsoft Edge neurális magyar hang)
 =========================================================================================
 
@@ -25,9 +25,9 @@ except ImportError:
     sys.exit("Hiányzik az edge-tts: pip install edge-tts")
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-VOICE = "hu-HU-TamasNeural"
-RATE = "-10%"      # lassabb, nyomatékosabb
-PITCH = "-20Hz"     # kicsit mélyebb
+VOICE = "hu-HU-NoemiNeural"   # természetes, barátságos női hang (a „light” változathoz)
+RATE = "+0%"
+PITCH = "+0Hz"
 
 
 async def main():

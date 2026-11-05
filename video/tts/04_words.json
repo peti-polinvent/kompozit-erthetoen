@@ -1,47 +1,107 @@
 [
  {
-  "text": "Injektálás",
-  "start": 0.106,
-  "end": 1.008
+  "text": "Vákuum",
+  "start": 0.1,
+  "end": 0.775
  },
  {
-  "text": "A",
-  "start": 2.042,
-  "end": 2.139
- },
- {
-  "text": "gyanta",
-  "start": 2.153,
-  "end": 2.486
- },
- {
-  "text": "átjárja",
-  "start": 2.5,
-  "end": 3.042
+  "text": "be",
+  "start": 0.775,
+  "end": 1.075
  },
  {
   "text": "a",
-  "start": 3.042,
-  "end": 3.167
+  "start": 1.337,
+  "end": 1.462
  },
  {
-  "text": "rétegeket",
-  "start": 3.181,
-  "end": 3.833
+  "text": "fólia",
+  "start": 1.462,
+  "end": 1.938
  },
  {
-  "text": "Aztán",
-  "start": 4.903,
-  "end": 5.25
+  "text": "ráfeszül",
+  "start": 1.938,
+  "end": 2.462
  },
  {
-  "text": "hagyjuk",
-  "start": 5.25,
-  "end": 5.611
+  "text": "a",
+  "start": 2.462,
+  "end": 2.5
  },
  {
-  "text": "térhálósodni",
-  "start": 5.639,
-  "end": 6.514
+  "text": "rétegekre",
+  "start": 2.5,
+  "end": 3.25
+ },
+ {
+  "text": "Nyílik",
+  "start": 4.088,
+  "end": 4.562
+ },
+ {
+  "text": "a",
+  "start": 4.562,
+  "end": 4.625
+ },
+ {
+  "text": "csap",
+  "start": 4.625,
+  "end": 5.05
+ },
+ {
+  "text": "és",
+  "start": 5.338,
+  "end": 5.562
+ },
+ {
+  "text": "a",
+  "start": 5.562,
+  "end": 5.6
+ },
+ {
+  "text": "légnyomás",
+  "start": 5.6,
+  "end": 6.25
+ },
+ {
+  "text": "betolja",
+  "start": 6.25,
+  "end": 6.7
+ },
+ {
+  "text": "a",
+  "start": 6.7,
+  "end": 6.737
+ },
+ {
+  "text": "gyantát",
+  "start": 6.737,
+  "end": 7.438
+ },
+ {
+  "text": "Átitatja",
+  "start": 8.275,
+  "end": 8.988
+ },
+ {
+  "text": "a",
+  "start": 8.988,
+  "end": 9.038
+ },
+ {
+  "text": "szöveteket",
+  "start": 9.037,
+  "end": 9.713
+ },
+ {
+  "text": "aztán",
+  "start": 9.825,
+  "end": 10.225
+ },
+ {
+  "text": "megkeményedik",
+  "start": 10.225,
+  "end": 11.225
  }
 ]
